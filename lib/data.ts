@@ -53,11 +53,11 @@ export const features: Feature[] = [
     icon: "sparkles",
     title: "Analyse IA instantanée",
     description:
-      "Dès qu’un carton rouge tombe, l’IA analyse le contexte du match et en calcule l’impact réel.",
+      "Dès qu’un carton rouge tombe, l’IA analyse le contexte du match et en calcule l’indice de confiance.",
   },
   {
     icon: "gauge",
-    title: "Score d’impact sur 100",
+    title: "Indice de confiance sur 100",
     description:
       "Une lecture immédiate de l’importance du carton sur l’issue du match, en un seul chiffre.",
   },
@@ -90,7 +90,7 @@ export const features: Feature[] = [
 export const steps = [
   { step: "01", title: "Carton rouge détecté", description: "Un carton rouge tombe : c’est le déclencheur. RedPulse le repère instantanément." },
   { step: "02", title: "Données récupérées", description: "Le contexte du match est collecté automatiquement : score, minute, équipes." },
-  { step: "03", title: "L’IA analyse l’impact", description: "Le copilote calcule le score d’impact et les probabilités clés du match." },
+  { step: "03", title: "L’IA analyse la situation", description: "Le copilote calcule l’indice de confiance et les probabilités clés du match." },
   { step: "04", title: "Telegram enrichi envoyé", description: "Vous recevez l’analyse complète dans Telegram en quelques secondes." },
 ]
 
@@ -156,11 +156,11 @@ export const testimonials: Testimonial[] = [
 export const faqs = [
   {
     q: "Comment fonctionne l’analyse IA ?",
-    a: "Le carton rouge est le déclencheur. Dès qu’il est détecté, RedPulse récupère le contexte du match, puis l’IA calcule l’impact du carton et vous envoie une analyse claire dans Telegram : probabilité de but supplémentaire, probabilité de victoire du favori et score d’impact sur 100.",
+    a: "Le carton rouge est le déclencheur. Dès qu’il est détecté, RedPulse récupère le contexte du match, puis l’IA calcule l’indice de confiance du carton et vous envoie une analyse claire dans Telegram : probabilité de but supplémentaire, probabilité de victoire du favori et indice de confiance sur 100.",
   },
   {
     q: "RedPulse donne-t-il des conseils de pari ?",
-    a: "Non, jamais. RedPulse n’est pas un service de pronostics ni de paris sportifs. Il fournit uniquement une analyse en temps réel de l’impact potentiel d’un carton rouge sur le match.",
+    a: "Non, jamais. RedPulse n’est pas un service de pronostics ni de paris sportifs. Il fournit uniquement une analyse en temps réel de l’effet potentiel d’un carton rouge sur le match.",
   },
   {
     q: "Quelles compétitions sont analysées ?",
@@ -168,7 +168,7 @@ export const faqs = [
   },
   {
     q: "Vais-je voir des statistiques complexes comme les xG ?",
-    a: "Non. L’objectif est une lecture simple et immédiate. Vous recevez uniquement l’essentiel : les deux probabilités clés et le score d’impact, sans jargon ni tableaux illisibles.",
+    a: "Non. L’objectif est une lecture simple et immédiate. Vous recevez uniquement l’essentiel : les deux probabilités clés et l’indice de confiance, sans jargon ni tableaux illisibles.",
   },
 ]
 

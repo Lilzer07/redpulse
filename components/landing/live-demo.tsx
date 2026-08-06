@@ -23,7 +23,7 @@ export function LiveDemo() {
           Voyez l’IA analyser en temps réel
         </h2>
         <p className="mt-4 text-pretty text-muted-foreground">
-          Chaque carton rouge déclenche une analyse d’impact instantanée, sans statistiques complexes.
+          Chaque carton rouge déclenche une analyse instantanée, sans statistiques complexes.
         </p>
       </div>
 
@@ -46,7 +46,7 @@ export function LiveDemo() {
           <span>Carton rouge</span>
           <span>But +</span>
           <span>Victoire favori</span>
-          <span className="text-right">Impact</span>
+          <span className="text-right">Confiance</span>
         </div>
 
         <div className="divide-y divide-white/5">
@@ -89,7 +89,7 @@ export function LiveDemo() {
       </div>
 
       <p className="mx-auto mt-6 max-w-2xl text-center text-xs text-muted-foreground">
-        RedPulse fournit une analyse d’impact en temps réel. Ce n’est pas un service de pronostics ni de paris
+        RedPulse fournit une analyse en temps réel. Ce n’est pas un service de pronostics ni de paris
         sportifs.
       </p>
     </section>

@@ -22,7 +22,7 @@ export function Features() {
           Le carton rouge déclenche, l’IA analyse
         </h2>
         <p className="mt-4 text-pretty text-muted-foreground">
-          Bien plus qu’une alerte : un copilote qui mesure l’impact réel de chaque carton, en temps réel.
+          Bien plus qu’une alerte : un copilote qui mesure l’indice de confiance de chaque carton, en temps réel.
         </p>
       </div>
 

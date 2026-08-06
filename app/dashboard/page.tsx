@@ -17,7 +17,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
           <StatCard label="Matchs surveillés" value="37" icon={Radio} accent="green" hint="En direct maintenant" delay={0} />
           <StatCard label="Analyses IA aujourd’hui" value="12" icon={Sparkles} accent="green" hint="+3 vs hier" delay={0.06} />
-          <StatCard label="Impact moyen" value="78/100" icon={Flame} accent="red" hint="Sur les cartons du jour" delay={0.12} />
+          <StatCard label="Indice de confiance moyen" value="78/100" icon={Flame} accent="red" hint="Sur les cartons du jour" delay={0.12} />
           <StatCard label="Temps moyen d’analyse" value="1,4 s" icon={Timer} accent="green" hint="Détection → Telegram" delay={0.18} />
           <StatCard label="Statut Telegram" value="Connecté" icon={Send} accent="green" hint="@redpulse_bot" delay={0.24} />
         </div>

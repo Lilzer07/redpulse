@@ -64,7 +64,7 @@ export function Hero() {
           </motion.h1>
 
           <motion.p variants={item} className="mt-6 text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Dès qu’un carton rouge tombe, RedPulse récupère le contexte du match, analyse son impact et vous
+            Dès qu’un carton rouge tombe, RedPulse récupère le contexte du match, analyse la situation et vous
             envoie une notification Telegram : probabilité de but supplémentaire, victoire du favori et indice de
             confiance. En quelques secondes.
           </motion.p>
@@ -96,7 +96,7 @@ export function Hero() {
             </div>
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-primary" />
-              Score d’impact /100
+              Indice de confiance /100
             </div>
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-primary" />

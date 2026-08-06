@@ -98,13 +98,13 @@ export function LiveFeed({ intervalMs = 4000, max = 12, compact = false }: Props
             {r.status === "analyzing" ? (
               <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
                 <Sparkles className="h-3.5 w-3.5 text-primary" aria-hidden />
-                Le copilote calcule l’impact…
+                Le copilote calcule l’indice de confiance…
               </div>
             ) : (
               <div className={`mt-3 grid gap-2 ${compact ? "grid-cols-1 sm:grid-cols-3" : "grid-cols-1 sm:grid-cols-3"}`}>
                 <Metric icon={Goal} label="But supplémentaire" value={`${r.analysis.extraGoalProb}%`} />
                 <Metric icon={Trophy} label={`Victoire ${r.analysis.favorite}`} value={`${r.analysis.favoriteWinProb}%`} />
-                <Metric icon={Flame} label="Score d’impact" value={`${r.analysis.impact}/100`} danger />
+                <Metric icon={Flame} label="Indice de confiance" value={`${r.analysis.impact}/100`} danger />
               </div>
             )}
           </motion.article>

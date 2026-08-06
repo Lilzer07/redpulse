@@ -113,7 +113,7 @@ export function TelegramPhone() {
                       </div>
                       <div className="flex items-center gap-2">
                         <Flame className="h-3.5 w-3.5 shrink-0 text-[var(--danger)]" aria-hidden />
-                        <span className="text-muted-foreground">Impact</span>
+                        <span className="text-muted-foreground">Confiance</span>
                         <span className="ml-auto font-bold tabular-nums text-primary">
                           {n.analysis.impact}/100
                         </span>

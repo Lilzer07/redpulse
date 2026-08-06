@@ -11,15 +11,15 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'RedPulse — Le copilote IA qui analyse l’impact des cartons rouges',
+  title: 'RedPulse — Le copilote IA qui analyse les cartons rouges',
   description:
-    'Dès qu’un carton rouge tombe, RedPulse analyse son impact et vous envoie une notification Telegram enrichie : probabilité de but, victoire du favori et score d’impact, en quelques secondes.',
+    'Dès qu’un carton rouge tombe, RedPulse analyse la situation et vous envoie une notification Telegram enrichie : probabilité de but, victoire du favori et indice de confiance, en quelques secondes.',
   generator: 'v0.app',
   keywords: [
     'carton rouge',
     'football',
     'analyse IA football',
-    'impact carton rouge',
+    'indice de confiance carton rouge',
     'notifications Telegram',
     'temps réel',
     'Premier League',
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'RedPulse — Le carton rouge, décodé par l’IA',
     description:
-      'Un copilote IA qui analyse l’impact de chaque carton rouge en temps réel et vous l’envoie sur Telegram.',
+      'Un copilote IA qui analyse chaque carton rouge en temps réel et vous l’envoie sur Telegram.',
     type: 'website',
   },
 }
