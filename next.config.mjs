@@ -3,8 +3,14 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // The runtime image optimizer isn't available in this environment, so images
+  // are served as-is. We ship pre-compressed WebP assets instead (see /public/images).
   images: {
     unoptimized: true,
+  },
+  // Tree-shake large icon/animation packages so only used exports ship.
+  experimental: {
+    optimizePackageImports: ["lucide-react", "framer-motion"],
   },
   async headers() {
     return [

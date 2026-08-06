@@ -11,7 +11,7 @@ import { faqs } from "@/lib/data"
 
 export function Faq() {
   return (
-    <section id="faq" className="relative mx-auto max-w-3xl scroll-mt-24 px-5 py-24">
+    <section id="faq" className="cv-auto relative mx-auto max-w-3xl scroll-mt-24 px-5 py-24">
       <div className="text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">FAQ</p>
         <h2 className="mt-4 text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">

@@ -5,7 +5,7 @@ import { steps } from "@/lib/data"
 
 export function HowItWorks() {
   return (
-    <section id="fonctionnement" className="relative scroll-mt-24 py-24">
+    <section id="fonctionnement" className="cv-auto relative scroll-mt-24 py-24">
       <div className="mx-auto max-w-6xl px-5">
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Comment ça marche</p>

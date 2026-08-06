@@ -1,28 +1,35 @@
 "use client"
 
+import Image from "next/image"
 import { motion } from "framer-motion"
 import { ArrowRight, Play } from "lucide-react"
 import { ButtonLink } from "@/components/ui/button-link"
 import { TelegramPhone } from "@/components/landing/telegram-phone"
 
+// Snappy, staggered entrance — same fade-up feel, but fast enough not to
+// delay the Largest Contentful Paint (the headline/paragraph).
 const container = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
+  show: { transition: { staggerChildren: 0.07 } },
 }
 const item = {
-  hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } },
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } },
 }
 
 export function Hero() {
   return (
     <section className="relative isolate min-h-screen w-full overflow-hidden">
-      {/* Stadium background */}
+      {/* Stadium background — priority so it preloads as the hero visual (LCP region) */}
       <div className="absolute inset-0 z-0">
-        <img
-          src="/images/stadium-hero.png"
+        <Image
+          src="/images/stadium-hero.webp"
           alt="Stade de football illuminé la nuit"
-          className="h-full w-full object-cover object-bottom"
+          fill
+          priority
+          fetchPriority="high"
+          sizes="100vw"
+          className="object-cover object-bottom"
         />
       </div>
       {/* Overlays for depth + legibility — kept light so the stadium stays visible */}
@@ -100,9 +107,9 @@ export function Hero() {
 
         {/* Right phone */}
         <motion.div
-          initial={{ opacity: 0, y: 40, rotateY: -8 }}
+          initial={{ opacity: 0, y: 32, rotateY: -8 }}
           animate={{ opacity: 1, y: 0, rotateY: 0 }}
-          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
           className="flex justify-center lg:justify-end"
         >
           <TelegramPhone />

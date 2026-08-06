@@ -15,7 +15,7 @@ const icons: Record<string, LucideIcon> = {
 
 export function Features() {
   return (
-    <section id="fonctionnalites" className="relative mx-auto max-w-6xl scroll-mt-24 px-5 py-24">
+    <section id="fonctionnalites" className="cv-auto relative mx-auto max-w-6xl scroll-mt-24 px-5 py-24">
       <div className="mx-auto max-w-2xl text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Fonctionnalités</p>
         <h2 className="mt-4 text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">

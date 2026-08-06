@@ -5,7 +5,7 @@ import { testimonials } from "@/lib/data"
 
 export function Testimonials() {
   return (
-    <section className="relative mx-auto max-w-6xl px-5 py-24">
+    <section className="cv-auto relative mx-auto max-w-6xl px-5 py-24">
       <div className="mx-auto max-w-2xl text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Avis clients</p>
         <h2 className="mt-4 text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
