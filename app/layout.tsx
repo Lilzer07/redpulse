@@ -1,36 +1,43 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
+import { Inter } from 'next/font/google'
 import './globals.css'
 
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+})
+
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
+  title: 'RedPulse — Alertes cartons rouges en temps réel sur Telegram',
+  description:
+    'Recevez une notification Telegram en moins de 2 secondes dès qu’un carton rouge est distribué dans les plus grandes compétitions européennes.',
   generator: 'v0.app',
-  icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
-    apple: '/apple-icon.png',
+  keywords: [
+    'carton rouge',
+    'football',
+    'notifications Telegram',
+    'temps réel',
+    'alertes football',
+    'Premier League',
+    'Ligue 1',
+    'Champions League',
+  ],
+  openGraph: {
+    title: 'RedPulse — Ne manquez plus jamais un carton rouge',
+    description:
+      'Alertes Telegram instantanées à chaque carton rouge dans les plus grands championnats européens.',
+    type: 'website',
   },
 }
 
 export const viewport: Viewport = {
-  colorScheme: 'light dark',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
-  ],
+  colorScheme: 'dark',
+  themeColor: '#050505',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
 }
 
 export default function RootLayout({
@@ -39,8 +46,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className="antialiased">
+    <html lang="fr" className={`dark ${inter.variable}`}>
+      <body className="font-sans antialiased bg-background text-foreground">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
