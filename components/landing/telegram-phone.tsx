@@ -12,11 +12,15 @@ function nowLabel() {
 }
 
 export function TelegramPhone() {
+  // Initialize with a stable placeholder time so server and client HTML match.
   const [notifs, setNotifs] = useState<Notif[]>(() =>
-    seedEvents.slice(0, 3).map((e) => ({ ...e, time: nowLabel() })),
+    seedEvents.slice(0, 3).map((e) => ({ ...e, time: "--:--" })),
   )
 
   useEffect(() => {
+    // Set the real timestamps only on the client, after hydration.
+    setNotifs((prev) => prev.map((n) => ({ ...n, time: nowLabel() })))
+
     const interval = setInterval(() => {
       setNotifs((prev) => {
         const next = { ...makeRandomEvent(), time: nowLabel() }

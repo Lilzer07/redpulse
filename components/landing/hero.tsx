@@ -1,9 +1,8 @@
 "use client"
 
-import Link from "next/link"
 import { motion } from "framer-motion"
 import { ArrowRight, Play } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { ButtonLink } from "@/components/ui/button-link"
 import { TelegramPhone } from "@/components/landing/telegram-phone"
 
 const container = {
@@ -17,24 +16,29 @@ const item = {
 
 export function Hero() {
   return (
-    <section className="relative min-h-screen w-full overflow-hidden">
+    <section className="relative isolate min-h-screen w-full overflow-hidden">
       {/* Stadium background */}
-      <div className="absolute inset-0 -z-20">
+      <div className="absolute inset-0 z-0">
         <img
           src="/images/stadium-hero.png"
           alt="Stade de football illuminé la nuit"
-          className="h-full w-full object-cover object-center"
+          className="h-full w-full object-cover object-bottom"
         />
       </div>
-      {/* Overlays for depth + legibility */}
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background/70 via-background/60 to-background" />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-background via-background/40 to-transparent" />
+      {/* Overlays for depth + legibility — kept light so the stadium stays visible */}
+      <div className="absolute inset-0 z-0 bg-gradient-to-b from-background/50 via-background/20 to-background/70" />
+      <div className="absolute inset-0 z-0 bg-gradient-to-r from-background/85 via-background/25 to-transparent" />
       <div
-        className="absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-background to-transparent"
+        className="absolute inset-x-0 top-0 z-0 h-32 bg-gradient-to-b from-background to-transparent"
+        aria-hidden
+      />
+      {/* Subtle green stadium glow */}
+      <div
+        className="absolute left-1/4 top-0 z-0 h-96 w-96 -translate-x-1/2 rounded-full bg-primary/10 blur-[120px]"
         aria-hidden
       />
 
-      <div className="mx-auto grid min-h-screen max-w-6xl grid-cols-1 items-center gap-12 px-5 pb-16 pt-32 lg:grid-cols-2 lg:gap-8 lg:pt-28">
+      <div className="relative z-10 mx-auto grid min-h-screen max-w-6xl grid-cols-1 items-center gap-12 px-5 pb-16 pt-32 lg:grid-cols-2 lg:gap-8 lg:pt-28">
         {/* Left copy */}
         <motion.div variants={container} initial="hidden" animate="show" className="max-w-xl">
           <motion.div variants={item}>
@@ -59,27 +63,23 @@ export function Hero() {
           </motion.p>
 
           <motion.div variants={item} className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button
-              asChild
+            <ButtonLink
+              href="/dashboard"
               size="lg"
               className="group h-12 rounded-xl bg-primary px-6 text-base font-semibold text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/90"
             >
-              <Link href="/dashboard">
-                Essayer gratuitement
-                <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Link>
-            </Button>
-            <Button
-              asChild
+              Essayer gratuitement
+              <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </ButtonLink>
+            <ButtonLink
+              href="#demo"
               size="lg"
               variant="outline"
               className="h-12 rounded-xl border-white/15 bg-white/5 px-6 text-base font-medium text-foreground backdrop-blur hover:bg-white/10"
             >
-              <a href="#demo">
-                <Play className="mr-1 h-4 w-4" />
-                Voir la démonstration
-              </a>
-            </Button>
+              <Play className="mr-1 h-4 w-4" />
+              Voir la démonstration
+            </ButtonLink>
           </motion.div>
 
           <motion.div variants={item} className="mt-8 flex items-center gap-6 text-sm text-muted-foreground">

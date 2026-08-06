@@ -1,9 +1,8 @@
 "use client"
 
-import Link from "next/link"
 import { motion } from "framer-motion"
 import { Check } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { ButtonLink } from "@/components/ui/button-link"
 import { pricingFeatures } from "@/lib/data"
 
 export function Pricing() {
@@ -52,13 +51,13 @@ export function Pricing() {
               ))}
             </ul>
 
-            <Button
-              asChild
+            <ButtonLink
+              href="/dashboard/billing"
               size="lg"
               className="mt-8 h-12 w-full rounded-xl bg-primary text-base font-semibold text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/90"
             >
-              <Link href="/dashboard/billing">S’abonner</Link>
-            </Button>
+              S’abonner
+            </ButtonLink>
           </div>
         </motion.div>
       </div>

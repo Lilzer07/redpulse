@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { Menu, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { ButtonLink } from "@/components/ui/button-link"
 import { Logo } from "@/components/landing/logo"
 
 const links = [
@@ -55,12 +55,15 @@ export function SiteNav() {
         </div>
 
         <div className="hidden items-center gap-2 md:flex">
-          <Button asChild variant="ghost" className="text-muted-foreground hover:text-foreground">
-            <Link href="/login">Connexion</Link>
-          </Button>
-          <Button asChild className="rounded-xl bg-primary font-semibold text-primary-foreground hover:bg-primary/90">
-            <Link href="/dashboard">Essayer gratuitement</Link>
-          </Button>
+          <ButtonLink href="/login" variant="ghost" className="text-muted-foreground hover:text-foreground">
+            Connexion
+          </ButtonLink>
+          <ButtonLink
+            href="/dashboard"
+            className="rounded-xl bg-primary font-semibold text-primary-foreground hover:bg-primary/90"
+          >
+            Essayer gratuitement
+          </ButtonLink>
         </div>
 
         <button
@@ -90,12 +93,12 @@ export function SiteNav() {
             </a>
           ))}
           <div className="mt-2 flex flex-col gap-2 border-t border-white/10 pt-3">
-            <Button asChild variant="ghost">
-              <Link href="/login">Connexion</Link>
-            </Button>
-            <Button asChild className="bg-primary font-semibold text-primary-foreground">
-              <Link href="/dashboard">Essayer gratuitement</Link>
-            </Button>
+            <ButtonLink href="/login" variant="ghost">
+              Connexion
+            </ButtonLink>
+            <ButtonLink href="/dashboard" className="bg-primary font-semibold text-primary-foreground">
+              Essayer gratuitement
+            </ButtonLink>
           </div>
         </motion.div>
       )}
