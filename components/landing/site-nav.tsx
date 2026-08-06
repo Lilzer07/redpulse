@@ -62,7 +62,7 @@ export function SiteNav() {
             href="/dashboard"
             className="rounded-xl bg-primary font-semibold text-primary-foreground hover:bg-primary/90"
           >
-            Essayer gratuitement
+            Commencer
           </ButtonLink>
         </div>
 
@@ -97,7 +97,7 @@ export function SiteNav() {
               Connexion
             </ButtonLink>
             <ButtonLink href="/dashboard" className="bg-primary font-semibold text-primary-foreground">
-              Essayer gratuitement
+              Commencer
             </ButtonLink>
           </div>
         </motion.div>

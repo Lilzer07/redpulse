@@ -1,17 +1,44 @@
 "use client"
 
+import { useState } from "react"
 import { competitions, type Competition } from "@/lib/data"
+
+function CompetitionMark({ c }: { c: Competition }) {
+  // Show the official logo when a file exists; fall back to a branded chip
+  // if there is no logo path or the image fails to load.
+  const [failed, setFailed] = useState(false)
+  const showLogo = Boolean(c.logo) && !failed
+
+  if (showLogo) {
+    return (
+      <span className="flex h-9 w-9 items-center justify-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={c.logo as string}
+          alt=""
+          aria-hidden
+          onError={() => setFailed(true)}
+          className="h-full w-full object-contain opacity-70 brightness-0 invert transition-all duration-300 group-hover:opacity-100"
+        />
+      </span>
+    )
+  }
+
+  return (
+    <span
+      className="flex h-9 w-9 items-center justify-center rounded-xl text-[11px] font-bold tracking-tight text-white/90 ring-1 ring-inset ring-white/10"
+      style={{ backgroundColor: c.color }}
+      aria-hidden
+    >
+      {c.abbr}
+    </span>
+  )
+}
 
 function Chip({ c }: { c: Competition }) {
   return (
     <div className="group flex shrink-0 items-center gap-3 rounded-2xl border border-white/5 bg-white/[0.02] px-5 py-3 transition-colors duration-300 hover:border-primary/30 hover:bg-white/[0.04]">
-      <span
-        className="flex h-9 w-9 items-center justify-center rounded-xl text-[11px] font-bold tracking-tight text-white/90 ring-1 ring-inset ring-white/10"
-        style={{ backgroundColor: c.color }}
-        aria-hidden
-      >
-        {c.abbr}
-      </span>
+      <CompetitionMark c={c} />
       <span className="whitespace-nowrap text-sm font-medium text-white/40 transition-colors duration-300 group-hover:text-white/80">
         {c.name}
       </span>

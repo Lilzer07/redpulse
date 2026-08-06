@@ -9,10 +9,17 @@ export type Competition = {
   tier: "league" | "cup" | "european"
   color: string
   abbr: string
+  /**
+   * Optional path to an official logo file in /public/logos.
+   * Drop a file named `{id}.svg` (or .png) into public/logos and set this
+   * field to `/logos/{id}.svg` — the marquee shows it automatically and
+   * falls back to a branded chip when it is absent.
+   */
+  logo?: string
 }
 
 export const competitions: Competition[] = [
-  { id: "premier-league", name: "Premier League", country: "Angleterre", tier: "league", color: "#3D195B", abbr: "PL" },
+  { id: "premier-league", name: "Premier League", country: "Angleterre", tier: "league", color: "#3D195B", abbr: "PL", logo: "/logos/premier-league.svg" },
   { id: "championship", name: "Championship", country: "Angleterre", tier: "league", color: "#1B458F", abbr: "CH" },
   { id: "ligue-1", name: "Ligue 1", country: "France", tier: "league", color: "#091C3E", abbr: "L1" },
   { id: "ligue-2", name: "Ligue 2", country: "France", tier: "league", color: "#0B3D91", abbr: "L2" },
@@ -24,7 +31,7 @@ export const competitions: Competition[] = [
   { id: "2-bundesliga", name: "2. Bundesliga", country: "Allemagne", tier: "league", color: "#E30613", abbr: "B2" },
   { id: "liga-portugal", name: "Liga Portugal", country: "Portugal", tier: "league", color: "#006940", abbr: "LP" },
   { id: "liga-portugal-2", name: "Liga Portugal 2", country: "Portugal", tier: "league", color: "#00843D", abbr: "P2" },
-  { id: "champions-league", name: "Champions League", country: "Europe", tier: "european", color: "#0B1B54", abbr: "UCL" },
+  { id: "champions-league", name: "Champions League", country: "Europe", tier: "european", color: "#0B1B54", abbr: "UCL", logo: "/logos/champions-league.svg" },
   { id: "europa-league", name: "Europa League", country: "Europe", tier: "european", color: "#FF6900", abbr: "UEL" },
   { id: "conference-league", name: "Conference League", country: "Europe", tier: "european", color: "#00B54A", abbr: "UECL" },
   { id: "fa-cup", name: "FA Cup", country: "Angleterre", tier: "cup", color: "#C8102E", abbr: "FA" },

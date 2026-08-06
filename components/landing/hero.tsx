@@ -68,7 +68,7 @@ export function Hero() {
               size="lg"
               className="group h-12 rounded-xl bg-primary px-6 text-base font-semibold text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/90"
             >
-              Essayer gratuitement
+              Commencer
               <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </ButtonLink>
             <ButtonLink
