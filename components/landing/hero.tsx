@@ -59,14 +59,14 @@ export function Hero() {
             variants={item}
             className="mt-6 text-balance text-4xl font-bold leading-[1.05] tracking-tight text-foreground sm:text-5xl lg:text-6xl"
           >
-            Le carton rouge,{" "}
-            <span className="text-gradient-green">décodé par l’IA</span>.
+            Chaque carton rouge cache une{" "}
+            <span className="text-gradient-green">opportunité</span>, notre IA la détecte.
           </motion.h1>
 
           <motion.p variants={item} className="mt-6 text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
             Dès qu’un carton rouge tombe, RedPulse récupère le contexte du match, analyse son impact et vous
-            envoie une notification Telegram enrichie : probabilité de but supplémentaire, victoire du favori et
-            score d’impact. En quelques secondes.
+            envoie une notification Telegram : probabilité de but supplémentaire, victoire du favori et indice de
+            confiance. En quelques secondes.
           </motion.p>
 
           <motion.div variants={item} className="mt-8 flex flex-col gap-3 sm:flex-row">
