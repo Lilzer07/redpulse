@@ -10,35 +10,35 @@ export type Competition = {
   color: string
   abbr: string
   /**
-   * Optional path to an official logo file in /public/logos.
-   * Drop a file named `{id}.svg` (or .png) into public/logos and set this
-   * field to `/logos/{id}.svg` — the marquee shows it automatically and
-   * falls back to a branded chip when it is absent.
+   * Path to the official league badge in /public/logos ({id}.png).
+   * Badges are sourced once from TheSportsDB and stored locally so they are
+   * browser-cached and lazy-loaded (no runtime API call). When a badge isn't
+   * available, the field is omitted and the UI shows a discreet placeholder.
    */
   logo?: string
 }
 
 export const competitions: Competition[] = [
-  { id: "premier-league", name: "Premier League", country: "Angleterre", tier: "league", color: "#3D195B", abbr: "PL", logo: "/logos/premier-league.svg" },
-  { id: "championship", name: "Championship", country: "Angleterre", tier: "league", color: "#1B458F", abbr: "CH" },
-  { id: "ligue-1", name: "Ligue 1", country: "France", tier: "league", color: "#091C3E", abbr: "L1" },
-  { id: "ligue-2", name: "Ligue 2", country: "France", tier: "league", color: "#0B3D91", abbr: "L2" },
-  { id: "laliga", name: "LaLiga", country: "Espagne", tier: "league", color: "#E30613", abbr: "LL" },
-  { id: "laliga-2", name: "LaLiga 2", country: "Espagne", tier: "league", color: "#00529F", abbr: "L2" },
-  { id: "serie-a", name: "Serie A", country: "Italie", tier: "league", color: "#008FD7", abbr: "SA" },
-  { id: "serie-b", name: "Serie B", country: "Italie", tier: "league", color: "#00A551", abbr: "SB" },
-  { id: "bundesliga", name: "Bundesliga", country: "Allemagne", tier: "league", color: "#D20515", abbr: "BL" },
-  { id: "2-bundesliga", name: "2. Bundesliga", country: "Allemagne", tier: "league", color: "#E30613", abbr: "B2" },
-  { id: "liga-portugal", name: "Liga Portugal", country: "Portugal", tier: "league", color: "#006940", abbr: "LP" },
+  { id: "premier-league", name: "Premier League", country: "Angleterre", tier: "league", color: "#3D195B", abbr: "PL", logo: "/logos/premier-league.png" },
+  { id: "championship", name: "Championship", country: "Angleterre", tier: "league", color: "#1B458F", abbr: "CH", logo: "/logos/championship.png" },
+  { id: "ligue-1", name: "Ligue 1", country: "France", tier: "league", color: "#091C3E", abbr: "L1", logo: "/logos/ligue-1.png" },
+  { id: "ligue-2", name: "Ligue 2", country: "France", tier: "league", color: "#0B3D91", abbr: "L2", logo: "/logos/ligue-2.png" },
+  { id: "laliga", name: "LaLiga", country: "Espagne", tier: "league", color: "#E30613", abbr: "LL", logo: "/logos/laliga.png" },
+  { id: "laliga-2", name: "LaLiga 2", country: "Espagne", tier: "league", color: "#00529F", abbr: "L2", logo: "/logos/laliga-2.png" },
+  { id: "serie-a", name: "Serie A", country: "Italie", tier: "league", color: "#008FD7", abbr: "SA", logo: "/logos/serie-a.png" },
+  { id: "serie-b", name: "Serie B", country: "Italie", tier: "league", color: "#00A551", abbr: "SB", logo: "/logos/serie-b.png" },
+  { id: "bundesliga", name: "Bundesliga", country: "Allemagne", tier: "league", color: "#D20515", abbr: "BL", logo: "/logos/bundesliga.png" },
+  { id: "2-bundesliga", name: "2. Bundesliga", country: "Allemagne", tier: "league", color: "#E30613", abbr: "B2", logo: "/logos/2-bundesliga.png" },
+  { id: "liga-portugal", name: "Liga Portugal", country: "Portugal", tier: "league", color: "#006940", abbr: "LP", logo: "/logos/liga-portugal.png" },
   { id: "liga-portugal-2", name: "Liga Portugal 2", country: "Portugal", tier: "league", color: "#00843D", abbr: "P2" },
-  { id: "champions-league", name: "Champions League", country: "Europe", tier: "european", color: "#0B1B54", abbr: "UCL", logo: "/logos/champions-league.svg" },
-  { id: "europa-league", name: "Europa League", country: "Europe", tier: "european", color: "#FF6900", abbr: "UEL" },
-  { id: "conference-league", name: "Conference League", country: "Europe", tier: "european", color: "#00B54A", abbr: "UECL" },
-  { id: "fa-cup", name: "FA Cup", country: "Angleterre", tier: "cup", color: "#C8102E", abbr: "FA" },
-  { id: "coupe-de-france", name: "Coupe de France", country: "France", tier: "cup", color: "#002395", abbr: "CDF" },
-  { id: "copa-del-rey", name: "Copa del Rey", country: "Espagne", tier: "cup", color: "#C60B1E", abbr: "CDR" },
-  { id: "coppa-italia", name: "Coppa Italia", country: "Italie", tier: "cup", color: "#0066A1", abbr: "CI" },
-  { id: "dfb-pokal", name: "DFB Pokal", country: "Allemagne", tier: "cup", color: "#000000", abbr: "DFB" },
+  { id: "champions-league", name: "Champions League", country: "Europe", tier: "european", color: "#0B1B54", abbr: "UCL", logo: "/logos/champions-league.png" },
+  { id: "europa-league", name: "Europa League", country: "Europe", tier: "european", color: "#FF6900", abbr: "UEL", logo: "/logos/europa-league.png" },
+  { id: "conference-league", name: "Conference League", country: "Europe", tier: "european", color: "#00B54A", abbr: "UECL", logo: "/logos/conference-league.png" },
+  { id: "fa-cup", name: "FA Cup", country: "Angleterre", tier: "cup", color: "#C8102E", abbr: "FA", logo: "/logos/fa-cup.png" },
+  { id: "coupe-de-france", name: "Coupe de France", country: "France", tier: "cup", color: "#002395", abbr: "CDF", logo: "/logos/coupe-de-france.png" },
+  { id: "copa-del-rey", name: "Copa del Rey", country: "Espagne", tier: "cup", color: "#C60B1E", abbr: "CDR", logo: "/logos/copa-del-rey.png" },
+  { id: "coppa-italia", name: "Coppa Italia", country: "Italie", tier: "cup", color: "#0066A1", abbr: "CI", logo: "/logos/coppa-italia.png" },
+  { id: "dfb-pokal", name: "DFB Pokal", country: "Allemagne", tier: "cup", color: "#000000", abbr: "DFB", logo: "/logos/dfb-pokal.png" },
   { id: "taca-de-portugal", name: "Taça de Portugal", country: "Portugal", tier: "cup", color: "#006600", abbr: "TDP" },
 ]
 

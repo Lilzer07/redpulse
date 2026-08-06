@@ -1,11 +1,12 @@
 "use client"
 
 import { useState } from "react"
+import { Shield } from "lucide-react"
 import { competitions, type Competition } from "@/lib/data"
 
 function CompetitionMark({ c }: { c: Competition }) {
-  // Show the official logo when a file exists; fall back to a branded chip
-  // if there is no logo path or the image fails to load.
+  // Show the official league badge when available; otherwise a discreet,
+  // neutral placeholder (no initials chips).
   const [failed, setFailed] = useState(false)
   const showLogo = Boolean(c.logo) && !failed
 
@@ -17,8 +18,12 @@ function CompetitionMark({ c }: { c: Competition }) {
           src={c.logo as string}
           alt=""
           aria-hidden
+          loading="lazy"
+          decoding="async"
+          width={36}
+          height={36}
           onError={() => setFailed(true)}
-          className="h-full w-full object-contain opacity-70 brightness-0 invert transition-all duration-300 group-hover:opacity-100"
+          className="h-full w-full object-contain opacity-80 transition-opacity duration-300 group-hover:opacity-100"
         />
       </span>
     )
@@ -26,11 +31,10 @@ function CompetitionMark({ c }: { c: Competition }) {
 
   return (
     <span
-      className="flex h-9 w-9 items-center justify-center rounded-xl text-[11px] font-bold tracking-tight text-white/90 ring-1 ring-inset ring-white/10"
-      style={{ backgroundColor: c.color }}
+      className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/[0.04] ring-1 ring-inset ring-white/10"
       aria-hidden
     >
-      {c.abbr}
+      <Shield className="h-4 w-4 text-white/25" />
     </span>
   )
 }

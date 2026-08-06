@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react"
 import { motion } from "framer-motion"
-import { Search } from "lucide-react"
+import { Search, Shield } from "lucide-react"
 import { Topbar } from "@/components/dashboard/topbar"
 import { Switch } from "@/components/ui/switch"
 import { competitions, type Competition } from "@/lib/data"
@@ -11,6 +11,40 @@ const tierLabels: Record<Competition["tier"], string> = {
   league: "Championnats",
   cup: "Coupes nationales",
   european: "Compétitions européennes",
+}
+
+// Official league badge with a discreet placeholder fallback (no initials).
+function CompetitionBadge({ c }: { c: Competition }) {
+  const [failed, setFailed] = useState(false)
+  const showLogo = Boolean(c.logo) && !failed
+
+  if (showLogo) {
+    return (
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={c.logo as string}
+          alt=""
+          aria-hidden
+          loading="lazy"
+          decoding="async"
+          width={44}
+          height={44}
+          onError={() => setFailed(true)}
+          className="h-full w-full object-contain"
+        />
+      </span>
+    )
+  }
+
+  return (
+    <span
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/[0.04] ring-1 ring-inset ring-white/10"
+      aria-hidden
+    >
+      <Shield className="h-5 w-5 text-muted-foreground" />
+    </span>
+  )
 }
 
 const tierOrder: Competition["tier"][] = ["league", "european", "cup"]
@@ -104,13 +138,7 @@ export default function CompetitionsPage() {
                           : "border-white/8 bg-white/[0.02] hover:border-white/15"
                       }`}
                     >
-                      <span
-                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xs font-bold text-white"
-                        style={{ backgroundColor: c.color }}
-                        aria-hidden
-                      >
-                        {c.abbr}
-                      </span>
+                      <CompetitionBadge c={c} />
                       <span className="min-w-0 flex-1">
                         <span className="block truncate font-medium text-foreground">{c.name}</span>
                         <span className="block truncate text-xs text-muted-foreground">{c.country}</span>
