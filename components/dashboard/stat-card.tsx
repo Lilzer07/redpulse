@@ -32,7 +32,7 @@ export function StatCard({ label, value, icon: Icon, hint, accent = "neutral", d
           <Icon className="h-4.5 w-4.5" aria-hidden />
         </span>
       </div>
-      <p className="mt-4 text-balance text-2xl font-bold leading-tight tracking-tight text-foreground lg:text-3xl">
+      <p className="mt-4 break-words text-balance text-xl font-bold leading-tight tracking-tight text-foreground sm:text-2xl lg:text-3xl">
         {value}
       </p>
       {hint ? <p className="mt-1 text-xs text-muted-foreground">{hint}</p> : null}
