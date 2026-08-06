@@ -11,9 +11,10 @@ export type Competition = {
   abbr: string
   /**
    * Path to the official league badge in /public/logos ({id}.png).
-   * Badges are sourced once from TheSportsDB and stored locally so they are
-   * browser-cached and lazy-loaded (no runtime API call). When a badge isn't
-   * available, the field is omitted and the UI shows a discreet placeholder.
+   * Badges are sourced once (TheSportsDB, with Wikimedia Commons as fallback
+   * for the two competitions TheSportsDB lacks) and stored locally, so they
+   * are browser-cached and lazy-loaded with no runtime API call. Every
+   * competition now ships a real logo — no initials chips.
    */
   logo?: string
 }
@@ -30,7 +31,7 @@ export const competitions: Competition[] = [
   { id: "bundesliga", name: "Bundesliga", country: "Allemagne", tier: "league", color: "#D20515", abbr: "BL", logo: "/logos/bundesliga.png" },
   { id: "2-bundesliga", name: "2. Bundesliga", country: "Allemagne", tier: "league", color: "#E30613", abbr: "B2", logo: "/logos/2-bundesliga.png" },
   { id: "liga-portugal", name: "Liga Portugal", country: "Portugal", tier: "league", color: "#006940", abbr: "LP", logo: "/logos/liga-portugal.png" },
-  { id: "liga-portugal-2", name: "Liga Portugal 2", country: "Portugal", tier: "league", color: "#00843D", abbr: "P2" },
+  { id: "liga-portugal-2", name: "Liga Portugal 2", country: "Portugal", tier: "league", color: "#00843D", abbr: "P2", logo: "/logos/liga-portugal-2.png" },
   { id: "champions-league", name: "Champions League", country: "Europe", tier: "european", color: "#0B1B54", abbr: "UCL", logo: "/logos/champions-league.png" },
   { id: "europa-league", name: "Europa League", country: "Europe", tier: "european", color: "#FF6900", abbr: "UEL", logo: "/logos/europa-league.png" },
   { id: "conference-league", name: "Conference League", country: "Europe", tier: "european", color: "#00B54A", abbr: "UECL", logo: "/logos/conference-league.png" },
@@ -39,7 +40,7 @@ export const competitions: Competition[] = [
   { id: "copa-del-rey", name: "Copa del Rey", country: "Espagne", tier: "cup", color: "#C60B1E", abbr: "CDR", logo: "/logos/copa-del-rey.png" },
   { id: "coppa-italia", name: "Coppa Italia", country: "Italie", tier: "cup", color: "#0066A1", abbr: "CI", logo: "/logos/coppa-italia.png" },
   { id: "dfb-pokal", name: "DFB Pokal", country: "Allemagne", tier: "cup", color: "#000000", abbr: "DFB", logo: "/logos/dfb-pokal.png" },
-  { id: "taca-de-portugal", name: "Taça de Portugal", country: "Portugal", tier: "cup", color: "#006600", abbr: "TDP" },
+  { id: "taca-de-portugal", name: "Taça de Portugal", country: "Portugal", tier: "cup", color: "#006600", abbr: "TDP", logo: "/logos/taca-de-portugal.png" },
 ]
 
 export type Feature = {
