@@ -1,9 +1,95 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Check } from "lucide-react"
+import { Check, Flame } from "lucide-react"
 import { ButtonLink } from "@/components/ui/button-link"
-import { pricingFeatures } from "@/lib/data"
+import { pricingPlans, type PricingPlan } from "@/lib/data"
+
+function PlanCard({ plan, index }: { plan: PricingPlan; index: number }) {
+  const highlight = plan.highlight
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.7, delay: index * 0.12 }}
+      className={[
+        "relative flex w-full flex-col overflow-hidden rounded-[2rem] p-8",
+        highlight
+          ? "glow-green border-2 border-primary bg-gradient-to-b from-primary/[0.08] to-transparent shadow-2xl shadow-primary/20 lg:-my-4 lg:py-12"
+          : "border border-white/10 bg-gradient-to-b from-white/[0.04] to-transparent",
+      ].join(" ")}
+    >
+      {highlight && (
+        <div
+          className="pointer-events-none absolute -right-20 -top-20 h-52 w-52 rounded-full bg-primary/25 blur-3xl"
+          aria-hidden
+        />
+      )}
+
+      <div className="relative flex h-full flex-col">
+        <div className="flex items-center justify-between gap-3">
+          <span
+            className={[
+              "inline-flex rounded-full px-3 py-1 text-xs font-medium",
+              highlight
+                ? "border border-primary/30 bg-primary/15 text-primary"
+                : "border border-white/10 bg-white/5 text-muted-foreground",
+            ].join(" ")}
+          >
+            {plan.name}
+          </span>
+          {plan.badge && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground shadow-lg shadow-primary/30">
+              <Flame className="h-3.5 w-3.5" aria-hidden />
+              {plan.badge}
+            </span>
+          )}
+        </div>
+
+        <div className="mt-6 flex items-end gap-2">
+          <span className="text-5xl font-bold tracking-tight text-foreground">{plan.price}</span>
+          <span className="pb-2 text-muted-foreground">{plan.period}</span>
+        </div>
+        <p className="mt-2 text-sm text-muted-foreground">{plan.tagline}</p>
+
+        {plan.description && (
+          <p className="mt-4 text-pretty text-sm leading-relaxed text-foreground/80">{plan.description}</p>
+        )}
+
+        <ul className="mt-8 space-y-3">
+          {plan.features.map((f) => (
+            <li key={f} className="flex items-center gap-3 text-sm text-foreground">
+              <span
+                className={[
+                  "flex h-5 w-5 shrink-0 items-center justify-center rounded-full",
+                  highlight ? "bg-primary/25" : "bg-primary/15",
+                ].join(" ")}
+              >
+                <Check className="h-3 w-3 text-primary" aria-hidden />
+              </span>
+              {f}
+            </li>
+          ))}
+        </ul>
+
+        <ButtonLink
+          href={plan.href}
+          size="lg"
+          className={[
+            "mt-8 h-12 w-full rounded-xl text-base font-semibold",
+            highlight
+              ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:bg-primary/90"
+              : "border border-white/15 bg-white/5 text-foreground hover:bg-white/10",
+          ].join(" ")}
+        >
+          {plan.cta}
+        </ButtonLink>
+      </div>
+    </motion.div>
+  )
+}
 
 export function Pricing() {
   return (
@@ -12,54 +98,18 @@ export function Pricing() {
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Tarification</p>
           <h2 className="mt-4 text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-            Simple. Une offre, tout inclus.
+            Choisissez votre accès à RedPulse.
           </h2>
           <p className="mt-4 text-pretty text-muted-foreground">
-            Pas de paliers, pas de suppléments. Tout RedPulse pour un seul prix.
+            Un abonnement flexible pour découvrir, ou un accès à vie pour les premiers membres.
           </p>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 0.7 }}
-          className="glow-green relative mx-auto mt-14 max-w-md overflow-hidden rounded-[2rem] border border-primary/20 bg-gradient-to-b from-white/[0.04] to-transparent p-8"
-        >
-          <div
-            className="pointer-events-none absolute -right-20 -top-20 h-52 w-52 rounded-full bg-primary/20 blur-3xl"
-            aria-hidden
-          />
-          <div className="relative">
-            <span className="inline-flex rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-              Offre unique
-            </span>
-            <div className="mt-6 flex items-end gap-2">
-              <span className="text-5xl font-bold tracking-tight text-foreground">10 €</span>
-              <span className="pb-2 text-muted-foreground">/ mois</span>
-            </div>
-            <p className="mt-2 text-sm text-muted-foreground">Sans engagement, résiliable à tout moment.</p>
-
-            <ul className="mt-8 space-y-3">
-              {pricingFeatures.map((f) => (
-                <li key={f} className="flex items-center gap-3 text-sm text-foreground">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/15">
-                    <Check className="h-3 w-3 text-primary" aria-hidden />
-                  </span>
-                  {f}
-                </li>
-              ))}
-            </ul>
-
-            <ButtonLink
-              href="/dashboard/billing"
-              size="lg"
-              className="mt-8 h-12 w-full rounded-xl bg-primary text-base font-semibold text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/90"
-            >
-              S’abonner
-            </ButtonLink>
-          </div>
-        </motion.div>
+        <div className="mx-auto mt-14 grid max-w-4xl grid-cols-1 items-center gap-6 md:grid-cols-2 lg:gap-8">
+          {pricingPlans.map((plan, i) => (
+            <PlanCard key={plan.id} plan={plan} index={i} />
+          ))}
+        </div>
       </div>
     </section>
   )

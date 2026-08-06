@@ -179,6 +179,61 @@ export const pricingFeatures = [
   "Support prioritaire",
 ]
 
+export type PricingPlan = {
+  id: string
+  name: string
+  price: string
+  period: string
+  tagline: string
+  description?: string
+  badge?: string
+  features: string[]
+  cta: string
+  href: string
+  highlight: boolean
+}
+
+export const pricingPlans: PricingPlan[] = [
+  {
+    id: "monthly",
+    name: "Abonnement Mensuel",
+    price: "10 €",
+    period: "/ mois",
+    tagline: "Idéal pour découvrir RedPulse.",
+    features: [
+      "Analyses IA illimitées",
+      "Notifications Telegram instantanées",
+      "Toutes les compétitions disponibles",
+      "Dashboard en temps réel",
+      "Toutes les mises à jour",
+    ],
+    cta: "Commencer maintenant",
+    href: "/dashboard/billing",
+    highlight: false,
+  },
+  {
+    id: "lifetime",
+    name: "Offre Fondateur",
+    price: "50 €",
+    period: "Accès à vie",
+    badge: "Le plus populaire",
+    tagline: "Payez une seule fois, accès à vie.",
+    description:
+      "Payez une seule fois et profitez d’un accès à vie à RedPulse ainsi qu’à toutes les futures mises à jour.",
+    features: [
+      "Accès à vie",
+      "Analyses IA illimitées",
+      "Notifications Telegram illimitées",
+      "Toutes les compétitions",
+      "Toutes les futures fonctionnalités incluses",
+      "Badge exclusif « Membre Fondateur »",
+    ],
+    cta: "Obtenir l’accès à vie",
+    href: "/dashboard/billing",
+    highlight: true,
+  },
+]
+
 // --- Live simulation helpers -------------------------------------------------
 
 export type MatchEvent = {
