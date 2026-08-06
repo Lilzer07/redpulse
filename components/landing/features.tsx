@@ -1,16 +1,16 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Gauge, Globe, Send, ShieldCheck, Sliders, Zap, type LucideIcon } from "lucide-react"
+import { Activity, Gauge, Globe, Send, Sparkles, Target, type LucideIcon } from "lucide-react"
 import { features } from "@/lib/data"
 
 const icons: Record<string, LucideIcon> = {
-  zap: Zap,
-  globe: Globe,
-  send: Send,
-  sliders: Sliders,
+  sparkles: Sparkles,
   gauge: Gauge,
-  "shield-check": ShieldCheck,
+  send: Send,
+  target: Target,
+  globe: Globe,
+  activity: Activity,
 }
 
 export function Features() {
@@ -19,10 +19,10 @@ export function Features() {
       <div className="mx-auto max-w-2xl text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Fonctionnalités</p>
         <h2 className="mt-4 text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-          Une seule mission, exécutée à la perfection
+          Le carton rouge déclenche, l’IA analyse
         </h2>
         <p className="mt-4 text-pretty text-muted-foreground">
-          Tout ce dont vous avez besoin pour ne jamais rater un carton rouge, et rien de superflu.
+          Bien plus qu’une alerte : un copilote qui mesure l’impact réel de chaque carton, en temps réel.
         </p>
       </div>
 

@@ -5,8 +5,8 @@ export default function LivePage() {
   return (
     <>
       <Topbar
-        title="Flux en direct"
-        subtitle="Chaque carton rouge détecté apparaît ici en temps réel."
+        title="Analyses en direct"
+        subtitle="Chaque carton rouge déclenche une analyse IA, affichée ici en temps réel."
       />
       <div className="px-5 py-6 lg:px-8">
         <LiveFeed max={12} intervalMs={4000} />

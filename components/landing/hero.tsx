@@ -44,7 +44,7 @@ export function Hero() {
           <motion.div variants={item}>
             <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-xs font-medium text-primary">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
-              Surveillance football en temps réel
+              Copilote IA football en temps réel
             </span>
           </motion.div>
 
@@ -52,14 +52,14 @@ export function Hero() {
             variants={item}
             className="mt-6 text-balance text-4xl font-bold leading-[1.05] tracking-tight text-foreground sm:text-5xl lg:text-6xl"
           >
-            Ne manquez plus jamais un{" "}
-            <span className="text-gradient-green">carton rouge</span>.
+            Le carton rouge,{" "}
+            <span className="text-gradient-green">décodé par l’IA</span>.
           </motion.h1>
 
           <motion.p variants={item} className="mt-6 text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Recevez instantanément une notification Telegram dès qu’un carton rouge est distribué dans les
-            compétitions que vous avez sélectionnées. Surveillez les plus grands championnats européens sans
-            regarder plusieurs matchs à la fois.
+            Dès qu’un carton rouge tombe, RedPulse récupère le contexte du match, analyse son impact et vous
+            envoie une notification Telegram enrichie : probabilité de but supplémentaire, victoire du favori et
+            score d’impact. En quelques secondes.
           </motion.p>
 
           <motion.div variants={item} className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -85,11 +85,11 @@ export function Hero() {
           <motion.div variants={item} className="mt-8 flex items-center gap-6 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-primary" />
-              Latence &lt; 2 s
+              Analyse &lt; 2 s
             </div>
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-primary" />
-              Sans engagement
+              Score d’impact /100
             </div>
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-primary" />

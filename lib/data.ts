@@ -50,54 +50,55 @@ export type Feature = {
 
 export const features: Feature[] = [
   {
-    icon: "zap",
-    title: "Notifications instantanées",
+    icon: "sparkles",
+    title: "Analyse IA instantanée",
     description:
-      "Recevez un message Telegram quelques secondes après chaque carton rouge, où que vous soyez.",
+      "Dès qu’un carton rouge tombe, l’IA analyse le contexte du match et en calcule l’impact réel.",
+  },
+  {
+    icon: "gauge",
+    title: "Score d’impact sur 100",
+    description:
+      "Une lecture immédiate de l’importance du carton sur l’issue du match, en un seul chiffre.",
+  },
+  {
+    icon: "send",
+    title: "Notification Telegram enrichie",
+    description:
+      "L’analyse complète arrive directement dans Telegram, quelques secondes après le carton.",
+  },
+  {
+    icon: "target",
+    title: "Probabilités simples",
+    description:
+      "But supplémentaire et victoire du favori, sans xG ni jargon : une lecture claire et rapide.",
   },
   {
     icon: "globe",
     title: "Grandes compétitions",
     description:
-      "Les championnats et coupes les plus importants d’Europe, réunis au même endroit.",
+      "Les championnats et coupes les plus importants d’Europe, surveillés en continu.",
   },
   {
-    icon: "send",
-    title: "Intégration Telegram",
+    icon: "activity",
+    title: "Données en temps réel",
     description:
-      "Connectez votre compte Telegram en quelques secondes, sans configuration complexe.",
-  },
-  {
-    icon: "sliders",
-    title: "Filtres personnalisés",
-    description:
-      "Choisissez uniquement les compétitions qui vous intéressent réellement.",
-  },
-  {
-    icon: "gauge",
-    title: "Infrastructure rapide",
-    description:
-      "Serveurs optimisés et surveillance continue pour une latence minimale.",
-  },
-  {
-    icon: "shield-check",
-    title: "Paiement sécurisé",
-    description: "Paiement géré par Stripe, avec le plus haut niveau de sécurité.",
+      "Le contexte du match est récupéré automatiquement à la détection du carton rouge.",
   },
 ]
 
 export const steps = [
-  { step: "01", title: "Créer un compte", description: "Inscrivez-vous en moins d’une minute avec votre e-mail." },
-  { step: "02", title: "Connecter Telegram", description: "Reliez votre bot Telegram en collant simplement votre token." },
-  { step: "03", title: "Choisir vos compétitions", description: "Sélectionnez les championnats et coupes à surveiller." },
-  { step: "04", title: "Recevoir les alertes", description: "Chaque carton rouge déclenche automatiquement une alerte." },
+  { step: "01", title: "Carton rouge détecté", description: "Un carton rouge tombe : c’est le déclencheur. RedPulse le repère instantanément." },
+  { step: "02", title: "Données récupérées", description: "Le contexte du match est collecté automatiquement : score, minute, équipes." },
+  { step: "03", title: "L’IA analyse l’impact", description: "Le copilote calcule le score d’impact et les probabilités clés du match." },
+  { step: "04", title: "Telegram enrichi envoyé", description: "Vous recevez l’analyse complète dans Telegram en quelques secondes." },
 ]
 
 export const stats = [
-  { value: 20, suffix: "+", label: "Compétitions" },
-  { value: 2, prefix: "<", suffix: "s", label: "Temps moyen de notification" },
+  { value: 20, suffix: "+", label: "Compétitions analysées" },
+  { value: 2, prefix: "<", suffix: "s", label: "Temps moyen d’analyse" },
   { value: 99.99, suffix: "%", label: "Disponibilité", decimals: 2 },
-  { value: 24, suffix: "h/24", label: "Surveillance" },
+  { value: 24, suffix: "h/24", label: "Surveillance IA" },
 ]
 
 export type Testimonial = {
@@ -154,20 +155,20 @@ export const testimonials: Testimonial[] = [
 
 export const faqs = [
   {
-    q: "À quelle vitesse arrivent les notifications ?",
-    a: "En moyenne moins de 2 secondes après la validation officielle du carton rouge. Notre infrastructure surveille les flux en continu pour minimiser la latence.",
+    q: "Comment fonctionne l’analyse IA ?",
+    a: "Le carton rouge est le déclencheur. Dès qu’il est détecté, RedPulse récupère le contexte du match, puis l’IA calcule l’impact du carton et vous envoie une analyse claire dans Telegram : probabilité de but supplémentaire, probabilité de victoire du favori et score d’impact sur 100.",
   },
   {
-    q: "Quelles compétitions sont surveillées ?",
+    q: "RedPulse donne-t-il des conseils de pari ?",
+    a: "Non, jamais. RedPulse n’est pas un service de pronostics ni de paris sportifs. Il fournit uniquement une analyse en temps réel de l’impact potentiel d’un carton rouge sur le match.",
+  },
+  {
+    q: "Quelles compétitions sont analysées ?",
     a: "Plus de 20 compétitions européennes majeures : Premier League, Ligue 1, LaLiga, Serie A, Bundesliga, Liga Portugal, leurs divisions secondaires, ainsi que la Champions League, l’Europa League, la Conference League et les principales coupes nationales.",
   },
   {
-    q: "Puis-je choisir uniquement certaines compétitions ?",
-    a: "Oui. Depuis votre tableau de bord, activez ou désactivez chaque compétition individuellement. Vous ne recevez que les alertes qui vous intéressent.",
-  },
-  {
-    q: "Puis-je résilier à tout moment ?",
-    a: "Bien sûr. L’abonnement est sans engagement et se résilie en un clic depuis la page Facturation. Vous conservez l’accès jusqu’à la fin de la période payée.",
+    q: "Vais-je voir des statistiques complexes comme les xG ?",
+    a: "Non. L’objectif est une lecture simple et immédiate. Vous recevez uniquement l’essentiel : les deux probabilités clés et le score d’impact, sans jargon ni tableaux illisibles.",
   },
 ]
 
@@ -235,6 +236,20 @@ export const pricingPlans: PricingPlan[] = [
 ]
 
 // --- Live simulation helpers -------------------------------------------------
+// The red card is only the trigger. For every detected card, RedPulse's AI
+// copilot produces a simple, readable impact analysis. These values are
+// simulated but structured so a real model/API response can be swapped in.
+
+export type Analysis = {
+  /** Team that RedPulse favours to win after the card (numerical advantage). */
+  favorite: string
+  /** Probability (%) of at least one more goal before the final whistle. */
+  extraGoalProb: number
+  /** Probability (%) that the favoured team wins the match. */
+  favoriteWinProb: number
+  /** Overall impact score of the red card on the match, out of 100. */
+  impact: number
+}
 
 export type MatchEvent = {
   id: string
@@ -244,8 +259,12 @@ export type MatchEvent = {
   away: string
   minute: number
   score: string
+  /** Player sent off. */
   player: string
-  status: "sent" | "sending"
+  /** Team that received the red card. */
+  team: string
+  status: "analyzing" | "sending" | "sent"
+  analysis: Analysis
 }
 
 const fixtures: { competitionId: string; competition: string; home: string; away: string; players: string[] }[] = [
@@ -259,12 +278,31 @@ const fixtures: { competitionId: string; competition: string; home: string; away
   { competitionId: "europa-league", competition: "Europa League", home: "Roma", away: "Leverkusen", players: ["Mancini", "Tah", "Cristante"] },
 ]
 
+const clamp = (n: number, min = 5, max = 99) => Math.max(min, Math.min(max, Math.round(n)))
+
+/**
+ * Build a plausible impact analysis. The side that keeps 11 players (the
+ * opponent of the carded team) becomes the favourite; probabilities rise with
+ * the time remaining and the card's lateness weights the impact score.
+ */
+export function buildAnalysis(home: string, away: string, minute: number, score: string, team: string): Analysis {
+  const favorite = team === home ? away : home
+  const timeLeft = Math.max(0, 92 - minute)
+  const rng = () => Math.random()
+  const extraGoalProb = clamp(42 + timeLeft * 0.42 + rng() * 14)
+  const favoriteWinProb = clamp(48 + timeLeft * 0.22 + rng() * 16)
+  const impact = clamp(58 + (minute / 90) * 26 + rng() * 14, 40, 99)
+  return { favorite, extraGoalProb, favoriteWinProb, impact }
+}
+
 export function makeRandomEvent(): MatchEvent {
   const f = fixtures[Math.floor(Math.random() * fixtures.length)]
   const minute = Math.floor(Math.random() * 88) + 3
   const a = Math.floor(Math.random() * 3)
   const b = Math.floor(Math.random() * 3)
   const player = f.players[Math.floor(Math.random() * f.players.length)]
+  const team = Math.random() > 0.5 ? f.home : f.away
+  const score = `${a}-${b}`
   return {
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     competitionId: f.competitionId,
@@ -272,15 +310,35 @@ export function makeRandomEvent(): MatchEvent {
     home: f.home,
     away: f.away,
     minute,
-    score: `${a}-${b}`,
+    score,
     player,
+    team,
     status: "sent",
+    analysis: buildAnalysis(f.home, f.away, minute, score, team),
   }
 }
 
+// Seeds carry fixed analysis values so the initial server/client render match
+// (no Math.random on first paint → no hydration mismatch).
 export const seedEvents: MatchEvent[] = [
-  { id: "seed-1", competitionId: "premier-league", competition: "Premier League", home: "Liverpool", away: "Arsenal", minute: 68, score: "1-1", player: "Saliba", status: "sent" },
-  { id: "seed-2", competitionId: "laliga", competition: "LaLiga", home: "Real Madrid", away: "Barcelone", minute: 74, score: "2-1", player: "Araujo", status: "sent" },
-  { id: "seed-3", competitionId: "serie-a", competition: "Serie A", home: "Inter", away: "Juventus", minute: 55, score: "0-0", player: "Bremer", status: "sent" },
-  { id: "seed-4", competitionId: "bundesliga", competition: "Bundesliga", home: "Bayern", away: "Dortmund", minute: 81, score: "3-2", player: "Hummels", status: "sent" },
+  {
+    id: "seed-1", competitionId: "premier-league", competition: "Premier League",
+    home: "Liverpool", away: "Arsenal", minute: 68, score: "1-1", player: "Saliba", team: "Arsenal",
+    status: "sent", analysis: { favorite: "Liverpool", extraGoalProb: 81, favoriteWinProb: 64, impact: 89 },
+  },
+  {
+    id: "seed-2", competitionId: "laliga", competition: "LaLiga",
+    home: "Real Madrid", away: "Barcelone", minute: 74, score: "2-1", player: "Araujo", team: "Barcelone",
+    status: "sent", analysis: { favorite: "Real Madrid", extraGoalProb: 68, favoriteWinProb: 79, impact: 84 },
+  },
+  {
+    id: "seed-3", competitionId: "serie-a", competition: "Serie A",
+    home: "Inter", away: "Juventus", minute: 55, score: "0-0", player: "Bremer", team: "Juventus",
+    status: "sent", analysis: { favorite: "Inter", extraGoalProb: 74, favoriteWinProb: 61, impact: 77 },
+  },
+  {
+    id: "seed-4", competitionId: "bundesliga", competition: "Bundesliga",
+    home: "Bayern", away: "Dortmund", minute: 81, score: "3-2", player: "Hummels", team: "Dortmund",
+    status: "sent", analysis: { favorite: "Bayern", extraGoalProb: 58, favoriteWinProb: 83, impact: 91 },
+  },
 ]

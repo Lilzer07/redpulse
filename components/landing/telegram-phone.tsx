@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { Check, Send } from "lucide-react"
+import { Check, Flame, Goal, Send, Sparkles, Trophy } from "lucide-react"
 import { makeRandomEvent, seedEvents, type MatchEvent } from "@/lib/data"
 
 type Notif = MatchEvent & { time: string }
@@ -67,27 +67,63 @@ export function TelegramPhone() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ type: "spring", stiffness: 260, damping: 26 }}
-                  className="rounded-2xl rounded-tl-md border border-[var(--danger)]/20 bg-[var(--danger)]/[0.06] p-3.5"
+                  className="rounded-2xl rounded-tl-md border border-white/10 bg-white/[0.03] p-3.5"
                 >
+                  {/* Trigger: red card */}
                   <div className="mb-2 flex items-center gap-2">
                     <span className="flex h-5 w-3.5 items-center justify-center rounded-[3px] bg-[var(--danger)] shadow-[0_0_10px_rgba(255,59,48,0.6)]" aria-hidden />
                     <span className="text-xs font-bold uppercase tracking-wide text-[var(--danger)]">
-                      Carton rouge
+                      RedPulse
                     </span>
                     <span className="ml-auto text-[10px] text-muted-foreground">{n.minute}&apos;</span>
                   </div>
                   <p className="text-[11px] font-medium uppercase tracking-wide text-primary">{n.competition}</p>
                   <p className="mt-0.5 text-sm font-semibold text-foreground">
-                    {n.home} <span className="text-muted-foreground">vs</span> {n.away}
-                  </p>
-                  <div className="mt-2 flex items-center justify-between">
-                    <span className="rounded-md bg-white/5 px-2 py-0.5 text-xs font-semibold text-foreground">
+                    {n.home}{" "}
+                    <span className="rounded bg-white/5 px-1.5 py-0.5 text-xs font-semibold text-foreground">
                       {n.score}
-                    </span>
-                    <span className="flex items-center gap-1 text-[10px] text-primary">
-                      <Check className="h-3 w-3" aria-hidden /> Envoyée · {n.time}
-                    </span>
+                    </span>{" "}
+                    {n.away}
+                  </p>
+                  <p className="mt-1 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                    <span className="h-3 w-2 rounded-[2px] bg-[var(--danger)]" aria-hidden />
+                    Carton rouge · <span className="font-medium text-foreground">{n.team}</span>
+                  </p>
+
+                  {/* AI analysis */}
+                  <div className="mt-3 rounded-xl border border-primary/15 bg-primary/[0.06] p-2.5">
+                    <p className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold text-primary">
+                      <Sparkles className="h-3.5 w-3.5" aria-hidden />
+                      Analyse IA
+                    </p>
+                    <div className="space-y-1.5 text-[11px]">
+                      <div className="flex items-center gap-2">
+                        <Goal className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden />
+                        <span className="text-muted-foreground">But supplémentaire</span>
+                        <span className="ml-auto font-semibold tabular-nums text-foreground">
+                          {n.analysis.extraGoalProb}%
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Trophy className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden />
+                        <span className="truncate text-muted-foreground">Victoire {n.analysis.favorite}</span>
+                        <span className="ml-auto font-semibold tabular-nums text-foreground">
+                          {n.analysis.favoriteWinProb}%
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Flame className="h-3.5 w-3.5 shrink-0 text-[var(--danger)]" aria-hidden />
+                        <span className="text-muted-foreground">Impact</span>
+                        <span className="ml-auto font-bold tabular-nums text-primary">
+                          {n.analysis.impact}/100
+                        </span>
+                      </div>
+                    </div>
                   </div>
+
+                  <span className="mt-2 flex items-center justify-end gap-1 text-[10px] text-primary">
+                    <Check className="h-3 w-3" aria-hidden /> Envoyée · {n.time}
+                  </span>
                 </motion.div>
               ))}
             </AnimatePresence>

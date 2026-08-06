@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { Check, Loader2 } from "lucide-react"
+import { Check, Flame, Goal, Loader2, Sparkles, Trophy } from "lucide-react"
 import { makeRandomEvent, seedEvents, type MatchEvent } from "@/lib/data"
 
 type Props = {
@@ -11,18 +11,40 @@ type Props = {
   compact?: boolean
 }
 
+function Metric({
+  icon: Icon,
+  label,
+  value,
+  danger = false,
+}: {
+  icon: typeof Goal
+  label: string
+  value: string
+  danger?: boolean
+}) {
+  return (
+    <div className="flex items-center gap-2 rounded-xl border border-white/8 bg-white/[0.02] px-3 py-2">
+      <Icon className={`h-4 w-4 shrink-0 ${danger ? "text-[var(--danger)]" : "text-primary"}`} aria-hidden />
+      <div className="min-w-0">
+        <p className="truncate text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
+        <p className={`text-sm font-bold tabular-nums ${danger ? "text-primary" : "text-foreground"}`}>{value}</p>
+      </div>
+    </div>
+  )
+}
+
 export function LiveFeed({ intervalMs = 4000, max = 12, compact = false }: Props) {
   const [rows, setRows] = useState<MatchEvent[]>(() => seedEvents.slice(0, compact ? 4 : 6))
 
   useEffect(() => {
     const interval = setInterval(() => {
       setRows((prev) => {
-        const incoming = { ...makeRandomEvent(), status: "sending" as const }
+        const incoming = { ...makeRandomEvent(), status: "analyzing" as const }
         const next = [incoming, ...prev].slice(0, max)
-        // Flip status to "sent" shortly after arrival.
+        // Analyzing → sent, mimicking the AI producing its analysis.
         setTimeout(() => {
           setRows((cur) => cur.map((r) => (r.id === incoming.id ? { ...r, status: "sent" } : r)))
-        }, 1200)
+        }, 1400)
         return next
       })
     }, intervalMs)
@@ -30,70 +52,32 @@ export function LiveFeed({ intervalMs = 4000, max = 12, compact = false }: Props
   }, [intervalMs, max])
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-white/8 bg-white/[0.02]">
-      {/* Header */}
-      <div
-        className={`grid items-center gap-3 border-b border-white/8 px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground ${
-          compact ? "grid-cols-[1fr_auto]" : "grid-cols-[1.2fr_1.6fr_auto_auto_1fr_auto] px-5"
-        }`}
-      >
-        <span>Compétition</span>
-        {!compact && <span>Match</span>}
-        {!compact && <span className="text-center">Min.</span>}
-        {!compact && <span className="text-center">Score</span>}
-        {!compact && <span>Événement</span>}
-        <span className="text-right">Statut</span>
-      </div>
+    <div className="flex flex-col gap-3">
+      <AnimatePresence initial={false}>
+        {rows.map((r) => (
+          <motion.article
+            key={r.id}
+            layout
+            initial={{ opacity: 0, y: -8, backgroundColor: "rgba(24,201,100,0.10)" }}
+            animate={{ opacity: 1, y: 0, backgroundColor: "rgba(255,255,255,0.015)" }}
+            exit={{ opacity: 0, height: 0, marginTop: 0 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="overflow-hidden rounded-2xl border border-white/8 p-4"
+          >
+            {/* Header row */}
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+              <span className="text-sm font-semibold text-primary">{r.competition}</span>
+              <span className="flex items-center gap-1.5 text-xs font-medium text-[var(--danger)]">
+                <span className="h-3.5 w-2.5 rounded-[2px] bg-[var(--danger)]" aria-hidden />
+                {r.team}
+              </span>
+              <span className="tabular-nums text-xs text-muted-foreground">{r.minute}&apos;</span>
 
-      <div className="divide-y divide-white/5">
-        <AnimatePresence initial={false}>
-          {rows.map((r) => (
-            <motion.div
-              key={r.id}
-              layout
-              initial={{ opacity: 0, backgroundColor: "rgba(255,59,48,0.12)" }}
-              animate={{ opacity: 1, backgroundColor: "rgba(255,59,48,0)" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className={`grid items-center gap-3 px-4 py-3.5 text-sm ${
-                compact ? "grid-cols-[1fr_auto]" : "grid-cols-[1.2fr_1.6fr_auto_auto_1fr_auto] px-5"
-              }`}
-            >
-              <span className="truncate font-medium text-primary">{r.competition}</span>
-
-              {!compact && (
-                <span className="truncate text-foreground">
-                  {r.home} <span className="text-muted-foreground">vs</span> {r.away}
-                </span>
-              )}
-              {!compact && <span className="text-center tabular-nums text-muted-foreground">{r.minute}&apos;</span>}
-              {!compact && (
-                <span className="text-center">
-                  <span className="rounded-md bg-white/5 px-2 py-0.5 text-xs font-semibold tabular-nums text-foreground">
-                    {r.score}
-                  </span>
-                </span>
-              )}
-
-              {compact ? (
-                <span className="flex items-center justify-end gap-2">
-                  <span className="flex items-center gap-1.5 text-xs font-medium text-[var(--danger)]">
-                    <span className="h-3.5 w-2.5 rounded-[2px] bg-[var(--danger)]" aria-hidden />
-                    {r.minute}&apos;
-                  </span>
-                </span>
-              ) : (
-                <span className="flex items-center gap-2 text-[var(--danger)]">
-                  <span className="h-3.5 w-2.5 rounded-[2px] bg-[var(--danger)]" aria-hidden />
-                  <span className="text-xs font-semibold">Carton rouge</span>
-                </span>
-              )}
-
-              <span className="flex justify-end">
-                {r.status === "sending" ? (
+              <span className="ml-auto">
+                {r.status === "analyzing" ? (
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
                     <Loader2 className="h-3 w-3 animate-spin" aria-hidden />
-                    Envoi
+                    Analyse IA…
                   </span>
                 ) : (
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-medium text-primary">
@@ -102,10 +86,30 @@ export function LiveFeed({ intervalMs = 4000, max = 12, compact = false }: Props
                   </span>
                 )}
               </span>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
+            </div>
+
+            {/* Match */}
+            <p className="mt-2 text-base font-semibold text-foreground">
+              {r.home}{" "}
+              <span className="rounded-md bg-white/5 px-2 py-0.5 text-sm tabular-nums">{r.score}</span> {r.away}
+            </p>
+
+            {/* AI metrics */}
+            {r.status === "analyzing" ? (
+              <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+                <Sparkles className="h-3.5 w-3.5 text-primary" aria-hidden />
+                Le copilote calcule l’impact…
+              </div>
+            ) : (
+              <div className={`mt-3 grid gap-2 ${compact ? "grid-cols-1 sm:grid-cols-3" : "grid-cols-1 sm:grid-cols-3"}`}>
+                <Metric icon={Goal} label="But supplémentaire" value={`${r.analysis.extraGoalProb}%`} />
+                <Metric icon={Trophy} label={`Victoire ${r.analysis.favorite}`} value={`${r.analysis.favoriteWinProb}%`} />
+                <Metric icon={Flame} label="Score d’impact" value={`${r.analysis.impact}/100`} danger />
+              </div>
+            )}
+          </motion.article>
+        ))}
+      </AnimatePresence>
     </div>
   )
 }
