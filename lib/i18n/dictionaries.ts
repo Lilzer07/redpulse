@@ -1,4 +1,4 @@
-// All user-facing copy for RedPulse, in French and English.
+// All user-facing copy for RedMatch, in French and English.
 // Components read strings from here through `useI18n()` so the whole site —
 // landing page and dashboard — switches language from a single toggle.
 // Structural data (icons, prices, hrefs, competition list) stays in lib/data.ts;
@@ -21,7 +21,7 @@ const fr = {
     login: "Connexion",
     start: "Commencer",
     menu: "Menu",
-    home: "RedPulse accueil",
+    home: "RedMatch accueil",
     language: "Langue",
   },
 
@@ -31,7 +31,7 @@ const fr = {
     titleHighlight: "opportunité",
     titleAfter: ", notre IA la détecte.",
     paragraph:
-      "Dès qu’un carton rouge tombe, RedPulse récupère le contexte du match, analyse la situation et vous envoie une notification Telegram : probabilité de but supplémentaire, victoire du favori et indice de confiance. En quelques secondes.",
+      "Dès qu’un carton rouge tombe, RedMatch récupère le contexte du match, analyse la situation et vous envoie une notification Telegram : probabilité de but supplémentaire, victoire du favori et indice de confiance. En quelques secondes.",
     ctaPrimary: "Commencer",
     ctaSecondary: "Voir la démonstration",
     trust: ["Analyse < 2 s", "Indice de confiance /100", "20+ compétitions"],
@@ -39,7 +39,7 @@ const fr = {
   },
 
   phone: {
-    botName: "RedPulse Bot",
+    botName: "RedMatch Bot",
     online: "en ligne",
     live: "live",
     redCard: "Carton rouge",
@@ -108,7 +108,7 @@ const fr = {
     steps: [
       {
         title: "Carton rouge détecté",
-        description: "Un carton rouge tombe : c’est le déclencheur. RedPulse le repère instantanément.",
+        description: "Un carton rouge tombe : c’est le déclencheur. RedMatch le repère instantanément.",
       },
       {
         title: "Données récupérées",
@@ -140,18 +140,18 @@ const fr = {
       confidence: "Confiance",
     },
     disclaimer:
-      "RedPulse fournit une analyse en temps réel. Ce n’est pas un service de pronostics ni de paris sportifs.",
+      "RedMatch fournit une analyse en temps réel. Ce n’est pas un service de pronostics ni de paris sportifs.",
   },
 
   pricing: {
     eyebrow: "Tarification",
-    title: "Choisissez votre accès à RedPulse.",
+    title: "Choisissez votre accès à RedMatch.",
     subtitle: "Un abonnement flexible pour découvrir, ou un accès à vie pour les premiers membres.",
     plans: {
       monthly: {
         name: "Abonnement Mensuel",
         period: "/ mois",
-        tagline: "Idéal pour découvrir RedPulse.",
+        tagline: "Idéal pour découvrir RedMatch.",
         features: [
           "Analyses IA illimitées",
           "Notifications Telegram instantanées",
@@ -167,7 +167,7 @@ const fr = {
         badge: "Le plus populaire",
         tagline: "Payez une seule fois, accès à vie.",
         description:
-          "Payez une seule fois et profitez d’un accès à vie à RedPulse ainsi qu’à toutes les futures mises à jour.",
+          "Payez une seule fois et profitez d’un accès à vie à RedMatch ainsi qu’à toutes les futures mises à jour.",
         features: [
           "Accès à vie",
           "Analyses IA illimitées",
@@ -200,11 +200,11 @@ const fr = {
     items: [
       {
         q: "Comment fonctionne l’analyse IA ?",
-        a: "Le carton rouge est le déclencheur. Dès qu’il est détecté, RedPulse récupère le contexte du match, puis l’IA calcule l’indice de confiance du carton et vous envoie une analyse claire dans Telegram : probabilité de but supplémentaire, probabilité de victoire du favori et indice de confiance sur 100.",
+        a: "Le carton rouge est le déclencheur. Dès qu’il est détecté, RedMatch récupère le contexte du match, puis l’IA calcule l’indice de confiance du carton et vous envoie une analyse claire dans Telegram : probabilité de but supplémentaire, probabilité de victoire du favori et indice de confiance sur 100.",
       },
       {
-        q: "RedPulse donne-t-il des conseils de pari ?",
-        a: "Non, jamais. RedPulse n’est pas un service de pronostics ni de paris sportifs. Il fournit uniquement une analyse en temps réel de l’effet potentiel d’un carton rouge sur le match.",
+        q: "RedMatch donne-t-il des conseils de pari ?",
+        a: "Non, jamais. RedMatch n’est pas un service de pronostics ni de paris sportifs. Il fournit uniquement une analyse en temps réel de l’effet potentiel d’un carton rouge sur le match.",
       },
       {
         q: "Quelles compétitions sont analysées ?",
@@ -224,7 +224,7 @@ const fr = {
       { title: "Entreprise", links: ["À propos", "Blog", "Carrières", "Contact"] },
       { title: "Légal", links: ["Confidentialité", "Conditions", "Cookies", "Mentions légales"] },
     ],
-    rights: "© 2026 RedPulse. Tous droits réservés.",
+    rights: "© 2026 RedMatch. Tous droits réservés.",
     notBetting: "Outil de surveillance football en temps réel — pas un service de paris.",
   },
 
@@ -348,7 +348,7 @@ const fr = {
     title: "Facturation",
     subtitle: "Gérez votre abonnement et vos moyens de paiement.",
     activeBadge: "Abonnement actif",
-    planName: "RedPulse Premium",
+    planName: "RedMatch Premium",
     nextBilling: "Prochaine facturation le 1 juillet 2026",
     perMonth: "/mois",
     features: [
@@ -407,7 +407,7 @@ const fr = {
     },
     appearance: { title: "Apparence" },
     darkMode: "Mode sombre",
-    darkModeDesc: "RedPulse est optimisé pour le mode sombre.",
+    darkModeDesc: "RedMatch est optimisé pour le mode sombre.",
     account: {
       title: "Compte",
       signedInAs: "Connecté en tant que",
@@ -476,7 +476,7 @@ const fr = {
     updatePassword: "Mettre à jour le mot de passe",
     updating: "Mise à jour…",
     termsPrefix: "J'accepte les",
-    termsLink: "conditions générales de RedPulse",
+    termsLink: "conditions générales de RedMatch",
     termsSuffix: ".",
     termsRequired: "Vous devez accepter les conditions générales pour créer un compte.",
   },
@@ -487,11 +487,11 @@ const fr = {
     sections: [
       {
         heading: "1. Objet du service",
-        body: "RedPulse est un outil de surveillance football en temps réel. Lorsqu'un carton rouge est détecté dans une compétition suivie, le service récupère le contexte du match, produit une analyse et vous l'envoie par notification Telegram. L'accès nécessite la création d'un compte.",
+        body: "RedMatch est un outil de surveillance football en temps réel. Lorsqu'un carton rouge est détecté dans une compétition suivie, le service récupère le contexte du match, produit une analyse et vous l'envoie par notification Telegram. L'accès nécessite la création d'un compte.",
       },
       {
         heading: "2. Nature de l'analyse",
-        body: "RedPulse n'est pas un service de pronostics ni de paris sportifs et ne fournit aucun conseil en investissement. Les probabilités et l'indice de confiance affichés sont des estimations statistiques fournies à titre informatif. Vous restez seul responsable des décisions que vous prenez à leur lecture.",
+        body: "RedMatch n'est pas un service de pronostics ni de paris sportifs et ne fournit aucun conseil en investissement. Les probabilités et l'indice de confiance affichés sont des estimations statistiques fournies à titre informatif. Vous restez seul responsable des décisions que vous prenez à leur lecture.",
       },
       {
         heading: "3. Compte utilisateur",
@@ -519,7 +519,7 @@ const fr = {
       },
     ],
     disclaimer:
-      "RedPulse est un outil d'analyse et de surveillance. Le service ne constitue en aucun cas une incitation au pari ni une garantie de résultat.",
+      "RedMatch est un outil d'analyse et de surveillance. Le service ne constitue en aucun cas une incitation au pari ni une garantie de résultat.",
   },
 }
 
@@ -538,7 +538,7 @@ const en: typeof fr = {
     login: "Log in",
     start: "Get started",
     menu: "Menu",
-    home: "RedPulse home",
+    home: "RedMatch home",
     language: "Language",
   },
 
@@ -548,7 +548,7 @@ const en: typeof fr = {
     titleHighlight: "opportunity",
     titleAfter: " — our AI spots it.",
     paragraph:
-      "The moment a red card is shown, RedPulse pulls the match context, analyses the situation and sends you a Telegram notification: chance of another goal, favourite’s win probability and a confidence score. In seconds.",
+      "The moment a red card is shown, RedMatch pulls the match context, analyses the situation and sends you a Telegram notification: chance of another goal, favourite’s win probability and a confidence score. In seconds.",
     ctaPrimary: "Get started",
     ctaSecondary: "Watch the demo",
     trust: ["Analysis in < 2 s", "Confidence score /100", "20+ competitions"],
@@ -556,7 +556,7 @@ const en: typeof fr = {
   },
 
   phone: {
-    botName: "RedPulse Bot",
+    botName: "RedMatch Bot",
     online: "online",
     live: "live",
     redCard: "Red card",
@@ -617,7 +617,7 @@ const en: typeof fr = {
     steps: [
       {
         title: "Red card detected",
-        description: "A red card is shown — that’s the trigger. RedPulse picks it up instantly.",
+        description: "A red card is shown — that’s the trigger. RedMatch picks it up instantly.",
       },
       {
         title: "Data collected",
@@ -649,18 +649,18 @@ const en: typeof fr = {
       confidence: "Confidence",
     },
     disclaimer:
-      "RedPulse provides real-time analysis. It is not a tipping or sports-betting service.",
+      "RedMatch provides real-time analysis. It is not a tipping or sports-betting service.",
   },
 
   pricing: {
     eyebrow: "Pricing",
-    title: "Choose your access to RedPulse.",
+    title: "Choose your access to RedMatch.",
     subtitle: "A flexible subscription to try it out, or lifetime access for early members.",
     plans: {
       monthly: {
         name: "Monthly plan",
         period: "/ month",
-        tagline: "Perfect for discovering RedPulse.",
+        tagline: "Perfect for discovering RedMatch.",
         features: [
           "Unlimited AI analyses",
           "Instant Telegram notifications",
@@ -676,7 +676,7 @@ const en: typeof fr = {
         badge: "Most popular",
         tagline: "Pay once, keep it for life.",
         description:
-          "Pay once and enjoy lifetime access to RedPulse, including every future update.",
+          "Pay once and enjoy lifetime access to RedMatch, including every future update.",
         features: [
           "Lifetime access",
           "Unlimited AI analyses",
@@ -709,11 +709,11 @@ const en: typeof fr = {
     items: [
       {
         q: "How does the AI analysis work?",
-        a: "The red card is the trigger. As soon as one is detected, RedPulse pulls the match context, then the AI computes the card’s confidence score and sends you a clear analysis in Telegram: the chance of another goal, the favourite’s win probability and a confidence score out of 100.",
+        a: "The red card is the trigger. As soon as one is detected, RedMatch pulls the match context, then the AI computes the card’s confidence score and sends you a clear analysis in Telegram: the chance of another goal, the favourite’s win probability and a confidence score out of 100.",
       },
       {
-        q: "Does RedPulse give betting advice?",
-        a: "Never. RedPulse is not a tipping or sports-betting service. It only provides a real-time analysis of a red card’s potential effect on the match.",
+        q: "Does RedMatch give betting advice?",
+        a: "Never. RedMatch is not a tipping or sports-betting service. It only provides a real-time analysis of a red card’s potential effect on the match.",
       },
       {
         q: "Which competitions are analysed?",
@@ -733,7 +733,7 @@ const en: typeof fr = {
       { title: "Company", links: ["About", "Blog", "Careers", "Contact"] },
       { title: "Legal", links: ["Privacy", "Terms", "Cookies", "Legal notice"] },
     ],
-    rights: "© 2026 RedPulse. All rights reserved.",
+    rights: "© 2026 RedMatch. All rights reserved.",
     notBetting: "A real-time football monitoring tool — not a betting service.",
   },
 
@@ -850,7 +850,7 @@ const en: typeof fr = {
     title: "Billing",
     subtitle: "Manage your subscription and payment methods.",
     activeBadge: "Active subscription",
-    planName: "RedPulse Premium",
+    planName: "RedMatch Premium",
     nextBilling: "Next billing on 1 July 2026",
     perMonth: "/month",
     features: [
@@ -908,7 +908,7 @@ const en: typeof fr = {
     },
     appearance: { title: "Appearance" },
     darkMode: "Dark mode",
-    darkModeDesc: "RedPulse is optimised for dark mode.",
+    darkModeDesc: "RedMatch is optimised for dark mode.",
     account: {
       title: "Account",
       signedInAs: "Signed in as",
@@ -974,7 +974,7 @@ const en: typeof fr = {
     newPassword: "New password",
     updatePassword: "Update password",
     updating: "Updating…",
-    termsPrefix: "I accept the RedPulse",
+    termsPrefix: "I accept the RedMatch",
     termsLink: "terms and conditions",
     termsSuffix: ".",
     termsRequired: "You must accept the terms and conditions to create an account.",
@@ -986,11 +986,11 @@ const en: typeof fr = {
     sections: [
       {
         heading: "1. What the service does",
-        body: "RedPulse is a real-time football monitoring tool. When a red card is detected in a competition you follow, the service pulls the match context, produces an analysis and sends it to you as a Telegram notification. Access requires an account.",
+        body: "RedMatch is a real-time football monitoring tool. When a red card is detected in a competition you follow, the service pulls the match context, produces an analysis and sends it to you as a Telegram notification. Access requires an account.",
       },
       {
         heading: "2. Nature of the analysis",
-        body: "RedPulse is not a tipping or sports betting service and provides no investment advice. The probabilities and confidence score shown are statistical estimates provided for information only. You remain solely responsible for any decisions you make based on them.",
+        body: "RedMatch is not a tipping or sports betting service and provides no investment advice. The probabilities and confidence score shown are statistical estimates provided for information only. You remain solely responsible for any decisions you make based on them.",
       },
       {
         heading: "3. Your account",
@@ -1018,7 +1018,7 @@ const en: typeof fr = {
       },
     ],
     disclaimer:
-      "RedPulse is an analysis and monitoring tool. The service is in no way an encouragement to bet, nor a guarantee of any outcome.",
+      "RedMatch is an analysis and monitoring tool. The service is in no way an encouragement to bet, nor a guarantee of any outcome.",
   },
 }
 

@@ -1,4 +1,4 @@
-// Central data layer for RedPulse.
+// Central data layer for RedMatch.
 // Frontend-first: values are simulated but structured so real API/Supabase
 // data can be swapped in without touching UI components.
 
@@ -89,7 +89,7 @@ export const features: Feature[] = [
 ]
 
 export const steps = [
-  { step: "01", title: "Carton rouge détecté", description: "Un carton rouge tombe : c’est le déclencheur. RedPulse le repère instantanément." },
+  { step: "01", title: "Carton rouge détecté", description: "Un carton rouge tombe : c’est le déclencheur. RedMatch le repère instantanément." },
   { step: "02", title: "Données récupérées", description: "Le contexte du match est collecté automatiquement : score, minute, équipes." },
   { step: "03", title: "L’IA analyse la situation", description: "Le copilote calcule l’indice de confiance et les probabilités clés du match." },
   { step: "04", title: "Telegram enrichi envoyé", description: "Vous recevez l’analyse complète dans Telegram en quelques secondes." },
@@ -157,11 +157,11 @@ export const testimonials: Testimonial[] = [
 export const faqs = [
   {
     q: "Comment fonctionne l’analyse IA ?",
-    a: "Le carton rouge est le déclencheur. Dès qu’il est détecté, RedPulse récupère le contexte du match, puis l’IA calcule l’indice de confiance du carton et vous envoie une analyse claire dans Telegram : probabilité de but supplémentaire, probabilité de victoire du favori et indice de confiance sur 100.",
+    a: "Le carton rouge est le déclencheur. Dès qu’il est détecté, RedMatch récupère le contexte du match, puis l’IA calcule l’indice de confiance du carton et vous envoie une analyse claire dans Telegram : probabilité de but supplémentaire, probabilité de victoire du favori et indice de confiance sur 100.",
   },
   {
-    q: "RedPulse donne-t-il des conseils de pari ?",
-    a: "Non, jamais. RedPulse n’est pas un service de pronostics ni de paris sportifs. Il fournit uniquement une analyse en temps réel de l’effet potentiel d’un carton rouge sur le match.",
+    q: "RedMatch donne-t-il des conseils de pari ?",
+    a: "Non, jamais. RedMatch n’est pas un service de pronostics ni de paris sportifs. Il fournit uniquement une analyse en temps réel de l’effet potentiel d’un carton rouge sur le match.",
   },
   {
     q: "Quelles compétitions sont analysées ?",
@@ -201,7 +201,7 @@ export const pricingPlans: PricingPlan[] = [
     name: "Abonnement Mensuel",
     price: "10 €",
     period: "/ mois",
-    tagline: "Idéal pour découvrir RedPulse.",
+    tagline: "Idéal pour découvrir RedMatch.",
     features: [
       "Analyses IA illimitées",
       "Notifications Telegram instantanées",
@@ -221,7 +221,7 @@ export const pricingPlans: PricingPlan[] = [
     badge: "Le plus populaire",
     tagline: "Payez une seule fois, accès à vie.",
     description:
-      "Payez une seule fois et profitez d’un accès à vie à RedPulse ainsi qu’à toutes les futures mises à jour.",
+      "Payez une seule fois et profitez d’un accès à vie à RedMatch ainsi qu’à toutes les futures mises à jour.",
     features: [
       "Accès à vie",
       "Analyses IA illimitées",
@@ -237,12 +237,12 @@ export const pricingPlans: PricingPlan[] = [
 ]
 
 // --- Live simulation helpers -------------------------------------------------
-// The red card is only the trigger. For every detected card, RedPulse's AI
+// The red card is only the trigger. For every detected card, RedMatch's AI
 // copilot produces a simple, readable impact analysis. These values are
 // simulated but structured so a real model/API response can be swapped in.
 
 export type Analysis = {
-  /** Team that RedPulse favours to win after the card (numerical advantage). */
+  /** Team that RedMatch favours to win after the card (numerical advantage). */
   favorite: string
   /** Probability (%) of at least one more goal before the final whistle. */
   extraGoalProb: number

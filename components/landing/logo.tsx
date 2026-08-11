@@ -9,7 +9,7 @@ export function Logo({ className = "" }: { className?: string }) {
         </span>
       </span>
       <span className="text-lg font-bold tracking-tight text-foreground">
-        Red<span className="text-primary">Pulse</span>
+        Red<span className="text-primary">Match</span>
       </span>
     </span>
   )

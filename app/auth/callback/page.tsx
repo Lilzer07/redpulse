@@ -15,7 +15,7 @@ import { useI18n } from "@/lib/i18n/context"
  * fragment, and fragments are never transmitted to the server -- which is why a
  * server route handler here saw no params at all and fell through to /auth/error.
  *
- * This runs in the browser so it can read `location.hash`. The branded RedPulse
+ * This runs in the browser so it can read `location.hash`. The branded RedMatch
  * email instead points at /auth/confirm, which is fully server-side.
  */
 export default function AuthCallbackPage() {

@@ -23,7 +23,7 @@ export default async function ChoosePlanPage() {
   return (
     <main className="flex min-h-screen flex-col bg-background">
       <header className="flex items-center justify-between gap-4 p-5">
-        <Link href="/" aria-label="RedPulse">
+        <Link href="/" aria-label="RedMatch">
           <Logo />
         </Link>
         <div className="flex items-center gap-2">

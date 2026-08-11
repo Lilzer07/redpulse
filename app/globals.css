@@ -51,7 +51,7 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* RedPulse — dark mode only */
+/* RedMatch — dark mode only */
 :root {
   color-scheme: dark;
 
@@ -114,7 +114,7 @@
 }
 
 /* Infinite marquee for competition logos */
-@keyframes redpulse-marquee {
+@keyframes redmatch-marquee {
   from {
     transform: translateX(0);
   }
@@ -123,11 +123,11 @@
   }
 }
 .animate-marquee {
-  animation: redpulse-marquee var(--marquee-duration, 40s) linear infinite;
+  animation: redmatch-marquee var(--marquee-duration, 40s) linear infinite;
   will-change: transform;
 }
 .animate-marquee-reverse {
-  animation: redpulse-marquee var(--marquee-duration, 40s) linear infinite reverse;
+  animation: redmatch-marquee var(--marquee-duration, 40s) linear infinite reverse;
   will-change: transform;
 }
 .marquee-pause:hover .animate-marquee,

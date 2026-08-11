@@ -1,4 +1,4 @@
--- RedPulse — per-user data model.
+-- RedMatch — per-user data model.
 -- Every table is owned by a single user and locked down with RLS, so one
 -- account can never read or write another account's rows. The public landing
 -- demo uses no database at all, which is what keeps it a demo.

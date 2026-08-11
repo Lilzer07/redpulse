@@ -1,7 +1,7 @@
--- RedPulse — subscription state, one row per user.
+-- RedMatch — subscription state, one row per user.
 -- The dashboard is gated on this table: no active row means no access. Stripe
 -- is not wired up yet, so rows are currently created by the temporary
--- "continue without paying" action (see app/onboarding/actions.ts). Once
+-- "continue without paying" action (see app/choose-plan/actions.ts). Once
 -- Stripe is connected, the webhook becomes the only writer.
 
 create table if not exists public.subscriptions (

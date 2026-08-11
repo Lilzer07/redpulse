@@ -78,7 +78,7 @@ export function TelegramPhone() {
                   <div className="mb-2 flex items-center gap-2">
                     <span className="flex h-5 w-3.5 items-center justify-center rounded-[3px] bg-[var(--danger)] shadow-[0_0_10px_rgba(255,59,48,0.6)]" aria-hidden />
                     <span className="text-xs font-bold uppercase tracking-wide text-[var(--danger)]">
-                      RedPulse
+                      RedMatch
                     </span>
                     <span className="ml-auto text-[10px] text-muted-foreground">{n.minute}&apos;</span>
                   </div>

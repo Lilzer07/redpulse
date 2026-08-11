@@ -3,7 +3,7 @@ import type { EmailOtpType } from "@supabase/supabase-js"
 import { createClient } from "@/lib/supabase/server"
 
 /**
- * Primary confirmation endpoint, used by the branded RedPulse email.
+ * Primary confirmation endpoint, used by the branded RedMatch email.
  *
  * The email link carries `token_hash` (Supabase's `{{ .TokenHash }}`) rather than
  * relying on Supabase's own /auth/v1/verify redirect. That matters because verify

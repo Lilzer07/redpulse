@@ -3,7 +3,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { dictionaries, type Dictionary, type Locale } from "@/lib/i18n/dictionaries"
 
-const STORAGE_KEY = "redpulse:locale"
+const STORAGE_KEY = "redmatch:locale"
+// Pre-rename key: still read once so existing visitors keep their language choice.
+const LEGACY_STORAGE_KEY = "redpulse:locale"
 
 type I18nValue = {
   locale: Locale
@@ -21,7 +23,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let next: Locale | null = null
     try {
-      const stored = window.localStorage.getItem(STORAGE_KEY)
+      const stored = window.localStorage.getItem(STORAGE_KEY) ?? window.localStorage.getItem(LEGACY_STORAGE_KEY)
       if (stored === "fr" || stored === "en") next = stored
     } catch {
       // localStorage unavailable (private mode) — fall back to browser language.
