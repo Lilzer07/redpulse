@@ -5,6 +5,8 @@ import { motion } from "framer-motion"
 import { Topbar } from "@/components/dashboard/topbar"
 import { Switch } from "@/components/ui/switch"
 import { useI18n } from "@/lib/i18n/context"
+import { useSession } from "@/lib/session-context"
+import { SignOutButton } from "@/components/auth/sign-out-button"
 
 function Section({
   title,
@@ -45,6 +47,7 @@ const notifPrefs = [
 
 export default function SettingsPage() {
   const { t, locale, setLocale } = useI18n()
+  const { email } = useSession()
   const [prefs, setPrefs] = useState<Record<string, boolean>>(
     Object.fromEntries(notifPrefs.map((p) => [p.id, p.on])),
   )
@@ -63,7 +66,7 @@ export default function SettingsPage() {
             </div>
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium text-foreground">{t.settings.email}</label>
-              <input id="email" type="email" defaultValue="martin@redpulse.io" className={fieldClass} />
+              <input id="email" type="email" defaultValue={email} className={fieldClass} />
             </div>
             <div className="space-y-2 sm:col-span-2">
               <label htmlFor="password" className="text-sm font-medium text-foreground">{t.settings.password}</label>
@@ -137,6 +140,16 @@ export default function SettingsPage() {
             </span>
             <Switch checked={darkMode} onCheckedChange={setDarkMode} aria-label={t.settings.darkMode} />
           </label>
+        </Section>
+
+        {/* Reachable on every viewport — the sidebar sign-out is desktop-only. */}
+        <Section title={t.settings.account.title} delay={0.24}>
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <p className="text-sm text-muted-foreground">
+              {t.settings.account.signedInAs} <span className="font-medium text-foreground">{email}</span>
+            </p>
+            <SignOutButton />
+          </div>
         </Section>
 
         <div className="flex justify-end gap-3">

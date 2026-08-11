@@ -380,9 +380,14 @@ const fr = {
     appearance: { title: "Apparence" },
     darkMode: "Mode sombre",
     darkModeDesc: "RedPulse est optimisé pour le mode sombre.",
+    account: {
+      title: "Compte",
+      signedInAs: "Connecté en tant que",
+    },
     cancel: "Annuler",
     save: "Enregistrer les modifications",
   },
+
   auth: {
     loginTitle: "Content de vous revoir",
     loginSubtitle: "Connectez-vous pour accéder à vos alertes.",
@@ -776,9 +781,14 @@ const en: typeof fr = {
     appearance: { title: "Appearance" },
     darkMode: "Dark mode",
     darkModeDesc: "RedPulse is optimised for dark mode.",
+    account: {
+      title: "Account",
+      signedInAs: "Signed in as",
+    },
     cancel: "Cancel",
     save: "Save changes",
   },
+
   auth: {
     loginTitle: "Welcome back",
     loginSubtitle: "Sign in to access your alerts.",
