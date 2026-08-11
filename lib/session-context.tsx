@@ -2,7 +2,10 @@
 
 import { createContext, useContext, type ReactNode } from "react"
 
-type SessionValue = { email: string }
+type SessionValue = {
+  email: string
+  displayName: string | null
+}
 
 const SessionContext = createContext<SessionValue | null>(null)
 
@@ -10,8 +13,16 @@ const SessionContext = createContext<SessionValue | null>(null)
  * Makes the server-verified session user available to client components inside
  * the dashboard, so they never have to re-fetch it on the client.
  */
-export function SessionProvider({ email, children }: { email: string; children: ReactNode }) {
-  return <SessionContext.Provider value={{ email }}>{children}</SessionContext.Provider>
+export function SessionProvider({
+  email,
+  displayName,
+  children,
+}: {
+  email: string
+  displayName: string | null
+  children: ReactNode
+}) {
+  return <SessionContext.Provider value={{ email, displayName }}>{children}</SessionContext.Provider>
 }
 
 export function useSession() {

@@ -4,6 +4,7 @@ import { Sidebar } from "@/components/dashboard/sidebar"
 import { MobileNav } from "@/components/dashboard/mobile-nav"
 import { createClient } from "@/lib/supabase/server"
 import { SessionProvider } from "@/lib/session-context"
+import { getProfile } from "@/lib/user-data"
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
   const supabase = await createClient()
@@ -17,8 +18,16 @@ export default async function DashboardLayout({ children }: { children: ReactNod
     redirect("/auth/login?next=/dashboard")
   }
 
+  // An unconfirmed account has no business inside the dashboard, even if a
+  // session cookie somehow exists.
+  if (!user.email_confirmed_at) {
+    redirect("/auth/login?reason=unconfirmed")
+  }
+
+  const profile = await getProfile()
+
   return (
-    <SessionProvider email={user.email ?? ""}>
+    <SessionProvider email={user.email ?? ""} displayName={profile?.display_name ?? null}>
       <div className="flex min-h-screen bg-background">
         <Sidebar userEmail={user.email} />
         <div className="flex min-w-0 flex-1 flex-col pb-20 lg:pb-0">{children}</div>

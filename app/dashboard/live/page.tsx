@@ -1,17 +1,15 @@
-"use client"
-
 import { Topbar } from "@/components/dashboard/topbar"
-import { LiveFeed } from "@/components/dashboard/live-feed"
-import { useI18n } from "@/lib/i18n/context"
+import { AlertsFeed } from "@/components/dashboard/alerts-feed"
+import { getAlerts, getEnabledCompetitionIds } from "@/lib/user-data"
 
-export default function LivePage() {
-  const { t } = useI18n()
+export default async function LivePage() {
+  const [alerts, enabledIds] = await Promise.all([getAlerts(50), getEnabledCompetitionIds()])
 
   return (
     <>
-      <Topbar title={t.live.title} subtitle={t.live.subtitle} />
+      <Topbar section="live" />
       <div className="px-5 py-6 lg:px-8">
-        <LiveFeed max={12} intervalMs={4000} />
+        <AlertsFeed alerts={alerts} hasCompetitions={enabledIds.length > 0} />
       </div>
     </>
   )

@@ -261,23 +261,37 @@ const fr = {
     title: "Dashboard",
     subtitle: "Votre copilote analyse les cartons rouges en direct.",
     stats: {
-      matches: { label: "Matchs surveillés", hint: "En direct maintenant" },
-      analyses: { label: "Analyses IA aujourd’hui", hint: "+3 vs hier" },
-      confidence: { label: "Indice de confiance moyen", hint: "Sur les cartons du jour" },
-      avgTime: { label: "Temps moyen d’analyse", value: "1,4 s", hint: "Détection → Telegram" },
-      telegram: { label: "Statut Telegram", value: "Connecté", hint: "@redpulse_bot" },
+      alerts: { label: "Analyses reçues", hint: "Depuis la création du compte" },
+      week: { label: "Ces 7 derniers jours", hint: "Analyses reçues" },
+      confidence: { label: "Indice de confiance moyen", hint: "Sur vos analyses" },
+      competitions: { label: "Compétitions suivies", hint: "Sélectionnées par vous" },
+      telegram: {
+        label: "Statut Telegram",
+        connected: "Connecté",
+        disconnected: "À configurer",
+        hint: "Votre bot personnel",
+      },
     },
-    liveTitle: "Analyses en direct",
+    liveTitle: "Vos analyses",
     seeAll: "Tout voir",
   },
 
   feed: {
     analyzing: "Analyse IA…",
     sent: "Envoyée",
+    pending: "En attente",
     computing: "Le copilote calcule l’indice de confiance…",
     extraGoal: "But supplémentaire",
     win: "Victoire",
     confidence: "Indice de confiance",
+    empty: {
+      title: "Aucune analyse pour le moment",
+      waiting:
+        "Votre compte est prêt. Dès qu’un carton rouge tombe dans une compétition que vous suivez, l’analyse apparaîtra ici.",
+      noCompetitions:
+        "Vous ne suivez encore aucune compétition. Choisissez celles à surveiller pour commencer à recevoir des analyses.",
+      pickCompetitions: "Choisir mes compétitions",
+    },
   },
 
   live: {
@@ -310,6 +324,7 @@ const fr = {
     testing: "Test en cours…",
     test: "Tester la connexion",
     success: "Telegram connecté avec succès.",
+    failed: "Telegram a refusé ces identifiants. Vérifiez le token et le Chat ID.",
     helpTitle: "Comment obtenir vos identifiants",
     helpSteps: [
       "Ouvrez Telegram et démarrez une conversation avec @BotFather.",
@@ -731,23 +746,37 @@ const en: typeof fr = {
     title: "Dashboard",
     subtitle: "Your copilot is analysing red cards live.",
     stats: {
-      matches: { label: "Matches monitored", hint: "Live right now" },
-      analyses: { label: "AI analyses today", hint: "+3 vs yesterday" },
-      confidence: { label: "Average confidence score", hint: "Across today’s cards" },
-      avgTime: { label: "Average analysis time", value: "1.4 s", hint: "Detection → Telegram" },
-      telegram: { label: "Telegram status", value: "Connected", hint: "@redpulse_bot" },
+      alerts: { label: "Analyses received", hint: "Since you signed up" },
+      week: { label: "Last 7 days", hint: "Analyses received" },
+      confidence: { label: "Average confidence score", hint: "Across your analyses" },
+      competitions: { label: "Competitions followed", hint: "Chosen by you" },
+      telegram: {
+        label: "Telegram status",
+        connected: "Connected",
+        disconnected: "Needs setup",
+        hint: "Your own bot",
+      },
     },
-    liveTitle: "Live analyses",
+    liveTitle: "Your analyses",
     seeAll: "See all",
   },
 
   feed: {
     analyzing: "AI analysing…",
     sent: "Sent",
+    pending: "Pending",
     computing: "The copilot is computing the confidence score…",
     extraGoal: "Another goal",
     win: "Win",
     confidence: "Confidence score",
+    empty: {
+      title: "No analyses yet",
+      waiting:
+        "Your account is ready. As soon as a red card happens in a competition you follow, the analysis will appear here.",
+      noCompetitions:
+        "You're not following any competition yet. Pick the ones to monitor to start receiving analyses.",
+      pickCompetitions: "Choose my competitions",
+    },
   },
 
   live: {
@@ -780,6 +809,7 @@ const en: typeof fr = {
     testing: "Testing…",
     test: "Test connection",
     success: "Telegram connected successfully.",
+    failed: "Telegram rejected these credentials. Check the token and chat ID.",
     helpTitle: "How to get your credentials",
     helpSteps: [
       "Open Telegram and start a chat with @BotFather.",
