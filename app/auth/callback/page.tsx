@@ -58,7 +58,7 @@ export default function AuthCallbackPage() {
           refresh_token: refreshToken,
         })
         if (error) {
-          console.log("[v0] setSession failed:", error.message)
+          console.error("setSession failed:", error.message)
           setFailed(true)
           router.replace(`/auth/error?reason=${encodeURIComponent(error.message)}`)
           return
@@ -74,7 +74,7 @@ export default function AuthCallbackPage() {
       if (code) {
         const { error } = await supabase.auth.exchangeCodeForSession(code)
         if (error) {
-          console.log("[v0] exchangeCodeForSession failed:", error.message)
+          console.error("exchangeCodeForSession failed:", error.message)
           setFailed(true)
           router.replace(`/auth/error?reason=${encodeURIComponent(error.message)}`)
           return

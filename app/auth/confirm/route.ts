@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
   const { error } = await supabase.auth.verifyOtp({ type, token_hash: tokenHash })
 
   if (error) {
-    console.log("[v0] verifyOtp failed:", error.message)
+    console.error("verifyOtp failed:", error.message)
     return NextResponse.redirect(`${origin}/auth/error?reason=${encodeURIComponent(error.message)}`)
   }
 
