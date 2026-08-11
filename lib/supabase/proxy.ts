@@ -39,8 +39,11 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // Signed-in users have no reason to see the login or sign-up forms.
-  if (user && (pathname === "/auth/login" || pathname === "/auth/sign-up")) {
+  // Signed-in users have no reason to see these forms. /auth/reset-password is
+  // deliberately excluded: a recovery link signs the user in, and that page is
+  // exactly where they need to land.
+  const guestOnly = ["/auth/login", "/auth/sign-up", "/auth/forgot-password"]
+  if (user && guestOnly.includes(pathname)) {
     const url = request.nextUrl.clone()
     url.pathname = "/dashboard"
     url.search = ""

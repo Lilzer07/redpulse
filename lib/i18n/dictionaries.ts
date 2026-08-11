@@ -426,6 +426,68 @@ const fr = {
       "Ce lien a expiré ou a déjà été utilisé. Si vous avez déjà confirmé votre adresse, connectez-vous simplement.",
     resendLink: "Recevoir un nouveau lien",
     goToLogin: "Aller à la connexion",
+    showPassword: "Afficher le mot de passe",
+    hidePassword: "Masquer le mot de passe",
+    forgotPassword: "Mot de passe oublié ?",
+    forgotTitle: "Mot de passe oublié",
+    forgotSubtitle:
+      "Indiquez votre adresse e-mail : nous vous envoyons un lien pour définir un nouveau mot de passe.",
+    sendResetLink: "Envoyer le lien",
+    sending: "Envoi…",
+    rememberedIt: "Vous vous en souvenez ?",
+    resetSentTitle: "Lien envoyé",
+    resetSentBody:
+      "Si un compte existe pour cette adresse, vous recevrez un lien de réinitialisation dans quelques instants.",
+    resetTitle: "Nouveau mot de passe",
+    resetSubtitle: "Choisissez un nouveau mot de passe pour votre compte.",
+    newPassword: "Nouveau mot de passe",
+    updatePassword: "Mettre à jour le mot de passe",
+    updating: "Mise à jour…",
+    termsPrefix: "J'accepte les",
+    termsLink: "conditions générales de RedPulse",
+    termsSuffix: ".",
+    termsRequired: "Vous devez accepter les conditions générales pour créer un compte.",
+  },
+
+  terms: {
+    title: "Conditions générales d'utilisation",
+    updated: "Dernière mise à jour : 11 août 2026",
+    sections: [
+      {
+        heading: "1. Objet du service",
+        body: "RedPulse est un outil de surveillance football en temps réel. Lorsqu'un carton rouge est détecté dans une compétition suivie, le service récupère le contexte du match, produit une analyse et vous l'envoie par notification Telegram. L'accès nécessite la création d'un compte.",
+      },
+      {
+        heading: "2. Nature de l'analyse",
+        body: "RedPulse n'est pas un service de pronostics ni de paris sportifs et ne fournit aucun conseil en investissement. Les probabilités et l'indice de confiance affichés sont des estimations statistiques fournies à titre informatif. Vous restez seul responsable des décisions que vous prenez à leur lecture.",
+      },
+      {
+        heading: "3. Compte utilisateur",
+        body: "Vous vous engagez à fournir une adresse e-mail valide et à préserver la confidentialité de votre mot de passe. Toute activité réalisée depuis votre compte vous est imputable. Prévenez-nous sans délai si vous suspectez un accès non autorisé.",
+      },
+      {
+        heading: "4. Abonnement et paiement",
+        body: "L'accès est proposé par abonnement mensuel ou par achat unique donnant un accès à vie. L'abonnement mensuel se renouvelle automatiquement et peut être résilié à tout moment : l'accès reste alors actif jusqu'à la fin de la période déjà payée.",
+      },
+      {
+        heading: "5. Disponibilité",
+        body: "Nous mettons tout en œuvre pour assurer un service continu, sans pouvoir garantir une disponibilité ininterrompue. Les analyses dépendent de fournisseurs de données tiers : un retard, une interruption ou une donnée manquante venant de ces sources peut affecter les notifications.",
+      },
+      {
+        heading: "6. Données personnelles",
+        body: "Nous collectons uniquement les données nécessaires au fonctionnement du service : adresse e-mail, préférences de compétitions et paramètres Telegram. Ces informations ne sont ni vendues ni cédées à des tiers à des fins publicitaires. Vous pouvez demander la suppression de votre compte et des données associées à tout moment.",
+      },
+      {
+        heading: "7. Utilisation acceptable",
+        body: "Vous vous engagez à ne pas revendre, redistribuer ni exploiter automatiquement les analyses à grande échelle sans autorisation écrite, et à ne pas tenter de contourner les limitations techniques du service.",
+      },
+      {
+        heading: "8. Évolution des conditions",
+        body: "Ces conditions peuvent être modifiées afin de refléter les évolutions du service ou du cadre légal. En cas de changement significatif, vous serez informé par e-mail avant son entrée en vigueur.",
+      },
+    ],
+    disclaimer:
+      "RedPulse est un outil d'analyse et de surveillance. Le service ne constitue en aucun cas une incitation au pari ni une garantie de résultat.",
   },
 }
 
@@ -833,6 +895,67 @@ const en: typeof fr = {
       "This link has expired or was already used. If you've already confirmed your address, just sign in.",
     resendLink: "Get a new link",
     goToLogin: "Go to sign in",
+    showPassword: "Show password",
+    hidePassword: "Hide password",
+    forgotPassword: "Forgot password?",
+    forgotTitle: "Forgot password",
+    forgotSubtitle: "Enter your email address and we'll send you a link to set a new password.",
+    sendResetLink: "Send the link",
+    sending: "Sending…",
+    rememberedIt: "Remembered it?",
+    resetSentTitle: "Link sent",
+    resetSentBody:
+      "If an account exists for that address, you'll receive a reset link in a few moments.",
+    resetTitle: "New password",
+    resetSubtitle: "Choose a new password for your account.",
+    newPassword: "New password",
+    updatePassword: "Update password",
+    updating: "Updating…",
+    termsPrefix: "I accept the RedPulse",
+    termsLink: "terms and conditions",
+    termsSuffix: ".",
+    termsRequired: "You must accept the terms and conditions to create an account.",
+  },
+
+  terms: {
+    title: "Terms and conditions",
+    updated: "Last updated: 11 August 2026",
+    sections: [
+      {
+        heading: "1. What the service does",
+        body: "RedPulse is a real-time football monitoring tool. When a red card is detected in a competition you follow, the service pulls the match context, produces an analysis and sends it to you as a Telegram notification. Access requires an account.",
+      },
+      {
+        heading: "2. Nature of the analysis",
+        body: "RedPulse is not a tipping or sports betting service and provides no investment advice. The probabilities and confidence score shown are statistical estimates provided for information only. You remain solely responsible for any decisions you make based on them.",
+      },
+      {
+        heading: "3. Your account",
+        body: "You agree to provide a valid email address and to keep your password confidential. Any activity carried out from your account is attributable to you. Tell us straight away if you suspect unauthorised access.",
+      },
+      {
+        heading: "4. Subscription and payment",
+        body: "Access is offered as a monthly subscription or as a one-off purchase granting lifetime access. The monthly subscription renews automatically and can be cancelled at any time: access then remains active until the end of the period already paid for.",
+      },
+      {
+        heading: "5. Availability",
+        body: "We do everything we can to keep the service running, without being able to guarantee uninterrupted availability. Analyses depend on third-party data providers: a delay, outage or missing data point from those sources can affect notifications.",
+      },
+      {
+        heading: "6. Personal data",
+        body: "We collect only the data needed to run the service: email address, competition preferences and Telegram settings. This information is never sold or passed to third parties for advertising purposes. You can request deletion of your account and its associated data at any time.",
+      },
+      {
+        heading: "7. Acceptable use",
+        body: "You agree not to resell, redistribute or automatically harvest the analyses at scale without written permission, and not to attempt to circumvent the service's technical limits.",
+      },
+      {
+        heading: "8. Changes to these terms",
+        body: "These terms may be updated to reflect changes to the service or to the legal framework. If a change is significant, you will be notified by email before it takes effect.",
+      },
+    ],
+    disclaimer:
+      "RedPulse is an analysis and monitoring tool. The service is in no way an encouragement to bet, nor a guarantee of any outcome.",
   },
 }
 

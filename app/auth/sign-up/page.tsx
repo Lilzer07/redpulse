@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { AlertCircle, Loader2 } from "lucide-react"
 import { AuthShell, authButtonClass, authFieldClass } from "@/components/auth/auth-shell"
+import { PasswordField } from "@/components/auth/password-field"
 import { createClient } from "@/lib/supabase/client"
 import { authErrorMessage } from "@/lib/auth-errors"
 import { useI18n } from "@/lib/i18n/context"
@@ -16,6 +17,7 @@ export default function SignUpPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirm, setConfirm] = useState("")
+  const [acceptedTerms, setAcceptedTerms] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
 
@@ -31,6 +33,10 @@ export default function SignUpPage() {
       setError(t.auth.passwordMismatch)
       return
     }
+    if (!acceptedTerms) {
+      setError(t.auth.termsRequired)
+      return
+    }
 
     setPending(true)
     const supabase = createClient()
@@ -38,6 +44,8 @@ export default function SignUpPage() {
       email,
       password,
       options: {
+        // Keep a record of when the terms were accepted.
+        data: { terms_accepted_at: new Date().toISOString() },
         // Only consumed by templates built on {{ .ConfirmationURL }}. The branded
         // RedPulse template links straight to /auth/confirm with {{ .TokenHash }},
         // which ignores this value. Kept so the default template still lands on a
@@ -86,37 +94,44 @@ export default function SignUpPage() {
           />
         </div>
 
-        <div className="space-y-2">
-          <label htmlFor="password" className="text-sm font-medium text-foreground">
-            {t.auth.password}
-          </label>
-          <input
-            id="password"
-            type="password"
-            autoComplete="new-password"
-            required
-            minLength={8}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={authFieldClass}
-          />
-          <p className="text-xs text-muted-foreground/70">{t.auth.passwordMinHint}</p>
-        </div>
+        <PasswordField
+          id="password"
+          label={t.auth.password}
+          value={password}
+          onChange={setPassword}
+          autoComplete="new-password"
+          minLength={8}
+          hint={t.auth.passwordMinHint}
+        />
 
-        <div className="space-y-2">
-          <label htmlFor="confirm" className="text-sm font-medium text-foreground">
-            {t.auth.confirmPassword}
-          </label>
+        <PasswordField
+          id="confirm"
+          label={t.auth.confirmPassword}
+          value={confirm}
+          onChange={setConfirm}
+          autoComplete="new-password"
+        />
+
+        <label htmlFor="terms" className="flex cursor-pointer items-start gap-3 pt-1">
           <input
-            id="confirm"
-            type="password"
-            autoComplete="new-password"
-            required
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-            className={authFieldClass}
+            id="terms"
+            type="checkbox"
+            checked={acceptedTerms}
+            onChange={(e) => setAcceptedTerms(e.target.checked)}
+            className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border-white/20 bg-background/60 text-primary accent-[var(--primary)]"
           />
-        </div>
+          <span className="text-xs leading-relaxed text-muted-foreground">
+            {t.auth.termsPrefix}{" "}
+            <Link
+              href="/terms"
+              target="_blank"
+              className="font-medium text-primary underline-offset-4 hover:underline"
+            >
+              {t.auth.termsLink}
+            </Link>
+            {t.auth.termsSuffix}
+          </span>
+        </label>
 
         {error && (
           <p

@@ -16,7 +16,9 @@ export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl
   const tokenHash = searchParams.get("token_hash")
   const type = searchParams.get("type") as EmailOtpType | null
-  const next = searchParams.get("next") ?? "/dashboard"
+  // A recovery link must land on the form that sets a new password, not the app.
+  const fallback = type === "recovery" ? "/auth/reset-password" : "/dashboard"
+  const next = searchParams.get("next") ?? fallback
 
   if (!tokenHash || !type) {
     return NextResponse.redirect(`${origin}/auth/error?reason=missing_token`)

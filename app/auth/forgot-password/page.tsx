@@ -1,26 +1,20 @@
 "use client"
 
-import { Suspense, useState } from "react"
+import { useState } from "react"
 import Link from "next/link"
-import { useRouter, useSearchParams } from "next/navigation"
-import { AlertCircle, Loader2 } from "lucide-react"
+import { AlertCircle, Loader2, MailCheck } from "lucide-react"
 import { AuthShell, authButtonClass, authFieldClass } from "@/components/auth/auth-shell"
-import { PasswordField } from "@/components/auth/password-field"
 import { createClient } from "@/lib/supabase/client"
 import { authErrorMessage } from "@/lib/auth-errors"
 import { useI18n } from "@/lib/i18n/context"
 
-function LoginForm() {
+export default function ForgotPasswordPage() {
   const { t } = useI18n()
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  // Set by the proxy when it intercepts a protected route.
-  const next = searchParams.get("next") ?? "/dashboard"
 
   const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
+  const [sent, setSent] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -28,28 +22,48 @@ function LoginForm() {
     setPending(true)
 
     const supabase = createClient()
-    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
+    // Only consumed by templates built on {{ .ConfirmationURL }}; the branded
+    // RedPulse template links straight to /auth/confirm with {{ .TokenHash }}.
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/callback?next=/auth/reset-password`,
+    })
 
-    if (signInError) {
-      setError(authErrorMessage(signInError, t))
+    if (resetError) {
+      setError(authErrorMessage(resetError, t))
       setPending(false)
       return
     }
 
-    // refresh() lets the server re-read the new auth cookies before navigating.
-    router.replace(next)
-    router.refresh()
+    // Always show success: revealing whether an address exists would leak accounts.
+    setSent(true)
+    setPending(false)
+  }
+
+  if (sent) {
+    return (
+      <AuthShell title={t.auth.resetSentTitle} subtitle={t.auth.resetSentBody}>
+        <div className="flex flex-col gap-5">
+          <div className="flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/[0.06] px-4 py-3.5">
+            <MailCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
+            <p className="text-sm leading-relaxed text-foreground">{email}</p>
+          </div>
+          <Link href="/auth/login" className={`${authButtonClass} flex items-center justify-center`}>
+            {t.auth.goToLogin}
+          </Link>
+        </div>
+      </AuthShell>
+    )
   }
 
   return (
     <AuthShell
-      title={t.auth.loginTitle}
-      subtitle={t.auth.loginSubtitle}
+      title={t.auth.forgotTitle}
+      subtitle={t.auth.forgotSubtitle}
       footer={
         <>
-          {t.auth.noAccount}{" "}
-          <Link href="/auth/sign-up" className="font-medium text-primary underline-offset-4 hover:underline">
-            {t.auth.createOne}
+          {t.auth.rememberedIt}{" "}
+          <Link href="/auth/login" className="font-medium text-primary underline-offset-4 hover:underline">
+            {t.auth.signInLink}
           </Link>
         </>
       }
@@ -71,22 +85,6 @@ function LoginForm() {
           />
         </div>
 
-        <PasswordField
-          id="password"
-          label={t.auth.password}
-          value={password}
-          onChange={setPassword}
-          autoComplete="current-password"
-          action={
-            <Link
-              href="/auth/forgot-password"
-              className="text-xs text-muted-foreground transition-colors hover:text-primary"
-            >
-              {t.auth.forgotPassword}
-            </Link>
-          }
-        />
-
         {error && (
           <p
             role="alert"
@@ -97,26 +95,21 @@ function LoginForm() {
           </p>
         )}
 
-        <button type="submit" disabled={pending} className={`${authButtonClass} mt-1 flex items-center justify-center gap-2`}>
+        <button
+          type="submit"
+          disabled={pending}
+          className={`${authButtonClass} mt-1 flex items-center justify-center gap-2`}
+        >
           {pending ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-              {t.auth.signingIn}
+              {t.auth.sending}
             </>
           ) : (
-            t.auth.signIn
+            t.auth.sendResetLink
           )}
         </button>
       </form>
     </AuthShell>
-  )
-}
-
-export default function LoginPage() {
-  // useSearchParams needs a Suspense boundary during prerendering.
-  return (
-    <Suspense>
-      <LoginForm />
-    </Suspense>
   )
 }
