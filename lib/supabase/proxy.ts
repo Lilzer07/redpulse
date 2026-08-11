@@ -30,8 +30,9 @@ export async function updateSession(request: NextRequest) {
 
   const { pathname } = request.nextUrl
 
-  // The landing page stays public; only the dashboard requires a session.
-  if (pathname.startsWith("/dashboard") && !user) {
+  // The landing page stays public; the dashboard and the plan step both need a
+  // session (there is nothing to subscribe for without an account).
+  if ((pathname.startsWith("/dashboard") || pathname.startsWith("/choose-plan")) && !user) {
     const url = request.nextUrl.clone()
     url.pathname = "/auth/login"
     // Remember where they were headed so login can send them back.

@@ -10,6 +10,15 @@ export type Profile = {
   notify_product: boolean
 }
 
+export type SubscriptionPlan = "monthly" | "lifetime"
+export type SubscriptionStatus = "active" | "pending" | "canceled"
+
+export type Subscription = {
+  plan: SubscriptionPlan
+  status: SubscriptionStatus
+  current_period_end: string | null
+}
+
 export type TelegramSettings = {
   bot_token: string | null
   chat_id: string | null
@@ -57,6 +66,31 @@ export async function getProfile(): Promise<Profile | null> {
     .maybeSingle()
 
   return data ?? null
+}
+
+export async function getSubscription(): Promise<Subscription | null> {
+  const { supabase, user } = await currentUser()
+  if (!user) return null
+
+  const { data } = await supabase
+    .from("subscriptions")
+    .select("plan, status, current_period_end")
+    .eq("user_id", user.id)
+    .maybeSingle()
+
+  return (data as Subscription | null) ?? null
+}
+
+/**
+ * Whether this account may enter the dashboard. A lifetime plan never expires;
+ * a monthly one stays valid until its paid period actually runs out.
+ */
+export async function hasActiveSubscription(): Promise<boolean> {
+  const sub = await getSubscription()
+  if (!sub || sub.status !== "active") return false
+  if (sub.plan === "lifetime") return true
+  if (!sub.current_period_end) return false
+  return new Date(sub.current_period_end).getTime() > Date.now()
 }
 
 /**

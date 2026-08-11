@@ -238,6 +238,16 @@ const fr = {
     Europe: "Europe",
   } as Record<string, string>,
 
+  choosePlan: {
+    eyebrow: "Dernière étape",
+    title: "Choisissez votre abonnement.",
+    subtitle: "Votre compte est créé. Sélectionnez une offre pour accéder à votre dashboard.",
+    signedInAs: "Connecté en tant que",
+    comingSoon: "Paiement bientôt disponible",
+    continueWithoutPaying: "Continuer sans payer",
+    error: "Impossible d'activer cette offre. Réessayez.",
+  },
+
   sidebar: {
     items: [
       "Dashboard",
@@ -735,6 +745,16 @@ const en: typeof fr = {
     Allemagne: "Germany",
     Portugal: "Portugal",
     Europe: "Europe",
+  },
+
+  choosePlan: {
+    eyebrow: "Last step",
+    title: "Choose your plan.",
+    subtitle: "Your account is ready. Pick a plan to unlock your dashboard.",
+    signedInAs: "Signed in as",
+    comingSoon: "Payment coming soon",
+    continueWithoutPaying: "Continue without paying",
+    error: "Could not activate this plan. Please try again.",
   },
 
   sidebar: {
