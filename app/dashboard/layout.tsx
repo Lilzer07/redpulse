@@ -27,7 +27,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   const profile = await getProfile()
 
   return (
-    <SessionProvider email={user.email ?? ""} displayName={profile?.display_name ?? null}>
+    <SessionProvider email={user.email ?? ""} profile={profile}>
       <div className="flex min-h-screen bg-background">
         <Sidebar userEmail={user.email} />
         <div className="flex min-w-0 flex-1 flex-col pb-20 lg:pb-0">{children}</div>

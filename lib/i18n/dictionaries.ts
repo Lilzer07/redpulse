@@ -378,8 +378,11 @@ const fr = {
     subtitle: "Gérez votre profil et vos préférences.",
     profile: { title: "Profil", description: "Vos informations personnelles." },
     name: "Nom",
+    namePlaceholder: "Votre nom",
     email: "Adresse e-mail",
     password: "Mot de passe",
+    passwordDesc: "Vous recevrez un lien sécurisé par e-mail pour le modifier.",
+    changePassword: "Modifier le mot de passe",
     regional: { title: "Préférences régionales", description: "Langue et fuseau horaire." },
     language: "Langue",
     timezone: "Fuseau horaire",
@@ -401,6 +404,8 @@ const fr = {
     },
     cancel: "Annuler",
     save: "Enregistrer les modifications",
+    saving: "Enregistrement…",
+    saved: "Modifications enregistrées.",
   },
 
   auth: {
@@ -862,8 +867,11 @@ const en: typeof fr = {
     subtitle: "Manage your profile and preferences.",
     profile: { title: "Profile", description: "Your personal information." },
     name: "Name",
+    namePlaceholder: "Your name",
     email: "Email address",
     password: "Password",
+    passwordDesc: "We'll email you a secure link to change it.",
+    changePassword: "Change password",
     regional: { title: "Regional preferences", description: "Language and time zone." },
     language: "Language",
     timezone: "Time zone",
@@ -885,6 +893,8 @@ const en: typeof fr = {
     },
     cancel: "Cancel",
     save: "Save changes",
+    saving: "Saving…",
+    saved: "Changes saved.",
   },
 
   auth: {

@@ -137,10 +137,16 @@ export async function updateProfile(input: {
     if (input.notifyDigest !== undefined) patch.notify_digest = input.notifyDigest
     if (input.notifyProduct !== undefined) patch.notify_product = input.notifyProduct
 
-    const { error } = await supabase.from("profiles").update(patch).eq("id", user.id)
+    // Upsert rather than update: accounts created before the signup trigger
+    // existed have no profile row, and a plain update would silently match none.
+    const { error } = await supabase
+      .from("profiles")
+      .upsert({ id: user.id, ...patch }, { onConflict: "id" })
     if (error) return { ok: false, error: error.message }
 
-    revalidatePath("/dashboard/settings")
+    // The profile feeds the dashboard layout (sidebar, greeting), so revalidate
+    // the whole subtree rather than just this page.
+    revalidatePath("/dashboard", "layout")
     return { ok: true }
   } catch {
     return { ok: false, error: "not-authenticated" }

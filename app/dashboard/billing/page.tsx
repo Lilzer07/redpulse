@@ -13,7 +13,7 @@ export default function BillingPage() {
 
   return (
     <>
-      <Topbar title={b.title} subtitle={b.subtitle} />
+      <Topbar section="billing" />
 
       <div className="flex flex-col gap-6 px-5 py-6 lg:px-8">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.2fr_1fr]">

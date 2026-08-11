@@ -1,9 +1,12 @@
 "use client"
 
 import { createContext, useContext, type ReactNode } from "react"
+import type { Profile } from "@/lib/user-data"
 
 type SessionValue = {
   email: string
+  /** The signed-in user's own profile row, or null if it has not loaded. */
+  profile: Profile | null
   displayName: string | null
 }
 
@@ -15,14 +18,18 @@ const SessionContext = createContext<SessionValue | null>(null)
  */
 export function SessionProvider({
   email,
-  displayName,
+  profile,
   children,
 }: {
   email: string
-  displayName: string | null
+  profile: Profile | null
   children: ReactNode
 }) {
-  return <SessionContext.Provider value={{ email, displayName }}>{children}</SessionContext.Provider>
+  return (
+    <SessionContext.Provider value={{ email, profile, displayName: profile?.display_name ?? null }}>
+      {children}
+    </SessionContext.Provider>
+  )
 }
 
 export function useSession() {

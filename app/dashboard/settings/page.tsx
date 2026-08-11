@@ -1,12 +1,14 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { motion } from "framer-motion"
 import { Topbar } from "@/components/dashboard/topbar"
 import { Switch } from "@/components/ui/switch"
 import { useI18n } from "@/lib/i18n/context"
 import { useSession } from "@/lib/session-context"
 import { SignOutButton } from "@/components/auth/sign-out-button"
+import { updateProfile } from "@/app/dashboard/actions"
 
 function Section({
   title,
@@ -39,38 +41,76 @@ const fieldClass =
   "h-12 w-full rounded-xl border border-white/8 bg-background/60 px-4 text-base text-foreground outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-primary/50"
 
 // Index-aligned with `settings.notifications.items` in the dictionaries.
-const notifPrefs = [
-  { id: "instant", on: true },
-  { id: "digest", on: false },
-  { id: "product", on: true },
-]
+const notifIds = ["instant", "digest", "product"] as const
 
 export default function SettingsPage() {
   const { t, locale, setLocale } = useI18n()
-  const { email } = useSession()
-  const [prefs, setPrefs] = useState<Record<string, boolean>>(
-    Object.fromEntries(notifPrefs.map((p) => [p.id, p.on])),
-  )
+  const { email, profile, displayName } = useSession()
+  // Seeded from this user's own profile row, not from shared defaults.
+  const [prefs, setPrefs] = useState<Record<string, boolean>>({
+    instant: profile?.notify_instant ?? true,
+    digest: profile?.notify_digest ?? false,
+    product: profile?.notify_product ?? true,
+  })
+  const [timezone, setTimezone] = useState(profile?.timezone ?? "Europe/Paris")
   const [darkMode, setDarkMode] = useState(true)
+  const [name, setName] = useState(displayName ?? "")
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+
+  // After a save the layout re-renders with the stored profile; adopt it so the
+  // field shows what was actually persisted rather than stale local input.
+  const [syncedName, setSyncedName] = useState(displayName)
+  if (displayName !== syncedName) {
+    setSyncedName(displayName)
+    setName(displayName ?? "")
+  }
+
+  async function handleSave() {
+    setSaving(true)
+    setSaved(false)
+    const result = await updateProfile({
+      displayName: name,
+      timezone,
+      notifyInstant: prefs.instant,
+      notifyDigest: prefs.digest,
+      notifyProduct: prefs.product,
+    })
+    setSaving(false)
+    if (result.ok) {
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2500)
+    }
+  }
 
   return (
     <>
-      <Topbar title={t.settings.title} subtitle={t.settings.subtitle} />
+      <Topbar section="settings" />
 
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-5 py-6 lg:px-8">
         <Section title={t.settings.profile.title} description={t.settings.profile.description}>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <div className="space-y-2">
               <label htmlFor="name" className="text-sm font-medium text-foreground">{t.settings.name}</label>
-              <input id="name" defaultValue="Martin Bernard" className={fieldClass} />
+              {/* The real profile name for this account, blank until the user sets one. */}
+              <input
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={t.settings.namePlaceholder}
+                className={fieldClass}
+              />
             </div>
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium text-foreground">{t.settings.email}</label>
-              <input id="email" type="email" defaultValue={email} className={fieldClass} />
-            </div>
-            <div className="space-y-2 sm:col-span-2">
-              <label htmlFor="password" className="text-sm font-medium text-foreground">{t.settings.password}</label>
-              <input id="password" type="password" defaultValue="password" className={fieldClass} />
+              {/* The email identifies the Supabase account, so it is not editable here. */}
+              <input
+                id="email"
+                type="email"
+                value={email}
+                readOnly
+                className={`${fieldClass} cursor-not-allowed text-muted-foreground`}
+              />
             </div>
           </div>
         </Section>
@@ -92,12 +132,18 @@ export default function SettingsPage() {
             </div>
             <div className="space-y-2">
               <label htmlFor="tz" className="text-sm font-medium text-foreground">{t.settings.timezone}</label>
-              <select id="tz" defaultValue="paris" className={fieldClass}>
-                <option value="paris">Europe/Paris (GMT+1)</option>
-                <option value="london">Europe/London (GMT)</option>
-                <option value="madrid">Europe/Madrid (GMT+1)</option>
-                <option value="rome">Europe/Rome (GMT+1)</option>
-                <option value="lisbon">Europe/Lisbon (GMT)</option>
+              {/* IANA names, matching what the profile row stores. */}
+              <select
+                id="tz"
+                value={timezone}
+                onChange={(e) => setTimezone(e.target.value)}
+                className={fieldClass}
+              >
+                <option value="Europe/Paris">Europe/Paris (GMT+1)</option>
+                <option value="Europe/London">Europe/London (GMT)</option>
+                <option value="Europe/Madrid">Europe/Madrid (GMT+1)</option>
+                <option value="Europe/Rome">Europe/Rome (GMT+1)</option>
+                <option value="Europe/Lisbon">Europe/Lisbon (GMT)</option>
               </select>
             </div>
           </div>
@@ -109,9 +155,9 @@ export default function SettingsPage() {
           delay={0.12}
         >
           <div className="space-y-1">
-            {notifPrefs.map((p, i) => (
+            {notifIds.map((id, i) => (
               <label
-                key={p.id}
+                key={id}
                 className="flex cursor-pointer items-center justify-between gap-4 rounded-xl px-2 py-3 transition-colors hover:bg-white/[0.02]"
               >
                 <span>
@@ -123,8 +169,8 @@ export default function SettingsPage() {
                   </span>
                 </span>
                 <Switch
-                  checked={prefs[p.id]}
-                  onCheckedChange={(v) => setPrefs((prev) => ({ ...prev, [p.id]: v }))}
+                  checked={prefs[id]}
+                  onCheckedChange={(v) => setPrefs((prev) => ({ ...prev, [id]: v }))}
                   aria-label={t.settings.notifications.items[i].label}
                 />
               </label>
@@ -150,14 +196,36 @@ export default function SettingsPage() {
             </p>
             <SignOutButton />
           </div>
+
+          {/* Passwords are changed through the emailed reset link, never shown in a field. */}
+          <div className="mt-5 flex flex-wrap items-center justify-between gap-4 border-t border-white/5 pt-5">
+            <div>
+              <p className="font-medium text-foreground">{t.settings.password}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{t.settings.passwordDesc}</p>
+            </div>
+            <Link
+              href="/auth/forgot-password"
+              className="h-11 shrink-0 rounded-xl border border-white/10 bg-white/[0.03] px-5 text-sm font-medium leading-[2.75rem] text-foreground transition-colors hover:bg-white/[0.06]"
+            >
+              {t.settings.changePassword}
+            </Link>
+          </div>
         </Section>
 
-        <div className="flex justify-end gap-3">
-          <button className="h-11 rounded-xl border border-white/10 bg-white/[0.03] px-5 text-sm font-medium text-foreground transition-colors hover:bg-white/[0.06]">
+        <div className="flex items-center justify-end gap-3">
+          {saved ? <p className="text-sm text-primary">{t.settings.saved}</p> : null}
+          <button
+            onClick={() => setName(displayName ?? "")}
+            className="h-11 rounded-xl border border-white/10 bg-white/[0.03] px-5 text-sm font-medium text-foreground transition-colors hover:bg-white/[0.06]"
+          >
             {t.settings.cancel}
           </button>
-          <button className="h-11 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition-colors hover:bg-primary/90">
-            {t.settings.save}
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="h-11 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition-colors hover:bg-primary/90 disabled:opacity-60"
+          >
+            {saving ? t.settings.saving : t.settings.save}
           </button>
         </div>
       </div>
