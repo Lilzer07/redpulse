@@ -35,13 +35,36 @@ export default function AuthCallbackPage() {
       const hash = new URLSearchParams(url.hash.replace(/^#/, ""))
       const next = url.searchParams.get("next") ?? hash.get("next") ?? "/dashboard"
 
+      // A full-page navigation, so the server re-reads the fresh session cookies
+      // (the dashboard/plan gate runs server-side).
+      const succeed = () => window.location.assign(next)
+
+      // Confirming a link also confirms the account server-side, so even when the
+      // client-side exchange can't complete (link already consumed, opened in a
+      // different browser, missing PKCE verifier) a valid session may already
+      // exist. Treat that as success instead of a false "invalid or expired".
+      const hasSession = async () => {
+        const { data } = await supabase.auth.getUser()
+        return !!data.user
+      }
+
+      const fail = async (reason: string) => {
+        if (await hasSession()) {
+          succeed()
+          return
+        }
+        setFailed(true)
+        router.replace(`/auth/error?reason=${encodeURIComponent(reason)}`)
+      }
+
       const errorDescription = url.searchParams.get("error_description") ?? hash.get("error_description")
       if (errorDescription) {
-        router.replace(`/auth/error?reason=${encodeURIComponent(errorDescription)}`)
+        await fail(errorDescription)
         return
       }
 
-      // Preferred: a token hash we can verify server-side.
+      // Preferred: a token hash we can verify server-side (no PKCE verifier needed,
+      // so it survives opening the email in another browser).
       const tokenHash = url.searchParams.get("token_hash")
       const type = url.searchParams.get("type")
       if (tokenHash && type) {
@@ -59,13 +82,12 @@ export default function AuthCallbackPage() {
         })
         if (error) {
           console.error("setSession failed:", error.message)
-          setFailed(true)
-          router.replace(`/auth/error?reason=${encodeURIComponent(error.message)}`)
+          await fail(error.message)
           return
         }
         // Clear the tokens from the address bar, then let the server see the cookies.
         window.history.replaceState(null, "", url.pathname)
-        window.location.assign(next)
+        succeed()
         return
       }
 
@@ -75,16 +97,17 @@ export default function AuthCallbackPage() {
         const { error } = await supabase.auth.exchangeCodeForSession(code)
         if (error) {
           console.error("exchangeCodeForSession failed:", error.message)
-          setFailed(true)
-          router.replace(`/auth/error?reason=${encodeURIComponent(error.message)}`)
+          await fail(error.message)
           return
         }
-        window.location.assign(next)
+        succeed()
         return
       }
 
-      setFailed(true)
-      router.replace("/auth/error?reason=missing_token")
+      // No recognizable params. The session may already be set (fragment stripped
+      // by an upstream redirect, or the tab was reopened) — only error when there
+      // is genuinely no session to fall back on.
+      await fail("missing_token")
     }
 
     void complete()

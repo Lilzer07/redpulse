@@ -7,6 +7,7 @@ import { AlertCircle, Loader2 } from "lucide-react"
 import { AuthShell, authButtonClass, authFieldClass } from "@/components/auth/auth-shell"
 import { PasswordField } from "@/components/auth/password-field"
 import { createClient } from "@/lib/supabase/client"
+import { authCallbackUrl } from "@/lib/supabase/auth-redirect"
 import { authErrorMessage } from "@/lib/auth-errors"
 import { useI18n } from "@/lib/i18n/context"
 
@@ -46,12 +47,10 @@ export default function SignUpPage() {
       options: {
         // Keep a record of when the terms were accepted.
         data: { terms_accepted_at: new Date().toISOString() },
-        // Only consumed by templates built on {{ .ConfirmationURL }}. The branded
-        // RedPulse template links straight to /auth/confirm with {{ .TokenHash }},
-        // which ignores this value. Kept so the default template still lands on a
-        // route that can complete the exchange (/auth/callback reads the fragment).
-        emailRedirectTo:
-          process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL ?? `${window.location.origin}/auth/callback`,
+        // Consumed by templates built on {{ .ConfirmationURL }}. In production this
+        // resolves to the live origin (e.g. https://redpulse-seven.vercel.app) so the
+        // PKCE verifier cookie matches; only the dev preview routes via the proxy.
+        emailRedirectTo: authCallbackUrl(),
       },
     })
 

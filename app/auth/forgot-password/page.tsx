@@ -5,6 +5,7 @@ import Link from "next/link"
 import { AlertCircle, Loader2, MailCheck } from "lucide-react"
 import { AuthShell, authButtonClass, authFieldClass } from "@/components/auth/auth-shell"
 import { createClient } from "@/lib/supabase/client"
+import { authCallbackUrl } from "@/lib/supabase/auth-redirect"
 import { authErrorMessage } from "@/lib/auth-errors"
 import { useI18n } from "@/lib/i18n/context"
 
@@ -22,10 +23,10 @@ export default function ForgotPasswordPage() {
     setPending(true)
 
     const supabase = createClient()
-    // Only consumed by templates built on {{ .ConfirmationURL }}; the branded
-    // RedPulse template links straight to /auth/confirm with {{ .TokenHash }}.
+    // Same origin rules as sign-up: production uses the live origin so the reset
+    // link's session exchange finds its verifier cookie; dev uses the proxy.
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/callback?next=/auth/reset-password`,
+      redirectTo: authCallbackUrl("/auth/reset-password"),
     })
 
     if (resetError) {

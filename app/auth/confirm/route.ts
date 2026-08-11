@@ -20,15 +20,26 @@ export async function GET(request: NextRequest) {
   const fallback = type === "recovery" ? "/auth/reset-password" : "/dashboard"
   const next = searchParams.get("next") ?? fallback
 
+  const supabase = await createClient()
+
+  // Even a missing/used token isn't necessarily a dead end: the account may have
+  // been confirmed on a prior click, leaving a valid session cookie. Fall back to
+  // that before showing "invalid or expired".
+  const hasSession = async () => {
+    const { data } = await supabase.auth.getUser()
+    return !!data.user
+  }
+
   if (!tokenHash || !type) {
+    if (await hasSession()) return NextResponse.redirect(`${origin}${next}`)
     return NextResponse.redirect(`${origin}/auth/error?reason=missing_token`)
   }
 
-  const supabase = await createClient()
   const { error } = await supabase.auth.verifyOtp({ type, token_hash: tokenHash })
 
   if (error) {
     console.error("verifyOtp failed:", error.message)
+    if (await hasSession()) return NextResponse.redirect(`${origin}${next}`)
     return NextResponse.redirect(`${origin}/auth/error?reason=${encodeURIComponent(error.message)}`)
   }
 
