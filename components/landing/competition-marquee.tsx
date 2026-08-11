@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Shield } from "lucide-react"
 import { competitions, type Competition } from "@/lib/data"
+import { useI18n } from "@/lib/i18n/context"
 
 function CompetitionMark({ c }: { c: Competition }) {
   // Show the official league badge when available; otherwise a discreet,
@@ -64,15 +65,16 @@ function Row({ items, reverse, duration }: { items: Competition[]; reverse?: boo
 }
 
 export function CompetitionMarquee() {
+  const { t } = useI18n()
   const half = Math.ceil(competitions.length / 2)
   const first = competitions.slice(0, half)
   const second = competitions.slice(half)
 
   return (
-    <section className="relative overflow-hidden py-16" aria-label="Compétitions surveillées">
+    <section className="relative overflow-hidden py-16" aria-label={t.marquee.label}>
       <div className="mb-8 text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.25em] text-muted-foreground">
-          Plus de 20 compétitions surveillées en continu
+          {t.marquee.title}
         </p>
       </div>
 

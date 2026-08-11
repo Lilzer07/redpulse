@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 import { ArrowRight, Play } from "lucide-react"
 import { ButtonLink } from "@/components/ui/button-link"
 import { TelegramPhone } from "@/components/landing/telegram-phone"
+import { useI18n } from "@/lib/i18n/context"
 
 // Snappy, staggered entrance — same fade-up feel, but fast enough not to
 // delay the Largest Contentful Paint (the headline/paragraph).
@@ -18,13 +19,15 @@ const item = {
 }
 
 export function Hero() {
+  const { t } = useI18n()
+
   return (
     <section className="relative isolate min-h-screen w-full overflow-hidden">
       {/* Stadium background — priority so it preloads as the hero visual (LCP region) */}
       <div className="absolute inset-0 z-0">
         <Image
           src="/images/stadium-hero.webp"
-          alt="Stade de football illuminé la nuit"
+          alt={t.hero.imageAlt}
           fill
           priority
           fetchPriority="high"
@@ -51,7 +54,7 @@ export function Hero() {
           <motion.div variants={item}>
             <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-xs font-medium text-primary">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
-              Copilote IA football en temps réel
+              {t.hero.badge}
             </span>
           </motion.div>
 
@@ -59,14 +62,13 @@ export function Hero() {
             variants={item}
             className="mt-6 text-balance text-4xl font-bold leading-[1.05] tracking-tight text-foreground sm:text-5xl lg:text-6xl"
           >
-            Chaque carton rouge cache une{" "}
-            <span className="text-gradient-green">opportunité</span>, notre IA la détecte.
+            {t.hero.titleBefore}{" "}
+            <span className="text-gradient-green">{t.hero.titleHighlight}</span>
+            {t.hero.titleAfter}
           </motion.h1>
 
           <motion.p variants={item} className="mt-6 text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Dès qu’un carton rouge tombe, RedPulse récupère le contexte du match, analyse la situation et vous
-            envoie une notification Telegram : probabilité de but supplémentaire, victoire du favori et indice de
-            confiance. En quelques secondes.
+            {t.hero.paragraph}
           </motion.p>
 
           <motion.div variants={item} className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -75,7 +77,7 @@ export function Hero() {
               size="lg"
               className="group h-12 rounded-xl bg-primary px-6 text-base font-semibold text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/90"
             >
-              Commencer
+              {t.hero.ctaPrimary}
               <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </ButtonLink>
             <ButtonLink
@@ -85,23 +87,17 @@ export function Hero() {
               className="h-12 rounded-xl border-white/15 bg-white/5 px-6 text-base font-medium text-foreground backdrop-blur hover:bg-white/10"
             >
               <Play className="mr-1 h-4 w-4" />
-              Voir la démonstration
+              {t.hero.ctaSecondary}
             </ButtonLink>
           </motion.div>
 
-          <motion.div variants={item} className="mt-8 flex items-center gap-6 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-primary" />
-              Analyse &lt; 2 s
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-primary" />
-              Indice de confiance /100
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-primary" />
-              20+ compétitions
-            </div>
+          <motion.div variants={item} className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
+            {t.hero.trust.map((label) => (
+              <div key={label} className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-primary" />
+                {label}
+              </div>
+            ))}
           </motion.div>
         </motion.div>
 

@@ -4,8 +4,10 @@ import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { Flame } from "lucide-react"
 import { makeRandomEvent, seedEvents, type MatchEvent } from "@/lib/data"
+import { useI18n } from "@/lib/i18n/context"
 
 export function LiveDemo() {
+  const { t } = useI18n()
   const [rows, setRows] = useState<MatchEvent[]>(seedEvents)
 
   useEffect(() => {
@@ -18,13 +20,11 @@ export function LiveDemo() {
   return (
     <section id="demo" className="cv-auto relative mx-auto max-w-6xl scroll-mt-24 px-5 py-24">
       <div className="mx-auto max-w-2xl text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Démonstration en direct</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">{t.demo.eyebrow}</p>
         <h2 className="mt-4 text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-          Voyez l’IA analyser en temps réel
+          {t.demo.title}
         </h2>
-        <p className="mt-4 text-pretty text-muted-foreground">
-          Chaque carton rouge déclenche une analyse instantanée, sans statistiques complexes.
-        </p>
+        <p className="mt-4 text-pretty text-muted-foreground">{t.demo.subtitle}</p>
       </div>
 
       <div className="mt-12 overflow-hidden rounded-3xl border border-white/8 bg-white/[0.02]">
@@ -34,19 +34,19 @@ export function LiveDemo() {
               <span className="absolute h-2.5 w-2.5 animate-ping rounded-full bg-[var(--danger)]/60" />
               <span className="h-2.5 w-2.5 rounded-full bg-[var(--danger)]" />
             </span>
-            <span className="text-sm font-medium text-foreground">Analyses en direct</span>
+            <span className="text-sm font-medium text-foreground">{t.demo.liveTitle}</span>
           </div>
-          <span className="text-xs text-muted-foreground">Mise à jour automatique</span>
+          <span className="text-xs text-muted-foreground">{t.demo.autoUpdate}</span>
         </div>
 
         {/* Header row */}
         <div className="hidden grid-cols-[1.1fr_1.7fr_1.1fr_0.8fr_1.3fr_0.9fr] gap-4 px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground md:grid">
-          <span>Compétition</span>
-          <span>Match</span>
-          <span>Carton rouge</span>
-          <span>But +</span>
-          <span>Victoire favori</span>
-          <span className="text-right">Confiance</span>
+          <span>{t.demo.columns.competition}</span>
+          <span>{t.demo.columns.match}</span>
+          <span>{t.demo.columns.redCard}</span>
+          <span>{t.demo.columns.extraGoal}</span>
+          <span>{t.demo.columns.favoriteWin}</span>
+          <span className="text-right">{t.demo.columns.confidence}</span>
         </div>
 
         <div className="divide-y divide-white/5">
@@ -89,8 +89,7 @@ export function LiveDemo() {
       </div>
 
       <p className="mx-auto mt-6 max-w-2xl text-center text-xs text-muted-foreground">
-        RedPulse fournit une analyse en temps réel. Ce n’est pas un service de pronostics ni de paris
-        sportifs.
+        {t.demo.disclaimer}
       </p>
     </section>
   )

@@ -4,9 +4,15 @@ import { motion } from "framer-motion"
 import { Check, Flame } from "lucide-react"
 import { ButtonLink } from "@/components/ui/button-link"
 import { pricingPlans, type PricingPlan } from "@/lib/data"
+import { useI18n } from "@/lib/i18n/context"
 
 function PlanCard({ plan, index }: { plan: PricingPlan; index: number }) {
+  const { t } = useI18n()
   const highlight = plan.highlight
+  // Translated copy per plan id; prices/hrefs stay in lib/data.ts.
+  const copy = t.pricing.plans[plan.id as keyof typeof t.pricing.plans]
+  const badge = "badge" in copy ? copy.badge : undefined
+  const description = "description" in copy ? copy.description : undefined
 
   return (
     <motion.div
@@ -38,12 +44,12 @@ function PlanCard({ plan, index }: { plan: PricingPlan; index: number }) {
                 : "border border-white/10 bg-white/5 text-muted-foreground",
             ].join(" ")}
           >
-            {plan.name}
+            {copy.name}
           </span>
-          {plan.badge && (
+          {badge && (
             <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground shadow-lg shadow-primary/30">
               <Flame className="h-3.5 w-3.5" aria-hidden />
-              {plan.badge}
+              {badge}
             </span>
           )}
         </div>

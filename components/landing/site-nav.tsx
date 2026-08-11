@@ -6,16 +6,12 @@ import { motion } from "framer-motion"
 import { Menu, X } from "lucide-react"
 import { ButtonLink } from "@/components/ui/button-link"
 import { Logo } from "@/components/landing/logo"
-
-const links = [
-  { href: "#fonctionnalites", label: "Fonctionnalités" },
-  { href: "#fonctionnement", label: "Fonctionnement" },
-  { href: "#demo", label: "Démo" },
-  { href: "#tarifs", label: "Tarifs" },
-  { href: "#faq", label: "FAQ" },
-]
+import { LanguageSwitcher } from "@/components/language-switcher"
+import { useI18n } from "@/lib/i18n/context"
 
 export function SiteNav() {
+  const { t } = useI18n()
+  const links = t.nav.links
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
 
@@ -38,7 +34,7 @@ export function SiteNav() {
           scrolled ? "glass shadow-2xl shadow-black/40" : "border border-transparent"
         }`}
       >
-        <Link href="/" className="flex items-center gap-2" aria-label="RedPulse accueil">
+        <Link href="/" className="flex items-center gap-2" aria-label={t.nav.home}>
           <Logo />
         </Link>
 
@@ -55,25 +51,29 @@ export function SiteNav() {
         </div>
 
         <div className="hidden items-center gap-2 md:flex">
+          <LanguageSwitcher />
           <ButtonLink href="/login" variant="ghost" className="text-muted-foreground hover:text-foreground">
-            Connexion
+            {t.nav.login}
           </ButtonLink>
           <ButtonLink
             href="/dashboard"
             className="rounded-xl bg-primary font-semibold text-primary-foreground hover:bg-primary/90"
           >
-            Commencer
+            {t.nav.start}
           </ButtonLink>
         </div>
 
-        <button
-          className="flex h-10 w-10 items-center justify-center rounded-xl text-foreground md:hidden"
-          onClick={() => setOpen((v) => !v)}
-          aria-label="Menu"
-          aria-expanded={open}
-        >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        <div className="flex items-center gap-2 md:hidden">
+          <LanguageSwitcher />
+          <button
+            className="flex h-10 w-10 items-center justify-center rounded-xl text-foreground"
+            onClick={() => setOpen((v) => !v)}
+            aria-label={t.nav.menu}
+            aria-expanded={open}
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </nav>
 
       {open && (
@@ -94,10 +94,10 @@ export function SiteNav() {
           ))}
           <div className="mt-2 flex flex-col gap-2 border-t border-white/10 pt-3">
             <ButtonLink href="/login" variant="ghost">
-              Connexion
+              {t.nav.login}
             </ButtonLink>
             <ButtonLink href="/dashboard" className="bg-primary font-semibold text-primary-foreground">
-              Commencer
+              {t.nav.start}
             </ButtonLink>
           </div>
         </motion.div>

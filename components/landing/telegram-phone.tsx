@@ -4,14 +4,19 @@ import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { Check, Flame, Goal, Send, Sparkles, Trophy } from "lucide-react"
 import { makeRandomEvent, seedEvents, type MatchEvent } from "@/lib/data"
+import { useI18n } from "@/lib/i18n/context"
 
 type Notif = MatchEvent & { time: string }
 
-function nowLabel() {
-  return new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
+function nowLabel(locale: string) {
+  return new Date().toLocaleTimeString(locale === "en" ? "en-GB" : "fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  })
 }
 
 export function TelegramPhone() {
+  const { t, locale } = useI18n()
   // Initialize with a stable placeholder time so server and client HTML match.
   const [notifs, setNotifs] = useState<Notif[]>(() =>
     seedEvents.slice(0, 3).map((e) => ({ ...e, time: "--:--" })),
@@ -19,16 +24,16 @@ export function TelegramPhone() {
 
   useEffect(() => {
     // Set the real timestamps only on the client, after hydration.
-    setNotifs((prev) => prev.map((n) => ({ ...n, time: nowLabel() })))
+    setNotifs((prev) => prev.map((n) => ({ ...n, time: nowLabel(locale) })))
 
     const interval = setInterval(() => {
       setNotifs((prev) => {
-        const next = { ...makeRandomEvent(), time: nowLabel() }
+        const next = { ...makeRandomEvent(), time: nowLabel(locale) }
         return [next, ...prev].slice(0, 4)
       })
     }, 3500)
     return () => clearInterval(interval)
-  }, [])
+  }, [locale])
 
   return (
     <div className="relative mx-auto w-[300px] sm:w-[330px]">
@@ -47,12 +52,12 @@ export function TelegramPhone() {
               <Send className="h-4 w-4 text-primary-foreground" aria-hidden />
             </div>
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-foreground">RedPulse Bot</p>
-              <p className="text-[11px] text-primary">en ligne</p>
+              <p className="truncate text-sm font-semibold text-foreground">{t.phone.botName}</p>
+              <p className="text-[11px] text-primary">{t.phone.online}</p>
             </div>
             <span className="ml-auto flex items-center gap-1.5 rounded-full bg-primary/10 px-2 py-1 text-[10px] font-medium text-primary">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
-              live
+              {t.phone.live}
             </span>
           </div>
 
@@ -87,33 +92,35 @@ export function TelegramPhone() {
                   </p>
                   <p className="mt-1 flex items-center gap-1.5 text-[11px] text-muted-foreground">
                     <span className="h-3 w-2 rounded-[2px] bg-[var(--danger)]" aria-hidden />
-                    Carton rouge · <span className="font-medium text-foreground">{n.team}</span>
+                    {t.phone.redCard} · <span className="font-medium text-foreground">{n.team}</span>
                   </p>
 
                   {/* AI analysis */}
                   <div className="mt-3 rounded-xl border border-primary/15 bg-primary/[0.06] p-2.5">
                     <p className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold text-primary">
                       <Sparkles className="h-3.5 w-3.5" aria-hidden />
-                      Analyse IA
+                      {t.phone.aiAnalysis}
                     </p>
                     <div className="space-y-1.5 text-[11px]">
                       <div className="flex items-center gap-2">
                         <Goal className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden />
-                        <span className="text-muted-foreground">But supplémentaire</span>
+                        <span className="text-muted-foreground">{t.phone.extraGoal}</span>
                         <span className="ml-auto font-semibold tabular-nums text-foreground">
                           {n.analysis.extraGoalProb}%
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Trophy className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden />
-                        <span className="truncate text-muted-foreground">Victoire {n.analysis.favorite}</span>
+                        <span className="truncate text-muted-foreground">
+                          {t.phone.win} {n.analysis.favorite}
+                        </span>
                         <span className="ml-auto font-semibold tabular-nums text-foreground">
                           {n.analysis.favoriteWinProb}%
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Flame className="h-3.5 w-3.5 shrink-0 text-[var(--danger)]" aria-hidden />
-                        <span className="text-muted-foreground">Confiance</span>
+                        <span className="text-muted-foreground">{t.phone.confidence}</span>
                         <span className="ml-auto font-bold tabular-nums text-primary">
                           {n.analysis.impact}/100
                         </span>
@@ -122,7 +129,7 @@ export function TelegramPhone() {
                   </div>
 
                   <span className="mt-2 flex items-center justify-end gap-1 text-[10px] text-primary">
-                    <Check className="h-3 w-3" aria-hidden /> Envoyée · {n.time}
+                    <Check className="h-3 w-3" aria-hidden /> {t.phone.sent} · {n.time}
                   </span>
                 </motion.div>
               ))}

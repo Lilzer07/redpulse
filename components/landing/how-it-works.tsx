@@ -2,15 +2,18 @@
 
 import { motion } from "framer-motion"
 import { steps } from "@/lib/data"
+import { useI18n } from "@/lib/i18n/context"
 
 export function HowItWorks() {
+  const { t } = useI18n()
+
   return (
     <section id="fonctionnement" className="cv-auto relative scroll-mt-24 py-24">
       <div className="mx-auto max-w-6xl px-5">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Comment ça marche</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">{t.how.eyebrow}</p>
           <h2 className="mt-4 text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-            Opérationnel en quatre étapes
+            {t.how.title}
           </h2>
         </div>
 
@@ -33,8 +36,8 @@ export function HowItWorks() {
                 <div className="relative z-10 flex h-16 w-16 items-center justify-center rounded-2xl border border-primary/30 bg-background text-lg font-bold text-primary shadow-[0_0_30px_-8px_rgba(24,201,100,0.5)]">
                   {s.step}
                 </div>
-                <h3 className="mt-5 text-lg font-semibold text-foreground">{s.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.description}</p>
+                <h3 className="mt-5 text-lg font-semibold text-foreground">{t.how.steps[i].title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t.how.steps[i].description}</p>
               </motion.li>
             ))}
           </ol>

@@ -3,14 +3,17 @@
 import { motion } from "framer-motion"
 import { stats } from "@/lib/data"
 import { AnimatedCounter } from "@/components/landing/animated-counter"
+import { useI18n } from "@/lib/i18n/context"
 
 export function Stats() {
+  const { t } = useI18n()
+
   return (
     <section className="relative mx-auto max-w-6xl px-5 py-16">
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {stats.map((s, i) => (
           <motion.div
-            key={s.label}
+            key={i}
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
@@ -25,7 +28,7 @@ export function Stats() {
                 suffix={s.suffix ?? ""}
               />
             </div>
-            <p className="mt-2 text-sm text-muted-foreground">{s.label}</p>
+            <p className="mt-2 text-sm text-muted-foreground">{t.stats.labels[i]}</p>
           </motion.div>
         ))}
       </div>

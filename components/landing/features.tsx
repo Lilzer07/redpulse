@@ -3,6 +3,7 @@
 import { motion } from "framer-motion"
 import { Activity, Gauge, Globe, Send, Sparkles, Target, type LucideIcon } from "lucide-react"
 import { features } from "@/lib/data"
+import { useI18n } from "@/lib/i18n/context"
 
 const icons: Record<string, LucideIcon> = {
   sparkles: Sparkles,
@@ -14,24 +15,25 @@ const icons: Record<string, LucideIcon> = {
 }
 
 export function Features() {
+  const { t } = useI18n()
+
   return (
     <section id="fonctionnalites" className="cv-auto relative mx-auto max-w-6xl scroll-mt-24 px-5 py-24">
       <div className="mx-auto max-w-2xl text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Fonctionnalités</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">{t.features.eyebrow}</p>
         <h2 className="mt-4 text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-          Le carton rouge déclenche, l’IA analyse
+          {t.features.title}
         </h2>
-        <p className="mt-4 text-pretty text-muted-foreground">
-          Bien plus qu’une alerte : un copilote qui mesure l’indice de confiance de chaque carton, en temps réel.
-        </p>
+        <p className="mt-4 text-pretty text-muted-foreground">{t.features.subtitle}</p>
       </div>
 
       <div className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {features.map((f, i) => {
           const Icon = icons[f.icon]
+          const copy = t.features.items[i]
           return (
             <motion.div
-              key={f.title}
+              key={f.icon}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
@@ -45,8 +47,8 @@ export function Features() {
               <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 ring-1 ring-inset ring-primary/20">
                 <Icon className="h-6 w-6 text-primary" aria-hidden />
               </div>
-              <h3 className="relative mt-5 text-lg font-semibold text-foreground">{f.title}</h3>
-              <p className="relative mt-2 text-sm leading-relaxed text-muted-foreground">{f.description}</p>
+              <h3 className="relative mt-5 text-lg font-semibold text-foreground">{copy.title}</h3>
+              <p className="relative mt-2 text-sm leading-relaxed text-muted-foreground">{copy.description}</p>
             </motion.div>
           )
         })}
