@@ -6,7 +6,7 @@ import { AlertCircle, Loader2, MailCheck } from "lucide-react"
 import { AuthShell, authButtonClass, authFieldClass } from "@/components/auth/auth-shell"
 import { createClient } from "@/lib/supabase/client"
 import { authCallbackUrl } from "@/lib/supabase/auth-redirect"
-import { authErrorMessage } from "@/lib/auth-errors"
+import { authErrorMessage, logAuthError } from "@/lib/auth-errors"
 import { useI18n } from "@/lib/i18n/context"
 
 export default function ForgotPasswordPage() {
@@ -30,6 +30,7 @@ export default function ForgotPasswordPage() {
     })
 
     if (resetError) {
+      logAuthError("resetPasswordForEmail", resetError)
       setError(authErrorMessage(resetError, t))
       setPending(false)
       return

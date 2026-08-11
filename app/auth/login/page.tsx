@@ -7,7 +7,7 @@ import { AlertCircle, Loader2 } from "lucide-react"
 import { AuthShell, authButtonClass, authFieldClass } from "@/components/auth/auth-shell"
 import { PasswordField } from "@/components/auth/password-field"
 import { createClient } from "@/lib/supabase/client"
-import { authErrorMessage } from "@/lib/auth-errors"
+import { authErrorMessage, logAuthError } from "@/lib/auth-errors"
 import { useI18n } from "@/lib/i18n/context"
 
 function LoginForm() {
@@ -31,6 +31,7 @@ function LoginForm() {
     const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
 
     if (signInError) {
+      logAuthError("signInWithPassword", signInError)
       setError(authErrorMessage(signInError, t))
       setPending(false)
       return

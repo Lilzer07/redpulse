@@ -445,6 +445,8 @@ const fr = {
     invalidCredentials: "E-mail ou mot de passe incorrect.",
     emailNotConfirmed: "Confirmez votre adresse e-mail avant de vous connecter.",
     rateLimited: "Trop de tentatives. Réessayez dans quelques minutes.",
+    emailSendFailed:
+      "Impossible d'envoyer l'e-mail de confirmation. Le service d'envoi (SMTP) n'est pas configuré correctement. Réessayez plus tard.",
     unexpectedError: "Une erreur inattendue est survenue. Réessayez.",
     confirmingTitle: "Confirmation en cours",
     confirmingBody: "Nous validons votre lien et ouvrons votre session.",
@@ -945,6 +947,8 @@ const en: typeof fr = {
     invalidCredentials: "Invalid email or password.",
     emailNotConfirmed: "Please confirm your email address before signing in.",
     rateLimited: "Too many attempts. Try again in a few minutes.",
+    emailSendFailed:
+      "We couldn't send the confirmation email. The email service (SMTP) isn't configured correctly. Please try again later.",
     unexpectedError: "Something unexpected went wrong. Please try again.",
     confirmingTitle: "Confirming your account",
     confirmingBody: "We're validating your link and opening your session.",

@@ -10,9 +10,9 @@
  * `NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL` is the v0 preview's redirect proxy: it
  * only exists so auth links can reach the sandboxed dev VM. It is a build-time
  * `NEXT_PUBLIC_` value, so it also gets inlined into the production bundle — using
- * it there would send real users (on e.g. https://redpulse-seven.vercel.app)
- * through the dev proxy. So we only honor it outside production; in production we
- * always use the live page origin.
+ * it there would send real users (on https://red-match.com) through the dev
+ * proxy. So we only honor it outside production; in production we always use the
+ * live page origin.
  */
 export function authCallbackUrl(next?: string): string {
   const useDevProxy =
