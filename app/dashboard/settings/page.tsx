@@ -4,6 +4,7 @@ import { useState } from "react"
 import { motion } from "framer-motion"
 import { Topbar } from "@/components/dashboard/topbar"
 import { Switch } from "@/components/ui/switch"
+import { useI18n } from "@/lib/i18n/context"
 
 function Section({
   title,
@@ -35,13 +36,15 @@ function Section({
 const fieldClass =
   "h-12 w-full rounded-xl border border-white/8 bg-background/60 px-4 text-base text-foreground outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-primary/50"
 
+// Index-aligned with `settings.notifications.items` in the dictionaries.
 const notifPrefs = [
-  { id: "instant", label: "Alertes instantanées", desc: "Notification dès qu’un carton rouge est distribué.", on: true },
-  { id: "digest", label: "Résumé quotidien", desc: "Un récapitulatif des cartons du jour à 22h.", on: false },
-  { id: "product", label: "Nouveautés produit", desc: "Nouvelles compétitions et fonctionnalités.", on: true },
+  { id: "instant", on: true },
+  { id: "digest", on: false },
+  { id: "product", on: true },
 ]
 
 export default function SettingsPage() {
+  const { t, locale, setLocale } = useI18n()
   const [prefs, setPrefs] = useState<Record<string, boolean>>(
     Object.fromEntries(notifPrefs.map((p) => [p.id, p.on])),
   )
@@ -49,40 +52,43 @@ export default function SettingsPage() {
 
   return (
     <>
-      <Topbar title="Paramètres" subtitle="Gérez votre profil et vos préférences." />
+      <Topbar title={t.settings.title} subtitle={t.settings.subtitle} />
 
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-5 py-6 lg:px-8">
-        <Section title="Profil" description="Vos informations personnelles.">
+        <Section title={t.settings.profile.title} description={t.settings.profile.description}>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <div className="space-y-2">
-              <label htmlFor="name" className="text-sm font-medium text-foreground">Nom</label>
+              <label htmlFor="name" className="text-sm font-medium text-foreground">{t.settings.name}</label>
               <input id="name" defaultValue="Martin Bernard" className={fieldClass} />
             </div>
             <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium text-foreground">Adresse e-mail</label>
+              <label htmlFor="email" className="text-sm font-medium text-foreground">{t.settings.email}</label>
               <input id="email" type="email" defaultValue="martin@redpulse.io" className={fieldClass} />
             </div>
             <div className="space-y-2 sm:col-span-2">
-              <label htmlFor="password" className="text-sm font-medium text-foreground">Mot de passe</label>
+              <label htmlFor="password" className="text-sm font-medium text-foreground">{t.settings.password}</label>
               <input id="password" type="password" defaultValue="password" className={fieldClass} />
             </div>
           </div>
         </Section>
 
-        <Section title="Préférences régionales" description="Langue et fuseau horaire." delay={0.06}>
+        <Section title={t.settings.regional.title} description={t.settings.regional.description} delay={0.06}>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <div className="space-y-2">
-              <label htmlFor="lang" className="text-sm font-medium text-foreground">Langue</label>
-              <select id="lang" defaultValue="fr" className={fieldClass}>
+              <label htmlFor="lang" className="text-sm font-medium text-foreground">{t.settings.language}</label>
+              {/* Bound to the real i18n state, so it stays in sync with the header switcher. */}
+              <select
+                id="lang"
+                value={locale}
+                onChange={(e) => setLocale(e.target.value as typeof locale)}
+                className={fieldClass}
+              >
                 <option value="fr">Français</option>
                 <option value="en">English</option>
-                <option value="es">Español</option>
-                <option value="it">Italiano</option>
-                <option value="de">Deutsch</option>
               </select>
             </div>
             <div className="space-y-2">
-              <label htmlFor="tz" className="text-sm font-medium text-foreground">Fuseau horaire</label>
+              <label htmlFor="tz" className="text-sm font-medium text-foreground">{t.settings.timezone}</label>
               <select id="tz" defaultValue="paris" className={fieldClass}>
                 <option value="paris">Europe/Paris (GMT+1)</option>
                 <option value="london">Europe/London (GMT)</option>
@@ -94,43 +100,51 @@ export default function SettingsPage() {
           </div>
         </Section>
 
-        <Section title="Préférences des notifications" description="Choisissez ce que vous recevez." delay={0.12}>
+        <Section
+          title={t.settings.notifications.title}
+          description={t.settings.notifications.description}
+          delay={0.12}
+        >
           <div className="space-y-1">
-            {notifPrefs.map((p) => (
+            {notifPrefs.map((p, i) => (
               <label
                 key={p.id}
                 className="flex cursor-pointer items-center justify-between gap-4 rounded-xl px-2 py-3 transition-colors hover:bg-white/[0.02]"
               >
                 <span>
-                  <span className="block font-medium text-foreground">{p.label}</span>
-                  <span className="block text-sm text-muted-foreground">{p.desc}</span>
+                  <span className="block font-medium text-foreground">
+                    {t.settings.notifications.items[i].label}
+                  </span>
+                  <span className="block text-sm text-muted-foreground">
+                    {t.settings.notifications.items[i].desc}
+                  </span>
                 </span>
                 <Switch
                   checked={prefs[p.id]}
                   onCheckedChange={(v) => setPrefs((prev) => ({ ...prev, [p.id]: v }))}
-                  aria-label={p.label}
+                  aria-label={t.settings.notifications.items[i].label}
                 />
               </label>
             ))}
           </div>
         </Section>
 
-        <Section title="Apparence" delay={0.18}>
+        <Section title={t.settings.appearance.title} delay={0.18}>
           <label className="flex cursor-pointer items-center justify-between gap-4">
             <span>
-              <span className="block font-medium text-foreground">Mode sombre</span>
-              <span className="block text-sm text-muted-foreground">RedPulse est optimisé pour le mode sombre.</span>
+              <span className="block font-medium text-foreground">{t.settings.darkMode}</span>
+              <span className="block text-sm text-muted-foreground">{t.settings.darkModeDesc}</span>
             </span>
-            <Switch checked={darkMode} onCheckedChange={setDarkMode} aria-label="Mode sombre" />
+            <Switch checked={darkMode} onCheckedChange={setDarkMode} aria-label={t.settings.darkMode} />
           </label>
         </Section>
 
         <div className="flex justify-end gap-3">
           <button className="h-11 rounded-xl border border-white/10 bg-white/[0.03] px-5 text-sm font-medium text-foreground transition-colors hover:bg-white/[0.06]">
-            Annuler
+            {t.settings.cancel}
           </button>
           <button className="h-11 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition-colors hover:bg-primary/90">
-            Enregistrer les modifications
+            {t.settings.save}
           </button>
         </div>
       </div>

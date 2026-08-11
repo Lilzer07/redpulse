@@ -4,10 +4,12 @@ import { useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { Check, Loader2, Send, KeyRound, Hash } from "lucide-react"
 import { Topbar } from "@/components/dashboard/topbar"
+import { useI18n } from "@/lib/i18n/context"
 
 type Status = "idle" | "testing" | "connected"
 
 export default function TelegramPage() {
+  const { t } = useI18n()
   const [token, setToken] = useState("")
   const [chatId, setChatId] = useState("")
   const [status, setStatus] = useState<Status>("idle")
@@ -23,7 +25,7 @@ export default function TelegramPage() {
 
   return (
     <>
-      <Topbar title="Telegram" subtitle="Connectez votre bot pour recevoir les alertes." />
+      <Topbar title={t.telegram.title} subtitle={t.telegram.subtitle} />
 
       <div className="flex flex-col gap-6 px-5 py-6 lg:px-8">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.3fr_1fr]">
@@ -39,15 +41,15 @@ export default function TelegramPage() {
                 <Send className="h-5 w-5" />
               </span>
               <div>
-                <h2 className="font-semibold text-foreground">Configuration du bot</h2>
-                <p className="text-sm text-muted-foreground">Collez les identifiants fournis par @BotFather.</p>
+                <h2 className="font-semibold text-foreground">{t.telegram.configTitle}</h2>
+                <p className="text-sm text-muted-foreground">{t.telegram.configSubtitle}</p>
               </div>
             </div>
 
             <div className="space-y-5">
               <div className="space-y-2">
                 <label htmlFor="token" className="text-sm font-medium text-foreground">
-                  Token du bot Telegram
+                  {t.telegram.tokenLabel}
                 </label>
                 <div className="relative">
                   <KeyRound className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -66,7 +68,7 @@ export default function TelegramPage() {
 
               <div className="space-y-2">
                 <label htmlFor="chatid" className="text-sm font-medium text-foreground">
-                  Chat ID
+                  {t.telegram.chatIdLabel}
                 </label>
                 <div className="relative">
                   <Hash className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -91,10 +93,10 @@ export default function TelegramPage() {
                 {status === "testing" ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    Test en cours…
+                    {t.telegram.testing}
                   </>
                 ) : (
-                  "Tester la connexion"
+                  t.telegram.test
                 )}
               </button>
 
@@ -114,7 +116,7 @@ export default function TelegramPage() {
                     >
                       <Check className="h-4 w-4" />
                     </motion.span>
-                    <p className="text-sm font-medium text-primary">Telegram connecté avec succès.</p>
+                    <p className="text-sm font-medium text-primary">{t.telegram.success}</p>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -128,14 +130,9 @@ export default function TelegramPage() {
             transition={{ duration: 0.4, delay: 0.1 }}
             className="rounded-3xl border border-white/8 bg-white/[0.02] p-6 lg:p-7"
           >
-            <h3 className="font-semibold text-foreground">Comment obtenir vos identifiants</h3>
+            <h3 className="font-semibold text-foreground">{t.telegram.helpTitle}</h3>
             <ol className="mt-4 space-y-4">
-              {[
-                "Ouvrez Telegram et démarrez une conversation avec @BotFather.",
-                "Envoyez /newbot puis suivez les instructions pour créer votre bot.",
-                "Copiez le token fourni et collez-le dans le champ à gauche.",
-                "Récupérez votre Chat ID via @userinfobot et collez-le également.",
-              ].map((text, i) => (
+              {t.telegram.helpSteps.map((text, i) => (
                 <li key={i} className="flex gap-3">
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/12 text-xs font-bold text-primary">
                     {i + 1}

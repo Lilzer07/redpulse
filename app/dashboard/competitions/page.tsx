@@ -84,7 +84,7 @@ export default function CompetitionsPage() {
 
   return (
     <>
-      <Topbar title="Compétitions" subtitle="Activez ou désactivez les alertes pour chaque compétition." />
+      <Topbar title={t.competitions.title} subtitle={t.competitions.subtitle} />
 
       <div className="flex flex-col gap-6 px-5 py-6 lg:px-8">
         {/* Toolbar */}
@@ -94,20 +94,21 @@ export default function CompetitionsPage() {
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Rechercher une compétition"
+              placeholder={t.competitions.search}
               className="h-11 w-full rounded-xl border border-white/8 bg-white/[0.02] pl-10 pr-4 text-base text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary/50"
             />
           </div>
 
           <div className="flex items-center justify-between gap-4 rounded-xl border border-white/8 bg-white/[0.02] px-4 py-2.5 sm:justify-start">
             <span className="text-sm text-muted-foreground">
-              <span className="font-semibold text-primary">{activeCount}</span> / {competitions.length} actives
+              <span className="font-semibold text-primary">{activeCount}</span> / {competitions.length}{" "}
+              {t.competitions.active}
             </span>
             <button
               onClick={toggleAll}
               className="text-sm font-medium text-foreground underline-offset-4 hover:underline"
             >
-              {allOn ? "Tout désactiver" : "Tout activer"}
+              {allOn ? t.competitions.disableAll : t.competitions.enableAll}
             </button>
           </div>
         </div>
@@ -117,7 +118,7 @@ export default function CompetitionsPage() {
           {groups.map((group) => (
             <section key={group.tier} className="space-y-3">
               <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {tierLabels[group.tier]}
+                {t.competitions.tiers[group.tier]}
               </h2>
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
                 {group.items.map((c, i) => {
@@ -139,7 +140,11 @@ export default function CompetitionsPage() {
                         <span className="block truncate font-medium text-foreground">{c.name}</span>
                         <span className="block truncate text-xs text-muted-foreground">{c.country}</span>
                       </span>
-                      <Switch checked={on} onCheckedChange={() => toggle(c.id)} aria-label={`Alertes ${c.name}`} />
+                      <Switch
+                        checked={on}
+                        onCheckedChange={() => toggle(c.id)}
+                        aria-label={`${t.competitions.alertsFor} ${c.name}`}
+                      />
                     </motion.label>
                   )
                 })}
