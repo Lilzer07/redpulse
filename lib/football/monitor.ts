@@ -12,6 +12,7 @@ import { extractRedCards } from "./red-cards"
 import { acquireMonitorLock, claimRedCard, markDispatched, recordRunResult, releaseMonitorLock } from "./dedupe"
 import { describeFailure, hasApiKey } from "./client"
 import { recordUserAlert } from "./alerts"
+import { reserveRequests } from "./budget"
 import { deliverRedCardAlert } from "@/lib/telegram/send"
 import { findEligibleRecipients } from "@/lib/subscriptions/authorization"
 import type { Fixture, RedCardWithAnalysis } from "./types"
@@ -25,17 +26,31 @@ import type { Fixture, RedCardWithAnalysis } from "./types"
  * busy Saturday from hitting the rate limit in a burst.
  */
 export const MONITOR_CONFIG = {
-  /** Suggested interval between polls, in seconds. */
-  intervalSeconds: 60,
+  /**
+   * Suggested interval between polls, in seconds.
+   *
+   * Sized for API-Football's free tier (100 requests/day). A poll costs
+   * 1 + (live fixtures) requests, so polling every minute would exhaust the day's
+   * quota within minutes of the first match kicking off. 15 minutes keeps a full
+   * match day inside the budget while still catching a red card well within the
+   * window that matters for in-play betting.
+   *
+   * Raise the cadence here (and DAILY_REQUEST_BUDGET in ./budget) together after
+   * upgrading the API plan — the budget guard, not this value, is what enforces
+   * the limit.
+   */
+  intervalSeconds: 900,
   /** Simultaneous /fixtures/events requests. */
   eventConcurrency: 4,
   /** Lock lifetime; slightly under the interval so a crashed run self-heals. */
-  lockTtlSeconds: 55,
+  lockTtlSeconds: 120,
 }
 
 export type MonitorRunResult = {
   ok: boolean
-  skipped?: "locked" | "no_api_key"
+  skipped?: "locked" | "no_api_key" | "quota_exhausted"
+  /** Live fixtures left uninspected because the daily budget ran out. */
+  skippedForBudget?: number
   matchesWatched: number
   redCardsFound: number
   newRedCards: RedCardWithAnalysis[]
@@ -63,8 +78,28 @@ export async function runMonitorCycle(): Promise<MonitorRunResult> {
   }
 
   try {
+    // The live-fixture list costs one request; if the day's budget is gone the
+    // run stops here instead of issuing a call the provider would reject.
+    if ((await reserveRequests(1)) < 1) {
+      await recordRunResult({ matchesWatched: 0, newRedCards: 0, error: "Daily API request budget exhausted." })
+      return {
+        ok: true,
+        skipped: "quota_exhausted",
+        ...empty,
+        error: "Daily API request budget exhausted; monitoring resumes at midnight UTC.",
+      }
+    }
+
     const fixtures = (await fetchLiveFixtures()).filter((fixture) => isLiveStatus(fixture.status))
-    const detected = await collectRedCards(fixtures)
+
+    // One request per fixture inspected. Reserving up front means a Saturday with
+    // more live matches than remaining budget degrades to inspecting a subset,
+    // rather than firing calls that fail once the quota is hit mid-pass.
+    const affordable = await reserveRequests(fixtures.length)
+    const inspected = fixtures.slice(0, affordable)
+    const skippedForBudget = fixtures.length - inspected.length
+
+    const detected = await collectRedCards(inspected)
 
     const newRedCards: RedCardWithAnalysis[] = []
     let attempted = 0
@@ -78,13 +113,14 @@ export async function runMonitorCycle(): Promise<MonitorRunResult> {
       if (claim.status === "duplicate") continue
       if (claim.status === "unavailable") {
         await recordRunResult({
-          matchesWatched: fixtures.length,
+          matchesWatched: inspected.length,
           newRedCards: newRedCards.length,
           error: `Deduplication unavailable: ${claim.reason}`,
         })
         return {
           ok: false,
-          matchesWatched: fixtures.length,
+          skippedForBudget,
+          matchesWatched: inspected.length,
           redCardsFound: detected.length,
           newRedCards,
           deliveries: { attempted, delivered },
@@ -102,11 +138,14 @@ export async function runMonitorCycle(): Promise<MonitorRunResult> {
       await markDispatched(claim.id)
     }
 
-    await recordRunResult({ matchesWatched: fixtures.length, newRedCards: newRedCards.length })
+    await recordRunResult({ matchesWatched: inspected.length, newRedCards: newRedCards.length })
 
     return {
       ok: true,
-      matchesWatched: fixtures.length,
+      skippedForBudget,
+      // Reports fixtures actually inspected, not fixtures found: claiming to have
+      // watched a match whose events were never fetched would be a false report.
+      matchesWatched: inspected.length,
       redCardsFound: detected.length,
       newRedCards,
       deliveries: { attempted, delivered },

@@ -1,0 +1,63 @@
+# Drives the red-card monitoring loop from GitHub Actions.
+#
+# Why not vercel.json crons: the Hobby plan caps cron jobs at one run per day,
+# which is useless for in-play monitoring. Scheduled Actions are free on public
+# repos and included in the free minutes on private ones, so this keeps a real
+# polling cadence without requiring a Vercel Pro upgrade.
+#
+# Setup (once):
+#   1. Add repository secret MONITOR_URL   = https://<your-domain>/api/monitor
+#   2. Add repository secret CRON_SECRET   = the same value as in Vercel
+#   Settings -> Secrets and variables -> Actions -> New repository secret
+#
+# Note: GitHub's scheduler is best-effort and queues under load, so runs can be
+# a few minutes late. The endpoint is safe to call at any time — it takes a lock,
+# skips overlapping runs, and refuses to spend more than the daily API budget.
+name: Red card monitor
+
+on:
+  schedule:
+    # Every 15 minutes, matching MONITOR_CONFIG.intervalSeconds. This cadence is
+    # what keeps the free API tier (100 requests/day) from being exhausted.
+    - cron: "*/15 * * * *"
+  # Lets you trigger a pass by hand from the Actions tab to verify the setup.
+  workflow_dispatch:
+
+# A late run must not pile up on top of a running one.
+concurrency:
+  group: red-card-monitor
+  cancel-in-progress: false
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Trigger monitoring pass
+        env:
+          MONITOR_URL: ${{ secrets.MONITOR_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${MONITOR_URL:-}" ] || [ -z "${CRON_SECRET:-}" ]; then
+            echo "::error::MONITOR_URL and CRON_SECRET repository secrets must be set."
+            exit 1
+          fi
+
+          # -f is deliberately omitted: a non-2xx body carries the reason, which is
+          # more useful in the log than curl's generic failure message.
+          status=$(curl -sS -m 120 -o response.json -w '%{http_code}' \
+            -X POST "$MONITOR_URL" \
+            -H "Authorization: Bearer $CRON_SECRET")
+
+          echo "HTTP $status"
+          cat response.json
+          echo
+
+          # 503 means the API key is missing on the deployment: surfaced as a
+          # failure so it is visible, rather than silently polling forever.
+          if [ "$status" != "200" ]; then
+            echo "::error::Monitoring pass failed with HTTP $status"
+            exit 1
+          fi

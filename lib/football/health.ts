@@ -1,7 +1,7 @@
 // Aggregates the real integration state for the dashboard panel.
 import "server-only"
 
-import { fetchAccountStatus } from "./api"
+import { readBudgetUsage } from "./budget"
 import { hasApiKey } from "./client"
 import { enabledCompetitions } from "./competitions"
 import { readMonitorState } from "./dedupe"
@@ -34,14 +34,21 @@ export async function getIntegrationStatus(): Promise<IntegrationStatusView> {
     }
   }
 
-  const status = await fetchAccountStatus()
+  // Deliberately does NOT call the provider. On the free tier every request
+  // counts, and a dashboard that spent quota on each page view would starve the
+  // monitor it is reporting on. The locally tracked counter is authoritative for
+  // spend, and the monitor's own last run tells us whether the API is answering.
+  const usage = await readBudgetUsage()
 
   return {
     ...base,
     configured: true,
-    reachable: status.ok,
-    requestsCurrent: status.ok ? status.requests.current : null,
-    requestsLimit: status.ok ? status.requests.limitDay : null,
-    error: status.ok ? (monitor?.lastError ?? null) : status.error,
+    // "Reachable" is inferred from the last real monitor run rather than a fresh
+    // probe: a successful run is proof the API answered, and a recorded error is
+    // proof it did not.
+    reachable: monitor?.lastError == null && monitor?.lastCheckedAt != null,
+    requestsCurrent: usage?.used ?? null,
+    requestsLimit: usage?.budget ?? null,
+    error: monitor?.lastError ?? null,
   }
 }
