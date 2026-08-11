@@ -4,11 +4,20 @@ import { motion } from "framer-motion"
 import { Radio, Sparkles, Flame, Trophy, Send, ArrowUpRight } from "lucide-react"
 import { StatCard } from "@/components/dashboard/stat-card"
 import { AlertsFeed } from "@/components/dashboard/alerts-feed"
+import { IntegrationStatus, type IntegrationStatusView } from "@/components/dashboard/integration-status"
 import { ButtonLink } from "@/components/ui/button-link"
 import { useI18n } from "@/lib/i18n/context"
 import type { Alert, DashboardStats } from "@/lib/user-data"
 
-export function DashboardOverview({ stats, alerts }: { stats: DashboardStats; alerts: Alert[] }) {
+export function DashboardOverview({
+  stats,
+  alerts,
+  integration,
+}: {
+  stats: DashboardStats
+  alerts: Alert[]
+  integration: IntegrationStatusView
+}) {
   const { t } = useI18n()
   const s = t.dashboard.stats
 
@@ -57,6 +66,9 @@ export function DashboardOverview({ stats, alerts }: { stats: DashboardStats; al
           delay={0.24}
         />
       </div>
+
+      {/* Real state of the monitoring pipeline that produces the alerts above. */}
+      <IntegrationStatus status={integration} />
 
       {/* Alerts feed */}
       <motion.section
