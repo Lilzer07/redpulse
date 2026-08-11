@@ -26,7 +26,14 @@ async function main() {
   }
 
   const sql = fs.readFileSync(file, "utf8")
-  const client = new Client({ connectionString, ssl: { rejectUnauthorized: false } })
+
+  // Supabase URLs carry `sslmode=require`, which pg now treats as `verify-full`
+  // and rejects because the chain is self-signed. Strip the param so our own
+  // ssl option below applies instead.
+  const cleaned = connectionString.replace(/([?&])sslmode=[^&]*(&|$)/, (_m, p1, p2) =>
+    p2 === "&" ? p1 : p1 === "?" ? "" : "",
+  )
+  const client = new Client({ connectionString: cleaned, ssl: { rejectUnauthorized: false } })
 
   await client.connect()
   try {
