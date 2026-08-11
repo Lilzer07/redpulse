@@ -13,6 +13,7 @@ import {
   type LucideIcon,
 } from "lucide-react"
 import { Logo } from "@/components/landing/logo"
+import { SignOutButton } from "@/components/auth/sign-out-button"
 import { useI18n } from "@/lib/i18n/context"
 
 // Index-aligned with `sidebar.items` in the dictionaries.
@@ -27,7 +28,7 @@ const items: NavItem[] = [
   { href: "/dashboard/settings", icon: Settings },
 ]
 
-export function Sidebar() {
+export function Sidebar({ userEmail }: { userEmail?: string }) {
   const pathname = usePathname()
   const { t } = useI18n()
 
@@ -65,6 +66,15 @@ export function Sidebar() {
           )
         })}
       </nav>
+
+      {userEmail && (
+        <div className="mt-4 border-t border-white/8 pt-3">
+          <p className="truncate px-3 text-xs text-muted-foreground" title={userEmail}>
+            {userEmail}
+          </p>
+          <SignOutButton className="mt-1 w-full" />
+        </div>
+      )}
 
       <div className="mt-4 rounded-2xl border border-white/8 bg-white/[0.02] p-4">
         <div className="flex items-center gap-2">

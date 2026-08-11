@@ -52,11 +52,11 @@ export function SiteNav() {
 
         <div className="hidden items-center gap-2 md:flex">
           <LanguageSwitcher />
-          <ButtonLink href="/login" variant="ghost" className="text-muted-foreground hover:text-foreground">
+          <ButtonLink href="/auth/login" variant="ghost" className="text-muted-foreground hover:text-foreground">
             {t.nav.login}
           </ButtonLink>
           <ButtonLink
-            href="/dashboard"
+            href="/auth/sign-up"
             className="rounded-xl bg-primary font-semibold text-primary-foreground hover:bg-primary/90"
           >
             {t.nav.start}
@@ -93,10 +93,10 @@ export function SiteNav() {
             </a>
           ))}
           <div className="mt-2 flex flex-col gap-2 border-t border-white/10 pt-3">
-            <ButtonLink href="/login" variant="ghost">
+            <ButtonLink href="/auth/login" variant="ghost">
               {t.nav.login}
             </ButtonLink>
-            <ButtonLink href="/dashboard" className="bg-primary font-semibold text-primary-foreground">
+            <ButtonLink href="/auth/sign-up" className="bg-primary font-semibold text-primary-foreground">
               {t.nav.start}
             </ButtonLink>
           </div>

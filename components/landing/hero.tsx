@@ -73,7 +73,7 @@ export function Hero() {
 
           <motion.div variants={item} className="mt-8 flex flex-col gap-3 sm:flex-row">
             <ButtonLink
-              href="/dashboard"
+              href="/auth/sign-up"
               size="lg"
               className="group h-12 rounded-xl bg-primary px-6 text-base font-semibold text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/90"
             >
