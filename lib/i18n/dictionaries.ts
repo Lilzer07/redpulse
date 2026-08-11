@@ -414,11 +414,17 @@ const fr = {
     emailNotConfirmed: "Confirmez votre adresse e-mail avant de vous connecter.",
     rateLimited: "Trop de tentatives. Réessayez dans quelques minutes.",
     unexpectedError: "Une erreur inattendue est survenue. Réessayez.",
+    confirmingTitle: "Confirmation en cours",
+    confirmingBody: "Nous validons votre lien et ouvrons votre session.",
+    confirmingWait: "Un instant…",
     checkEmailTitle: "Vérifiez votre boîte mail",
     checkEmailBody:
       "Nous vous avons envoyé un lien de confirmation. Cliquez dessus pour activer votre compte, puis connectez-vous.",
     errorTitle: "Lien invalide ou expiré",
     errorBody: "Ce lien de confirmation n'est plus valable. Demandez-en un nouveau en vous inscrivant à nouveau.",
+    errorBodyExpired:
+      "Ce lien a expiré ou a déjà été utilisé. Si vous avez déjà confirmé votre adresse, connectez-vous simplement.",
+    resendLink: "Recevoir un nouveau lien",
     goToLogin: "Aller à la connexion",
   },
 }
@@ -815,11 +821,17 @@ const en: typeof fr = {
     emailNotConfirmed: "Please confirm your email address before signing in.",
     rateLimited: "Too many attempts. Try again in a few minutes.",
     unexpectedError: "Something unexpected went wrong. Please try again.",
+    confirmingTitle: "Confirming your account",
+    confirmingBody: "We're validating your link and opening your session.",
+    confirmingWait: "One moment…",
     checkEmailTitle: "Check your inbox",
     checkEmailBody:
       "We sent you a confirmation link. Click it to activate your account, then sign in.",
     errorTitle: "Invalid or expired link",
     errorBody: "This confirmation link is no longer valid. Request a new one by signing up again.",
+    errorBodyExpired:
+      "This link has expired or was already used. If you've already confirmed your address, just sign in.",
+    resendLink: "Get a new link",
     goToLogin: "Go to sign in",
   },
 }

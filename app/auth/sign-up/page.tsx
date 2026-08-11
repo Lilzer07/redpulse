@@ -38,7 +38,10 @@ export default function SignUpPage() {
       email,
       password,
       options: {
-        // Route the confirmation link through the v0 proxy so it reaches this preview.
+        // Only consumed by templates built on {{ .ConfirmationURL }}. The branded
+        // RedPulse template links straight to /auth/confirm with {{ .TokenHash }},
+        // which ignores this value. Kept so the default template still lands on a
+        // route that can complete the exchange (/auth/callback reads the fragment).
         emailRedirectTo:
           process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL ?? `${window.location.origin}/auth/callback`,
       },
