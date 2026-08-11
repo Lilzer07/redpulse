@@ -1,15 +1,46 @@
 // Typed API-Football queries: current season, live fixtures, fixture events.
 import "server-only"
 
-import { apiFootballRequest } from "./client"
+import { apiFootballObjectRequest, apiFootballRequest, describeFailure } from "./client"
 import { competitionById, enabledLeagueIds, isWatchedLeague } from "./competitions"
-import type { Fixture, FixtureEvent, RawEvent, RawFixture, RawLeague } from "./types"
+import type { Fixture, FixtureEvent, RawEvent, RawFixture, RawLeague, RawStatus } from "./types"
 
 /** Statuses in which a fixture is actually being played (spec section 6). */
 const LIVE_STATUSES = new Set(["1H", "2H", "HT", "ET", "BT", "P", "LIVE", "INT"])
 
 export function isLiveStatus(status: string): boolean {
   return LIVE_STATUSES.has(status.toUpperCase())
+}
+
+export type AccountStatus =
+  | {
+      ok: true
+      plan: string | null
+      requests: { current: number | null; limitDay: number | null }
+    }
+  | { ok: false; error: string; kind: string }
+
+/**
+ * Live reachability + quota check against the provider's own /status endpoint.
+ *
+ * Returns a result object instead of throwing so the dashboard can render
+ * "unreachable, because X" rather than crashing. Never includes the key.
+ */
+export async function fetchAccountStatus(): Promise<AccountStatus> {
+  try {
+    const status = await apiFootballObjectRequest<RawStatus>("/status", { revalidate: 60 })
+    return {
+      ok: true,
+      plan: typeof status.subscription?.plan === "string" ? status.subscription.plan : null,
+      requests: {
+        current: typeof status.requests?.current === "number" ? status.requests.current : null,
+        limitDay: typeof status.requests?.limit_day === "number" ? status.requests.limit_day : null,
+      },
+    }
+  } catch (error) {
+    const { kind, message } = describeFailure(error)
+    return { ok: false, error: message, kind }
+  }
 }
 
 /**

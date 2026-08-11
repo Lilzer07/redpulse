@@ -1,0 +1,6 @@
+{
+  "crons": [
+    { "path": "/api/monitor", "schedule": "* * * * *" },
+    { "path": "/api/cron/expire-subscriptions", "schedule": "0 3 * * *" }
+  ]
+}

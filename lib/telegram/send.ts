@@ -31,8 +31,11 @@ export function isTelegramConfigured(): boolean {
  * No `parse_mode`: the message embeds third-party team and player names, and
  * plain text makes them incapable of breaking the markup or injecting into it.
  */
-export async function sendTelegramMessage(chatId: string, text: string): Promise<SendResult> {
-  const token = process.env.TELEGRAM_BOT_TOKEN?.trim()
+export async function sendTelegramMessage(chatId: string, text: string, botToken?: string | null): Promise<SendResult> {
+  // Each account may bring its own bot; the shared env token is the fallback for
+  // accounts that haven't. If neither exists, nothing is sent and the caller is
+  // told so explicitly rather than being handed a fake success.
+  const token = botToken?.trim() || process.env.TELEGRAM_BOT_TOKEN?.trim()
   if (!token) return { status: "not_configured" }
 
   const controller = new AbortController()
@@ -67,8 +70,11 @@ export async function sendTelegramMessage(chatId: string, text: string): Promise
 }
 
 export type DeliveryOutcome =
-  | { userId: string; delivered: true; messageId: number }
-  | { userId: string; delivered: false; reason: string }
+  | { userId: string; authorized: true; delivered: true; messageId: number }
+  // `authorized` separates "not entitled, must not be alerted at all" from
+  // "entitled, but the send itself failed" — the latter is still worth recording
+  // in the user's history so a transport outage is visible rather than silent.
+  | { userId: string; authorized: boolean; delivered: false; reason: string }
 
 /**
  * Delivers a red-card alert to one user, gated on authorization.
@@ -84,10 +90,19 @@ export async function deliverRedCardAlert(
 ): Promise<DeliveryOutcome> {
   const authorization = await authorizeTelegramDelivery(userId)
   if (!authorization.allowed) {
-    return { userId, delivered: false, reason: authorization.reason }
+    return { userId, authorized: false, delivered: false, reason: authorization.reason }
   }
 
-  const result = await sendTelegramMessage(authorization.chatId, formatTelegramAlert(event, analysis))
-  if (result.status === "sent") return { userId, delivered: true, messageId: result.messageId }
-  return { userId, delivered: false, reason: result.status === "not_configured" ? "telegram_not_configured" : result.error }
+  const result = await sendTelegramMessage(
+    authorization.chatId,
+    formatTelegramAlert(event, analysis),
+    authorization.botToken,
+  )
+  if (result.status === "sent") return { userId, authorized: true, delivered: true, messageId: result.messageId }
+  return {
+    userId,
+    authorized: true,
+    delivered: false,
+    reason: result.status === "not_configured" ? "telegram_not_configured" : result.error,
+  }
 }

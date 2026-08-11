@@ -53,6 +53,38 @@ type RequestOptions = {
  * message strings.
  */
 export async function apiFootballRequest<T>(path: string, options: RequestOptions = {}): Promise<T[]> {
+  const response = await requestPayload(path, options)
+
+  if (!Array.isArray(response)) {
+    throw new FootballApiFailure({
+      kind: "invalid_response",
+      message: "API-Football response field was not an array.",
+    })
+  }
+
+  return response as T[]
+}
+
+/**
+ * Same pipeline, for the endpoints whose `response` is a single object rather
+ * than an array (`/status`). Sharing `requestPayload` keeps timeout, quota and
+ * auth handling identical across both shapes.
+ */
+export async function apiFootballObjectRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  const response = await requestPayload(path, options)
+
+  if (typeof response !== "object" || response === null || Array.isArray(response)) {
+    throw new FootballApiFailure({
+      kind: "invalid_response",
+      message: "API-Football response field was not an object.",
+    })
+  }
+
+  return response as T
+}
+
+/** Shared transport: performs the call and returns the validated `response`. */
+async function requestPayload(path: string, options: RequestOptions = {}): Promise<unknown> {
   const key = process.env.FOOTBALL_API_KEY?.trim()
   if (!key) {
     throw new FootballApiFailure({
@@ -140,14 +172,7 @@ export async function apiFootballRequest<T>(path: string, options: RequestOption
     })
   }
 
-  if (!Array.isArray(envelope.response)) {
-    throw new FootballApiFailure({
-      kind: "invalid_response",
-      message: "API-Football response field was not an array.",
-    })
-  }
-
-  return envelope.response as T[]
+  return envelope.response
 }
 
 /**

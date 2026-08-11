@@ -284,6 +284,18 @@ const fr = {
     },
     liveTitle: "Vos analyses",
     seeAll: "Tout voir",
+    integration: {
+      title: "Surveillance API-Football",
+      reachable: "Connectée",
+      unreachable: "Injoignable",
+      notConfigured: "Clé non configurée",
+      quota: "Requêtes aujourd’hui",
+      competitions: "Compétitions surveillées",
+      lastCheck: "Dernière vérification",
+      never: "Jamais",
+      matchesWatched: "Matchs suivis au dernier passage",
+      redCards: "Cartons rouges détectés",
+    },
   },
 
   feed: {
@@ -788,6 +800,18 @@ const en: typeof fr = {
     },
     liveTitle: "Your analyses",
     seeAll: "See all",
+    integration: {
+      title: "API-Football monitoring",
+      reachable: "Connected",
+      unreachable: "Unreachable",
+      notConfigured: "Key not configured",
+      quota: "Requests today",
+      competitions: "Competitions monitored",
+      lastCheck: "Last check",
+      never: "Never",
+      matchesWatched: "Matches watched on last pass",
+      redCards: "Red cards detected",
+    },
   },
 
   feed: {

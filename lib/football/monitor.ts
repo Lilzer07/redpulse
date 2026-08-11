@@ -11,6 +11,7 @@ import { analyseRedCard } from "./analysis"
 import { extractRedCards } from "./red-cards"
 import { acquireMonitorLock, claimRedCard, markDispatched, recordRunResult, releaseMonitorLock } from "./dedupe"
 import { describeFailure, hasApiKey } from "./client"
+import { recordUserAlert } from "./alerts"
 import { deliverRedCardAlert } from "@/lib/telegram/send"
 import { findEligibleRecipients } from "@/lib/subscriptions/authorization"
 import type { Fixture, RedCardWithAnalysis } from "./types"
@@ -160,5 +161,21 @@ async function dispatch(event: RedCardWithAnalysis): Promise<{ attempted: number
   if (!recipients.length) return { attempted: 0, delivered: 0 }
 
   const outcomes = await Promise.all(recipients.map((userId) => deliverRedCardAlert(userId, event, event.analysis)))
+
+  // History is written only for users who were actually entitled. An unentitled
+  // account must leave no trace of an alert it was never allowed to receive.
+  await Promise.all(
+    outcomes
+      .filter((outcome) => outcome.authorized)
+      .map((outcome) =>
+        recordUserAlert({
+          userId: outcome.userId,
+          event,
+          analysis: event.analysis,
+          deliveredAt: outcome.delivered ? new Date().toISOString() : null,
+        }),
+      ),
+  )
+
   return { attempted: outcomes.length, delivered: outcomes.filter((o) => o.delivered).length }
 }

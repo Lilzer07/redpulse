@@ -23,7 +23,17 @@ export type DenialReason =
   | "storage_unavailable"
 
 export type Authorization =
-  | { allowed: true; chatId: string; plan: string }
+  | {
+      allowed: true
+      chatId: string
+      plan: string
+      /**
+       * The user's own bot token, when they configured one. RedMatch lets each
+       * account bring its own bot (see the Telegram settings form), so delivery
+       * must use that token; the shared TELEGRAM_BOT_TOKEN is only a fallback.
+       */
+      botToken: string | null
+    }
   | { allowed: false; reason: DenialReason; detail?: string }
 
 /**
@@ -41,7 +51,11 @@ export async function authorizeTelegramDelivery(userId: string): Promise<Authori
 
   const [subscription, telegram] = await Promise.all([
     supabase.from("subscriptions").select("plan,status,current_period_end").eq("user_id", userId).maybeSingle(),
-    supabase.from("telegram_settings").select("chat_id,access_status").eq("user_id", userId).maybeSingle(),
+    supabase
+      .from("telegram_settings")
+      .select("chat_id,access_status,bot_token")
+      .eq("user_id", userId)
+      .maybeSingle(),
   ])
 
   if (subscription.error) {
@@ -81,7 +95,8 @@ export async function authorizeTelegramDelivery(userId: string): Promise<Authori
     return { allowed: false, reason: "telegram_revoked", detail: telegram.data.access_status as string }
   }
 
-  return { allowed: true, chatId, plan }
+  const botToken = (telegram.data.bot_token as string | null)?.trim() || null
+  return { allowed: true, chatId, plan, botToken }
 }
 
 /**

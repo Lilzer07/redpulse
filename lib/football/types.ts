@@ -41,6 +41,13 @@ export type RawLeague = {
   seasons?: { year?: number; current?: boolean; start?: string; end?: string }[]
 }
 
+/** `/status` — the only endpoint whose `response` is an object, not an array. */
+export type RawStatus = {
+  account?: { firstname?: string; lastname?: string; email?: string }
+  subscription?: { plan?: string; end?: string; active?: boolean }
+  requests?: { current?: number; limit_day?: number }
+}
+
 // --- Internal, validated types ---------------------------------------------
 
 /** A live fixture in one of the watched competitions. */

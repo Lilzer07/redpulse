@@ -105,6 +105,12 @@ export async function saveTelegramSettings(
         bot_token: token,
         chat_id: chat,
         verified_at: verified ? new Date().toISOString() : null,
+        // Delivery authorization is a separate gate from billing: this records
+        // that the user linked a working chat, while the subscription check runs
+        // independently at send time. Left 'pending' until Telegram confirms, so
+        // the monitor never tries to push to an unverified chat.
+        access_status: verified ? "active" : "pending",
+        revoked_at: null,
         updated_at: new Date().toISOString(),
       },
       { onConflict: "user_id" },
