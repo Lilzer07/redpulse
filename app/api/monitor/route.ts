@@ -40,7 +40,10 @@ async function handle(request: Request) {
       intervalSeconds: MONITOR_CONFIG.intervalSeconds,
       error: result.error ?? null,
     },
-    { status: result.ok ? 200 : 502 },
+    // A missing key is a configuration problem on our side (503), not a failure
+    // of the upstream provider (502). A "locked" run is a normal no-op and
+    // already reports ok, so it stays 200 and never alarms the cron monitor.
+    { status: result.ok ? 200 : result.skipped === "no_api_key" ? 503 : 502 },
   )
 }
 
