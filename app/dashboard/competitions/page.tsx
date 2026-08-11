@@ -6,12 +6,7 @@ import { Search, Shield } from "lucide-react"
 import { Topbar } from "@/components/dashboard/topbar"
 import { Switch } from "@/components/ui/switch"
 import { competitions, type Competition } from "@/lib/data"
-
-const tierLabels: Record<Competition["tier"], string> = {
-  league: "Championnats",
-  cup: "Coupes nationales",
-  european: "Compétitions européennes",
-}
+import { useI18n } from "@/lib/i18n/context"
 
 // Official league badge with a discreet placeholder fallback (no initials).
 function CompetitionBadge({ c }: { c: Competition }) {
@@ -50,6 +45,7 @@ function CompetitionBadge({ c }: { c: Competition }) {
 const tierOrder: Competition["tier"][] = ["league", "european", "cup"]
 
 export default function CompetitionsPage() {
+  const { t } = useI18n()
   // All competitions enabled by default.
   const [enabled, setEnabled] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(competitions.map((c) => [c.id, true])),

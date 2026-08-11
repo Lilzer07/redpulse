@@ -56,16 +56,16 @@ function PlanCard({ plan, index }: { plan: PricingPlan; index: number }) {
 
         <div className="mt-6 flex items-end gap-2">
           <span className="text-5xl font-bold tracking-tight text-foreground">{plan.price}</span>
-          <span className="pb-2 text-muted-foreground">{plan.period}</span>
+          <span className="pb-2 text-muted-foreground">{copy.period}</span>
         </div>
-        <p className="mt-2 text-sm text-muted-foreground">{plan.tagline}</p>
+        <p className="mt-2 text-sm text-muted-foreground">{copy.tagline}</p>
 
-        {plan.description && (
-          <p className="mt-4 text-pretty text-sm leading-relaxed text-foreground/80">{plan.description}</p>
+        {description && (
+          <p className="mt-4 text-pretty text-sm leading-relaxed text-foreground/80">{description}</p>
         )}
 
         <ul className="mt-8 space-y-3">
-          {plan.features.map((f) => (
+          {copy.features.map((f) => (
             <li key={f} className="flex items-center gap-3 text-sm text-foreground">
               <span
                 className={[
@@ -90,7 +90,7 @@ function PlanCard({ plan, index }: { plan: PricingPlan; index: number }) {
               : "border border-white/15 bg-white/5 text-foreground hover:bg-white/10",
           ].join(" ")}
         >
-          {plan.cta}
+          {copy.cta}
         </ButtonLink>
       </div>
     </motion.div>
@@ -98,17 +98,17 @@ function PlanCard({ plan, index }: { plan: PricingPlan; index: number }) {
 }
 
 export function Pricing() {
+  const { t } = useI18n()
+
   return (
     <section id="tarifs" className="relative scroll-mt-24 py-24">
       <div className="mx-auto max-w-6xl px-5">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Tarification</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">{t.pricing.eyebrow}</p>
           <h2 className="mt-4 text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-            Choisissez votre accès à RedPulse.
+            {t.pricing.title}
           </h2>
-          <p className="mt-4 text-pretty text-muted-foreground">
-            Un abonnement flexible pour découvrir, ou un accès à vie pour les premiers membres.
-          </p>
+          <p className="mt-4 text-pretty text-muted-foreground">{t.pricing.subtitle}</p>
         </div>
 
         <div className="mx-auto mt-14 grid max-w-4xl grid-cols-1 items-center gap-6 md:grid-cols-2 lg:gap-8">

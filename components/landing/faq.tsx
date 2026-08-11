@@ -7,15 +7,17 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { faqs } from "@/lib/data"
+import { useI18n } from "@/lib/i18n/context"
 
 export function Faq() {
+  const { t } = useI18n()
+
   return (
     <section id="faq" className="cv-auto relative mx-auto max-w-3xl scroll-mt-24 px-5 py-24">
       <div className="text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">FAQ</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">{t.faq.eyebrow}</p>
         <h2 className="mt-4 text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-          Questions fréquentes
+          {t.faq.title}
         </h2>
       </div>
 
@@ -27,7 +29,7 @@ export function Faq() {
         className="mt-12"
       >
         <Accordion className="space-y-3">
-          {faqs.map((f, i) => (
+          {t.faq.items.map((f, i) => (
             <AccordionItem
               key={i}
               value={`item-${i}`}

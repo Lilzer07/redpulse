@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { Check, Flame, Goal, Loader2, Sparkles, Trophy } from "lucide-react"
 import { makeRandomEvent, seedEvents, type MatchEvent } from "@/lib/data"
+import { useI18n } from "@/lib/i18n/context"
 
 type Props = {
   intervalMs?: number
@@ -34,6 +35,7 @@ function Metric({
 }
 
 export function LiveFeed({ intervalMs = 4000, max = 12, compact = false }: Props) {
+  const { t } = useI18n()
   const [rows, setRows] = useState<MatchEvent[]>(() => seedEvents.slice(0, compact ? 4 : 6))
 
   useEffect(() => {
@@ -77,12 +79,12 @@ export function LiveFeed({ intervalMs = 4000, max = 12, compact = false }: Props
                 {r.status === "analyzing" ? (
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
                     <Loader2 className="h-3 w-3 animate-spin" aria-hidden />
-                    Analyse IA…
+                    {t.feed.analyzing}
                   </span>
                 ) : (
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-medium text-primary">
                     <Check className="h-3 w-3" aria-hidden />
-                    Envoyée
+                    {t.feed.sent}
                   </span>
                 )}
               </span>
@@ -98,13 +100,17 @@ export function LiveFeed({ intervalMs = 4000, max = 12, compact = false }: Props
             {r.status === "analyzing" ? (
               <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
                 <Sparkles className="h-3.5 w-3.5 text-primary" aria-hidden />
-                Le copilote calcule l’indice de confiance…
+                {t.feed.computing}
               </div>
             ) : (
               <div className={`mt-3 grid gap-2 ${compact ? "grid-cols-1 sm:grid-cols-3" : "grid-cols-1 sm:grid-cols-3"}`}>
-                <Metric icon={Goal} label="But supplémentaire" value={`${r.analysis.extraGoalProb}%`} />
-                <Metric icon={Trophy} label={`Victoire ${r.analysis.favorite}`} value={`${r.analysis.favoriteWinProb}%`} />
-                <Metric icon={Flame} label="Indice de confiance" value={`${r.analysis.impact}/100`} danger />
+                <Metric icon={Goal} label={t.feed.extraGoal} value={`${r.analysis.extraGoalProb}%`} />
+                <Metric
+                  icon={Trophy}
+                  label={`${t.feed.win} ${r.analysis.favorite}`}
+                  value={`${r.analysis.favoriteWinProb}%`}
+                />
+                <Metric icon={Flame} label={t.feed.confidence} value={`${r.analysis.impact}/100`} danger />
               </div>
             )}
           </motion.article>

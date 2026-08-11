@@ -6,20 +6,24 @@ import { Topbar } from "@/components/dashboard/topbar"
 import { StatCard } from "@/components/dashboard/stat-card"
 import { LiveFeed } from "@/components/dashboard/live-feed"
 import { ButtonLink } from "@/components/ui/button-link"
+import { useI18n } from "@/lib/i18n/context"
 
 export default function DashboardPage() {
+  const { t } = useI18n()
+  const s = t.dashboard.stats
+
   return (
     <>
-      <Topbar title="Dashboard" subtitle="Votre copilote analyse les cartons rouges en direct." />
+      <Topbar title={t.dashboard.title} subtitle={t.dashboard.subtitle} />
 
       <div className="flex flex-col gap-6 px-5 py-6 lg:px-8">
         {/* Stat grid */}
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
-          <StatCard label="Matchs surveillés" value="37" icon={Radio} accent="green" hint="En direct maintenant" delay={0} />
-          <StatCard label="Analyses IA aujourd’hui" value="12" icon={Sparkles} accent="green" hint="+3 vs hier" delay={0.06} />
-          <StatCard label="Indice de confiance moyen" value="78/100" icon={Flame} accent="red" hint="Sur les cartons du jour" delay={0.12} />
-          <StatCard label="Temps moyen d’analyse" value="1,4 s" icon={Timer} accent="green" hint="Détection → Telegram" delay={0.18} />
-          <StatCard label="Statut Telegram" value="Connecté" icon={Send} accent="green" hint="@redpulse_bot" delay={0.24} />
+          <StatCard label={s.matches.label} value="37" icon={Radio} accent="green" hint={s.matches.hint} delay={0} />
+          <StatCard label={s.analyses.label} value="12" icon={Sparkles} accent="green" hint={s.analyses.hint} delay={0.06} />
+          <StatCard label={s.confidence.label} value="78/100" icon={Flame} accent="red" hint={s.confidence.hint} delay={0.12} />
+          <StatCard label={s.avgTime.label} value={s.avgTime.value} icon={Timer} accent="green" hint={s.avgTime.hint} delay={0.18} />
+          <StatCard label={s.telegram.label} value={s.telegram.value} icon={Send} accent="green" hint={s.telegram.hint} delay={0.24} />
         </div>
 
         {/* Live feed */}
@@ -35,7 +39,7 @@ export default function DashboardPage() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
                 <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-primary" />
               </span>
-              <h2 className="text-base font-semibold text-foreground">Analyses en direct</h2>
+              <h2 className="text-base font-semibold text-foreground">{t.dashboard.liveTitle}</h2>
             </div>
             <ButtonLink
               href="/dashboard/live"
@@ -43,7 +47,7 @@ export default function DashboardPage() {
               size="sm"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
-              Tout voir
+              {t.dashboard.seeAll}
               <ArrowUpRight className="ml-1 h-4 w-4" />
             </ButtonLink>
           </div>

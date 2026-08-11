@@ -13,29 +13,32 @@ import {
   type LucideIcon,
 } from "lucide-react"
 import { Logo } from "@/components/landing/logo"
+import { useI18n } from "@/lib/i18n/context"
 
-type NavItem = { href: string; label: string; icon: LucideIcon }
+// Index-aligned with `sidebar.items` in the dictionaries.
+type NavItem = { href: string; icon: LucideIcon }
 
 const items: NavItem[] = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/dashboard/live", label: "Flux en direct", icon: Radio },
-  { href: "/dashboard/competitions", label: "Compétitions", icon: Trophy },
-  { href: "/dashboard/telegram", label: "Telegram", icon: Send },
-  { href: "/dashboard/billing", label: "Facturation", icon: CreditCard },
-  { href: "/dashboard/settings", label: "Paramètres", icon: Settings },
+  { href: "/dashboard", icon: LayoutDashboard },
+  { href: "/dashboard/live", icon: Radio },
+  { href: "/dashboard/competitions", icon: Trophy },
+  { href: "/dashboard/telegram", icon: Send },
+  { href: "/dashboard/billing", icon: CreditCard },
+  { href: "/dashboard/settings", icon: Settings },
 ]
 
 export function Sidebar() {
   const pathname = usePathname()
+  const { t } = useI18n()
 
   return (
     <aside className="hidden w-64 shrink-0 flex-col border-r border-white/8 bg-[#070807] p-4 lg:flex">
-      <Link href="/" className="mb-8 flex items-center gap-2 px-2 pt-2" aria-label="RedPulse accueil">
+      <Link href="/" className="mb-8 flex items-center gap-2 px-2 pt-2" aria-label={t.nav.home}>
         <Logo />
       </Link>
 
       <nav className="flex flex-1 flex-col gap-1">
-        {items.map((item) => {
+        {items.map((item, i) => {
           const active =
             item.href === "/dashboard"
               ? pathname === "/dashboard"
@@ -57,7 +60,7 @@ export function Sidebar() {
                 />
               )}
               <Icon className="relative z-10 h-4.5 w-4.5" aria-hidden />
-              <span className="relative z-10">{item.label}</span>
+              <span className="relative z-10">{t.sidebar.items[i]}</span>
             </Link>
           )
         })}
@@ -66,11 +69,9 @@ export function Sidebar() {
       <div className="mt-4 rounded-2xl border border-white/8 bg-white/[0.02] p-4">
         <div className="flex items-center gap-2">
           <span className="h-2 w-2 animate-pulse rounded-full bg-primary" aria-hidden />
-          <p className="text-xs font-medium text-foreground">Système opérationnel</p>
+          <p className="text-xs font-medium text-foreground">{t.sidebar.systemOk}</p>
         </div>
-        <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
-          Surveillance active sur 22 compétitions.
-        </p>
+        <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">{t.sidebar.watching}</p>
       </div>
     </aside>
   )
