@@ -4,6 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { LayoutDashboard, Radio, Trophy, Send, CreditCard, type LucideIcon } from "lucide-react"
 import { useI18n } from "@/lib/i18n/context"
+import { SignOutButton } from "@/components/auth/sign-out-button"
 
 // Index-aligned with `sidebar.mobileItems` in the dictionaries.
 type NavItem = { href: string; icon: LucideIcon }
@@ -39,6 +40,8 @@ export function MobileNav() {
           </Link>
         )
       })}
+      {/* The sidebar sign-out is desktop-only, so mobile needs its own tab. */}
+      <SignOutButton variant="tab" />
     </nav>
   )
 }

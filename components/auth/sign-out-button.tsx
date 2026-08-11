@@ -6,7 +6,14 @@ import { LogOut } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { useI18n } from "@/lib/i18n/context"
 
-export function SignOutButton({ className = "" }: { className?: string }) {
+export function SignOutButton({
+  className = "",
+  variant = "row",
+}: {
+  className?: string
+  /** "tab" matches the mobile bottom-nav items; "row" is the sidebar/settings style. */
+  variant?: "row" | "tab"
+}) {
   const { t } = useI18n()
   const router = useRouter()
   const [pending, setPending] = useState(false)
@@ -18,6 +25,19 @@ export function SignOutButton({ className = "" }: { className?: string }) {
     // refresh() clears the server-rendered session before the redirect.
     router.replace("/")
     router.refresh()
+  }
+
+  if (variant === "tab") {
+    return (
+      <button
+        onClick={handleSignOut}
+        disabled={pending}
+        className={`flex min-h-[56px] flex-1 flex-col items-center justify-center gap-1 py-2 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground disabled:opacity-60 ${className}`}
+      >
+        <LogOut className="h-5 w-5" aria-hidden />
+        {t.auth.signOutShort}
+      </button>
+    )
   }
 
   return (

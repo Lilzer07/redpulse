@@ -426,6 +426,8 @@ const fr = {
     createOne: "Inscrivez-vous",
     signInLink: "Connectez-vous",
     signOut: "Déconnexion",
+    // Abbreviated to fit the six-tab mobile bar, like "Compét." and "Facture".
+    signOutShort: "Sortie",
     backHome: "Retour à l'accueil",
     passwordMinHint: "8 caractères minimum.",
     passwordMismatch: "Les mots de passe ne correspondent pas.",
@@ -915,6 +917,7 @@ const en: typeof fr = {
     createOne: "Sign up",
     signInLink: "Sign in",
     signOut: "Sign out",
+    signOutShort: "Exit",
     backHome: "Back to home",
     passwordMinHint: "8 characters minimum.",
     passwordMismatch: "Passwords do not match.",
