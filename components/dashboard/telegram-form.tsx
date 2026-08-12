@@ -9,6 +9,7 @@ import {
   sendTestAlert,
   requestChannelInvite,
 } from "@/app/dashboard/actions"
+import { useI18n } from "@/lib/i18n/context"
 
 type Props = {
   /** True when the chat is linked and access is active. */
@@ -72,6 +73,7 @@ export function TelegramForm({ connected, subscriptionActive, inChannel, pending
  * on demand rather than embedded in the page.
  */
 function JoinChannelPanel({ pendingInvite }: { pendingInvite: string | null }) {
+  const { t } = useI18n()
   const [link, setLink] = useState(pendingInvite ?? "")
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle")
   const [error, setError] = useState("")
@@ -87,10 +89,10 @@ function JoinChannelPanel({ pendingInvite }: { pendingInvite: string | null }) {
     }
     setError(
       res.error === "no_subscription"
-        ? "Votre abonnement n'est plus actif."
+        ? t.telegram.joinErrorNoSub
         : res.error === "not_connected"
-          ? "Votre compte Telegram n'est plus lié. Reconnectez-le."
-          : "Le canal n'est pas encore configuré côté serveur. Réessayez plus tard.",
+          ? t.telegram.joinErrorUnlinked
+          : t.telegram.joinErrorChannel,
     )
     setStatus("error")
   }
@@ -99,15 +101,15 @@ function JoinChannelPanel({ pendingInvite }: { pendingInvite: string | null }) {
     <Panel>
       <Header
         icon={<Users className="h-5 w-5" />}
-        title="Dernière étape : rejoindre le canal"
-        subtitle="Vos alertes sont publiées dans un canal privé."
+        title={t.telegram.joinTitle}
+        subtitle={t.telegram.joinSubtitle}
       />
 
-      <div className="mb-5 flex items-start gap-3 rounded-xl border border-[var(--warning,var(--danger))]/25 bg-primary/[0.06] px-4 py-3">
+      <div className="mb-5 flex items-start gap-3 rounded-xl border border-primary/25 bg-primary/[0.06] px-4 py-3">
         <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
         <p className="text-sm leading-relaxed text-muted-foreground">
-          Votre compte Telegram est bien lié, mais vous ne recevrez aucune alerte avant{" "}
-          <span className="font-medium text-foreground">{"d'avoir rejoint le canal"}</span>.
+          {t.telegram.joinWarning}{" "}
+          <span className="font-medium text-foreground">{t.telegram.joinWarningEmphasis}</span>.
         </p>
       </div>
 
@@ -120,11 +122,9 @@ function JoinChannelPanel({ pendingInvite }: { pendingInvite: string | null }) {
             className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90"
           >
             <Users className="h-4 w-4" />
-            Rejoindre le canal RedMatch
+            {t.telegram.joinCta}
           </a>
-          <p className="text-xs text-muted-foreground">
-            Lien personnel et à usage unique. Une fois dans le canal, cette page se mettra à jour.
-          </p>
+          <p className="text-xs text-muted-foreground">{t.telegram.joinHint}</p>
         </div>
       ) : (
         <button
@@ -135,12 +135,12 @@ function JoinChannelPanel({ pendingInvite }: { pendingInvite: string | null }) {
           {status === "loading" ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />
-              Génération…
+              {t.telegram.joinLoading}
             </>
           ) : (
             <>
               <Link2 className="h-4 w-4" />
-              Obtenir mon lien {"d'invitation"}
+              {t.telegram.joinRequest}
             </>
           )}
         </button>
@@ -275,6 +275,7 @@ function ConnectPanel() {
 }
 
 function ConnectedPanel() {
+  const { t } = useI18n()
   const [testStatus, setTestStatus] = useState<"idle" | "sending" | "sent" | "failed">("idle")
   const [disconnecting, setDisconnecting] = useState(false)
 
@@ -296,15 +297,15 @@ function ConnectedPanel() {
     <Panel>
       <Header
         icon={<Check className="h-5 w-5" />}
-        title="Tout est prêt"
-        subtitle="Vous êtes dans le canal : les alertes y arrivent en temps réel."
+        title={t.telegram.readyTitle}
+        subtitle={t.telegram.readySubtitle}
       />
 
       <div className="mb-5 flex items-center gap-3 rounded-xl border border-primary/25 bg-primary/[0.08] px-4 py-3">
         <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground">
           <Check className="h-4 w-4" />
         </span>
-        <p className="text-sm font-medium text-primary">Compte lié et membre du canal.</p>
+        <p className="text-sm font-medium text-primary">{t.telegram.readyBadge}</p>
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row">

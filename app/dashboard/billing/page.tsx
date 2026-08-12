@@ -20,16 +20,8 @@ export default async function BillingPage() {
 
       <div className="flex flex-col gap-6 px-5 py-6 lg:px-8">
         <div className="max-w-3xl">
-          <BillingPanel
-            subscription={subscription}
-            active={active}
-            features={[
-              "Alertes carton rouge en temps réel",
-              "27 compétitions couvertes",
-              "Analyse statistique de chaque expulsion",
-              "Canal Telegram privé",
-            ]}
-          />
+          {/* Feature bullets live in the dictionary so both languages stay in sync. */}
+          <BillingPanel subscription={subscription} active={active} />
         </div>
       </div>
     </>

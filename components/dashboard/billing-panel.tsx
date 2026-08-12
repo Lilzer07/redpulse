@@ -4,19 +4,13 @@ import { useState } from "react"
 import { motion } from "framer-motion"
 import { Check, ExternalLink, Loader2, AlertTriangle, Infinity as InfinityIcon } from "lucide-react"
 import { openBillingPortal } from "@/app/dashboard/actions"
+import { useI18n } from "@/lib/i18n/context"
 import type { Subscription } from "@/lib/user-data"
 
 type Props = {
   subscription: Subscription | null
   /** True when the plan currently entitles the account to alerts. */
   active: boolean
-  /** Localised feature bullets for the plan. */
-  features: string[]
-}
-
-const PLAN_LABEL: Record<string, string> = {
-  monthly: "RedMatch Mensuel",
-  lifetime: "RedMatch À vie",
 }
 
 const PLAN_PRICE: Record<string, string> = {
@@ -24,11 +18,11 @@ const PLAN_PRICE: Record<string, string> = {
   lifetime: "50 €",
 }
 
-function formatDate(value: string | null): string | null {
+function formatDate(value: string | null, locale: string): string | null {
   if (!value) return null
   const time = new Date(value).getTime()
   if (Number.isNaN(time)) return null
-  return new Date(time).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
+  return new Date(time).toLocaleDateString(locale, { day: "numeric", month: "long", year: "numeric" })
 }
 
 /**
@@ -39,7 +33,9 @@ function formatDate(value: string | null): string | null {
  * them, and a local copy would silently drift out of date. The portal button
  * hands the user to Stripe for those instead.
  */
-export function BillingPanel({ subscription, active, features }: Props) {
+export function BillingPanel({ subscription, active }: Props) {
+  const { t } = useI18n()
+  const b = t.billing
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle")
   const [error, setError] = useState("")
 
@@ -51,11 +47,7 @@ export function BillingPanel({ subscription, active, features }: Props) {
       window.location.href = res.url
       return
     }
-    setError(
-      res.error === "no_customer"
-        ? "Aucun paiement récurrent à gérer pour ce compte."
-        : "Le portail de facturation est momentanément indisponible.",
-    )
+    setError(res.error === "no_customer" ? b.portalErrorNoCustomer : b.portalErrorUnavailable)
     setStatus("error")
   }
 
@@ -63,22 +55,20 @@ export function BillingPanel({ subscription, active, features }: Props) {
   if (!subscription) {
     return (
       <div className="rounded-3xl border border-white/8 bg-white/[0.02] p-6 lg:p-8">
-        <h2 className="text-xl font-bold text-foreground">Aucun abonnement</h2>
-        <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
-          {"Ce compte n'a pas encore d'abonnement actif. Choisissez une offre pour recevoir les alertes."}
-        </p>
+        <h2 className="text-xl font-bold text-foreground">{b.noneTitle}</h2>
+        <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">{b.noneBody}</p>
         <a
           href="/choose-plan"
           className="mt-6 inline-flex h-11 items-center justify-center rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
         >
-          Voir les offres
+          {b.noneCta}
         </a>
       </div>
     )
   }
 
   const isLifetime = subscription.plan === "lifetime"
-  const renewal = formatDate(subscription.current_period_end)
+  const renewal = formatDate(subscription.current_period_end, b.locale)
 
   return (
     <motion.div
@@ -94,10 +84,10 @@ export function BillingPanel({ subscription, active, features }: Props) {
               active ? "bg-primary/12 text-primary" : "bg-[var(--danger)]/12 text-[var(--danger)]"
             }`}
           >
-            {active ? "Abonnement actif" : subscription.status === "pending" ? "Paiement en attente" : "Expiré"}
+            {active ? b.statusActive : subscription.status === "pending" ? b.statusPending : b.statusExpired}
           </span>
           <h2 className="mt-4 text-xl font-bold text-foreground">
-            {PLAN_LABEL[subscription.plan] ?? subscription.plan}
+            {isLifetime ? b.planLifetime : subscription.plan === "monthly" ? b.planMonthly : subscription.plan}
           </h2>
 
           {/* State the actual consequence: a lifetime plan has no renewal date,
@@ -106,28 +96,24 @@ export function BillingPanel({ subscription, active, features }: Props) {
             {isLifetime ? (
               <>
                 <InfinityIcon className="h-4 w-4" />
-                Accès permanent, aucun renouvellement
+                {b.lifetimeAccess}
               </>
             ) : renewal ? (
-              active ? (
-                `Prochain prélèvement le ${renewal}`
-              ) : (
-                `Expiré depuis le ${renewal}`
-              )
+              `${active ? b.nextCharge : b.expiredSince} ${renewal}`
             ) : (
-              "Aucune date de renouvellement enregistrée"
+              b.noRenewalDate
             )}
           </p>
         </div>
 
         <p className="text-3xl font-bold text-foreground">
           {PLAN_PRICE[subscription.plan] ?? "—"}
-          {!isLifetime && <span className="text-base font-medium text-muted-foreground">/mois</span>}
+          {!isLifetime && <span className="text-base font-medium text-muted-foreground">{b.perMonth}</span>}
         </p>
       </div>
 
       <ul className="mt-6 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-        {features.map((f) => (
+        {b.features.map((f) => (
           <li key={f} className="flex items-center gap-2 text-sm text-muted-foreground">
             <Check className="h-4 w-4 shrink-0 text-primary" />
             {f}
@@ -138,7 +124,7 @@ export function BillingPanel({ subscription, active, features }: Props) {
       {/* Only recurring plans have anything to manage in the portal. */}
       {isLifetime ? (
         <p className="mt-7 rounded-xl border border-white/8 bg-white/[0.02] px-4 py-3 text-xs leading-relaxed text-muted-foreground">
-          {"Votre accès est définitif : il n'y a ni prélèvement à venir, ni abonnement à résilier."}
+          {b.lifetimeNote}
         </p>
       ) : (
         <div className="mt-7">
@@ -150,18 +136,16 @@ export function BillingPanel({ subscription, active, features }: Props) {
             {status === "loading" ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Ouverture…
+                {b.portalLoading}
               </>
             ) : (
               <>
                 <ExternalLink className="h-4 w-4" />
-                Gérer mon abonnement
+                {b.portalCta}
               </>
             )}
           </button>
-          <p className="mt-3 text-center text-xs leading-relaxed text-muted-foreground">
-            Carte bancaire, factures et résiliation sont gérés directement par Stripe.
-          </p>
+          <p className="mt-3 text-center text-xs leading-relaxed text-muted-foreground">{b.portalNote}</p>
 
           {status === "error" && (
             <div className="mt-4 flex items-center gap-3 rounded-xl border border-[var(--danger)]/30 bg-[var(--danger)]/[0.08] px-4 py-3">
