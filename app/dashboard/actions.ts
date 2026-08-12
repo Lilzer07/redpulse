@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server"
 import { competitions } from "@/lib/data"
 import { createLinkToken, unlinkTelegram } from "@/lib/telegram/linking"
 import { grantChannelAccess } from "@/lib/telegram/access"
+import { createPortalSession } from "@/lib/stripe/portal"
 import { authorizeTelegramDelivery } from "@/lib/subscriptions/authorization"
 import { sendMessage } from "@/lib/telegram/service"
 
@@ -85,6 +86,24 @@ export async function startTelegramLinking(): Promise<
 
     revalidatePath("/dashboard/telegram")
     return { ok: true, deepLink: result.deepLink, expiresAt: result.expiresAt }
+  } catch {
+    return { ok: false, error: "not-authenticated" }
+  }
+}
+
+/**
+ * Opens the Stripe billing portal for the signed-in user.
+ *
+ * Card changes, invoices and cancellation are handled by Stripe rather than
+ * reimplemented here: Stripe holds the authoritative billing state, so any local
+ * copy would eventually contradict it.
+ */
+export async function openBillingPortal(): Promise<{ ok: true; url: string } | { ok: false; error: string }> {
+  try {
+    const { user } = await requireUser()
+    const result = await createPortalSession(user.id)
+    if (result.ok) return { ok: true, url: result.url }
+    return { ok: false, error: result.reason }
   } catch {
     return { ok: false, error: "not-authenticated" }
   }

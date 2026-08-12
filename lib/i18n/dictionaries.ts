@@ -243,9 +243,6 @@ const fr = {
     title: "Choisissez votre abonnement.",
     subtitle: "Votre compte est créé. Sélectionnez une offre pour accéder à votre dashboard.",
     signedInAs: "Connecté en tant que",
-    comingSoon: "Paiement bientôt disponible",
-    continueWithoutPaying: "Continuer sans payer",
-    error: "Impossible d'activer cette offre. Réessayez.",
   },
 
   sidebar: {
@@ -353,41 +350,7 @@ const fr = {
 
   billing: {
     title: "Facturation",
-    subtitle: "Gérez votre abonnement et vos moyens de paiement.",
-    activeBadge: "Abonnement actif",
-    planName: "RedMatch Premium",
-    nextBilling: "Prochaine facturation le 1 juillet 2026",
-    perMonth: "/mois",
-    features: [
-      "Notifications illimitées",
-      "Connexion Telegram",
-      "Toutes les compétitions disponibles",
-      "Infrastructure temps réel",
-      "Support prioritaire",
-    ],
-    changePayment: "Modifier le moyen de paiement",
-    cardTitle: "Carte bancaire",
-    cardExpiry: "Visa · expire 08/28",
-    updateCard: "Mettre à jour la carte",
-    secure: "Paiements sécurisés traités par Stripe.",
-    historyTitle: "Historique des paiements",
-    paid: "Payé",
-    downloadInvoice: "Télécharger la facture",
-    payments: [
-      { id: "INV-2026-006", date: "1 juin 2026", amount: "10,00 €" },
-      { id: "INV-2026-005", date: "1 mai 2026", amount: "10,00 €" },
-      { id: "INV-2026-004", date: "1 avril 2026", amount: "10,00 €" },
-      { id: "INV-2026-003", date: "1 mars 2026", amount: "10,00 €" },
-    ],
-    // Deliberately low-key wording for the account-closing area.
-    manageAccount: "Gestion du compte",
-    cancelLink: "Résilier l’abonnement",
-    cancelHint: "Votre accès reste actif jusqu’à la fin de la période en cours.",
-    cancelConfirmTitle: "Confirmer la résiliation ?",
-    cancelConfirmBody:
-      "Vos analyses et notifications Telegram s’arrêteront à la fin de la période déjà payée.",
-    cancelConfirm: "Oui, résilier",
-    cancelBack: "Annuler",
+    subtitle: "Gérez votre abonnement.",
   },
 
   settings: {
@@ -761,9 +724,6 @@ const en: typeof fr = {
     title: "Choose your plan.",
     subtitle: "Your account is ready. Pick a plan to unlock your dashboard.",
     signedInAs: "Signed in as",
-    comingSoon: "Payment coming soon",
-    continueWithoutPaying: "Continue without paying",
-    error: "Could not activate this plan. Please try again.",
   },
 
   sidebar: {
@@ -864,40 +824,7 @@ const en: typeof fr = {
 
   billing: {
     title: "Billing",
-    subtitle: "Manage your subscription and payment methods.",
-    activeBadge: "Active subscription",
-    planName: "RedMatch Premium",
-    nextBilling: "Next billing on 1 July 2026",
-    perMonth: "/month",
-    features: [
-      "Unlimited notifications",
-      "Telegram connection",
-      "All available competitions",
-      "Real-time infrastructure",
-      "Priority support",
-    ],
-    changePayment: "Change payment method",
-    cardTitle: "Payment card",
-    cardExpiry: "Visa · expires 08/28",
-    updateCard: "Update card",
-    secure: "Secure payments processed by Stripe.",
-    historyTitle: "Payment history",
-    paid: "Paid",
-    downloadInvoice: "Download invoice",
-    payments: [
-      { id: "INV-2026-006", date: "1 June 2026", amount: "€10.00" },
-      { id: "INV-2026-005", date: "1 May 2026", amount: "€10.00" },
-      { id: "INV-2026-004", date: "1 April 2026", amount: "€10.00" },
-      { id: "INV-2026-003", date: "1 March 2026", amount: "€10.00" },
-    ],
-    manageAccount: "Account management",
-    cancelLink: "Cancel subscription",
-    cancelHint: "Your access stays active until the end of the current period.",
-    cancelConfirmTitle: "Confirm cancellation?",
-    cancelConfirmBody:
-      "Your analyses and Telegram notifications will stop at the end of the period you already paid for.",
-    cancelConfirm: "Yes, cancel",
-    cancelBack: "Keep my plan",
+    subtitle: "Manage your subscription.",
   },
 
   settings: {
