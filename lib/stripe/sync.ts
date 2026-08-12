@@ -127,7 +127,7 @@ export async function syncSubscription(input: SyncInput): Promise<{ ok: boolean 
       if (chatId) {
         await sendMessage(
           chatId,
-          `Abonnement confirmé.\n\nVoici votre lien d'accès personnel au canal privé RedMatch Alertes :\n${grant.inviteLink}\n\nCe lien est à usage unique et expire sous 24 h.`,
+          `Abonnement confirmé.\n\nVoici votre lien d'accès personnel au canal privé RedMatch Alertes :\n${grant.inviteLink}\n\nOuvrez-le puis validez la demande d'adhésion : l'accès est accordé automatiquement. Ce lien est personnel, à usage unique, et expire sous 15 minutes.`,
         )
       }
     }

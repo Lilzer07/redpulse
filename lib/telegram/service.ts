@@ -13,8 +13,15 @@ import { getConfigValue, setConfigValue } from "@/lib/config-store"
 
 const TELEGRAM_API = "https://api.telegram.org"
 
-/** Per-member invite links stay valid for this long. */
-const INVITE_TTL_MS = 24 * 60 * 60 * 1000
+/**
+ * Per-member invite links stay valid for this long.
+ *
+ * Kept short on purpose: the link only has to survive the few seconds between
+ * "get my link" and tapping it in Telegram. A tight window shrinks the chance
+ * of a link leaking and being used by someone else before the join request is
+ * checked against the subscription.
+ */
+const INVITE_TTL_MS = 15 * 60 * 1000
 
 function botToken(): string | null {
   return process.env.TELEGRAM_BOT_TOKEN?.trim() || null
@@ -122,10 +129,19 @@ export async function sendChannelMessage(text: string): Promise<{ ok: true } | T
 export type InviteLink = { inviteLink: string; expiresAt: string }
 
 /**
- * Creates a personal, single-use invite link to the private channel.
+ * Creates a personal invite link that funnels the user into a JOIN REQUEST
+ * rather than an instant join.
  *
- * `member_limit: 1` means the link dies once this subscriber joins, so it cannot
- * be shared onward, and `expire_date` caps the window if it is never used.
+ * `creates_join_request: true` is the crux of the access model: tapping the link
+ * does not add anyone to the channel — it raises a `chat_join_request` update
+ * that the bot approves only after re-checking the subscription server-side
+ * (see `approveChannelJoin`). This closes the hole where a leaked instant-join
+ * link would hand out channel access with no payment check at join time.
+ *
+ * Telegram forbids `member_limit` together with `creates_join_request`, so the
+ * "one person only" guarantee moves to the approval handler: it approves a
+ * single request, then revokes the link so it can raise no further requests.
+ * `expire_date` still caps how long an unused link can sit around.
  */
 export async function createInviteLink(label: string): Promise<({ ok: true } & InviteLink) | TelegramFailure> {
   const channel = await channelId()
@@ -136,13 +152,40 @@ export async function createInviteLink(label: string): Promise<({ ok: true } & I
     chat_id: channel,
     name: label.slice(0, 32),
     expire_date: Math.floor(expiresAt.getTime() / 1000),
-    member_limit: 1,
-    creates_join_request: false,
+    creates_join_request: true,
   })
 
   if (!result.ok) return result
   if (!result.result.invite_link) return { ok: false, reason: "api_error", detail: "missing invite_link" }
   return { ok: true, inviteLink: result.result.invite_link, expiresAt: expiresAt.toISOString() }
+}
+
+/**
+ * Approves a pending join request for a user (spec: paid access only).
+ *
+ * Called from the webhook once the subscription has been confirmed active. The
+ * user is added to the channel by Telegram as a direct result of this call.
+ */
+export async function approveChatJoinRequest(telegramUserId: number): Promise<{ ok: true } | TelegramFailure> {
+  const channel = await channelId()
+  if (!channel) return { ok: false, reason: "not_configured" }
+
+  const result = await call<unknown>("approveChatJoinRequest", { chat_id: channel, user_id: telegramUserId })
+  return result.ok ? { ok: true } : result
+}
+
+/**
+ * Declines a pending join request — used when no active subscription backs it.
+ *
+ * Declining (rather than ignoring) clears the request so a later, legitimate
+ * attempt starts from a clean slate.
+ */
+export async function declineChatJoinRequest(telegramUserId: number): Promise<{ ok: true } | TelegramFailure> {
+  const channel = await channelId()
+  if (!channel) return { ok: false, reason: "not_configured" }
+
+  const result = await call<unknown>("declineChatJoinRequest", { chat_id: channel, user_id: telegramUserId })
+  return result.ok ? { ok: true } : result
 }
 
 /** Revokes a previously issued invite link so it can no longer be used. */
