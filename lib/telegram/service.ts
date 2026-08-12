@@ -237,6 +237,126 @@ export async function getChatMember(
   return { ok: true, status: (result.result.status ?? "left") as MemberStatus }
 }
 
+/**
+ * The update types the access model depends on.
+ *
+ * Telegram's default `allowed_updates` omits `chat_member` and
+ * `chat_join_request`, and a webhook registered without naming them explicitly
+ * silently never receives them — so nobody is ever admitted to the channel and
+ * the channel id is never auto-discovered. This list is therefore load-bearing.
+ *
+ * `scripts/set-telegram-webhook.mjs` keeps its own copy because a plain .mjs
+ * script cannot import from TypeScript; the two lists must stay in sync.
+ */
+export const REQUIRED_WEBHOOK_UPDATES = ["message", "my_chat_member", "chat_member", "chat_join_request"] as const
+
+export type WebhookStatus = {
+  url: string | null
+  allowedUpdates: string[]
+  pendingUpdates: number
+  lastError: string | null
+  missingUpdates: string[]
+}
+
+/**
+ * Points Telegram at our webhook route.
+ *
+ * Runs on the server so the bot token never has to leave the deployment: the
+ * caller only needs `CRON_SECRET`. `drop_pending_updates` stays false so a
+ * re-registration cannot silently discard a join request that is already queued.
+ */
+export async function registerWebhook(baseUrl: string): Promise<({ ok: true; url: string; secured: boolean }) | TelegramFailure> {
+  const base = baseUrl.replace(/\/+$/, "")
+  const url = `${base}/api/telegram/webhook`
+  const secret = process.env.TELEGRAM_WEBHOOK_SECRET?.trim()
+
+  const body: Record<string, unknown> = {
+    url,
+    allowed_updates: [...REQUIRED_WEBHOOK_UPDATES],
+    drop_pending_updates: false,
+  }
+  if (secret) body.secret_token = secret
+
+  const result = await call<boolean>("setWebhook", body)
+  if (!result.ok) return result
+  return { ok: true, url, secured: Boolean(secret) }
+}
+
+/** Reads back what Telegram thinks the webhook is, plus any missing update types. */
+export async function getWebhookStatus(): Promise<({ ok: true } & WebhookStatus) | TelegramFailure> {
+  const result = await call<{
+    url?: string
+    allowed_updates?: string[]
+    pending_update_count?: number
+    last_error_message?: string
+  }>("getWebhookInfo")
+  if (!result.ok) return result
+
+  const allowedUpdates = result.result.allowed_updates ?? []
+  return {
+    ok: true,
+    url: result.result.url || null,
+    allowedUpdates,
+    pendingUpdates: result.result.pending_update_count ?? 0,
+    lastError: result.result.last_error_message ?? null,
+    // A default (empty) list means every required type is effectively missing.
+    missingUpdates: REQUIRED_WEBHOOK_UPDATES.filter((update) => !allowedUpdates.includes(update)),
+  }
+}
+
+export type ChannelReadiness = {
+  channelKnown: boolean
+  botStatus: MemberStatus | null
+  canInviteUsers: boolean
+  canPostMessages: boolean
+  detail: string | null
+}
+
+/**
+ * Checks whether the bot can actually operate the channel.
+ *
+ * Both rights are required by the access model: `can_invite_users` to approve or
+ * decline join requests, `can_post_messages` to publish alerts. Reported as data
+ * rather than thrown so the setup route can explain exactly what is missing.
+ */
+export async function getChannelReadiness(): Promise<ChannelReadiness> {
+  const channel = await channelId()
+  if (!channel) {
+    return {
+      channelKnown: false,
+      botStatus: null,
+      canInviteUsers: false,
+      canPostMessages: false,
+      detail: "Channel id unknown — promote the bot to administrator of the private channel.",
+    }
+  }
+
+  const me = await call<{ id?: number }>("getMe")
+  if (!me.ok) return { channelKnown: true, botStatus: null, canInviteUsers: false, canPostMessages: false, detail: me.reason === "api_error" ? me.detail : "not configured" }
+
+  const member = await call<{ status?: MemberStatus; can_invite_users?: boolean; can_post_messages?: boolean }>("getChatMember", {
+    chat_id: channel,
+    user_id: me.result.id,
+  })
+  if (!member.ok) {
+    return {
+      channelKnown: true,
+      botStatus: null,
+      canInviteUsers: false,
+      canPostMessages: false,
+      detail: member.reason === "api_error" ? member.detail : "not configured",
+    }
+  }
+
+  return {
+    channelKnown: true,
+    botStatus: (member.result.status ?? "left") as MemberStatus,
+    canInviteUsers: Boolean(member.result.can_invite_users),
+    canPostMessages: Boolean(member.result.can_post_messages),
+    detail: null,
+  }
+}
+
 /** Reads the channel title, used by the admin "Tester Telegram" action. */
 export async function getChannelInfo(): Promise<({ ok: true; title: string }) | TelegramFailure> {
   const channel = await channelId()
