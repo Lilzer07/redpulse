@@ -1,71 +1,177 @@
-// Registers (or refreshes) the Telegram webhook for RedMatch.
+// Registers (or refreshes) the Telegram webhook for RedMatch AND verifies the
+// whole channel-access setup in one run.
 //
 // WHY THIS SCRIPT EXISTS
 // Telegram only delivers the update types listed in `allowed_updates`, and that
 // list defaults to EVERYTHING EXCEPT `chat_member` and `chat_join_request`.
 // The channel access model depends on `chat_join_request` (the bot approves a
-// join only after re-checking the Stripe subscription) and on `chat_member`
-// (to record who actually joined/left). If the webhook is registered without
-// naming them explicitly, those updates never arrive and nobody is ever
-// admitted to the channel — silently. So this list is load-bearing, not
-// cosmetic.
+// join only after re-checking the Stripe subscription), on `chat_member` (to
+// record who actually joined/left) and on `my_chat_member` (how the bot learns
+// the channel id when it is promoted to admin). If the webhook is registered
+// without naming them explicitly, those updates never arrive and nobody is ever
+// admitted to the channel — silently. So this list is load-bearing.
 //
-// Usage:
-//   node --env-file-if-exists=/vercel/share/.env.project scripts/set-telegram-webhook.mjs https://your-domain.com
-//   node scripts/set-telegram-webhook.mjs            (derives the URL from env)
+// USAGE (run where TELEGRAM_BOT_TOKEN is available — e.g. Vercel, or locally
+// after `vercel env pull`). The token is read from the environment; never pass
+// it on the command line.
 //
-// Requires TELEGRAM_BOT_TOKEN. Uses TELEGRAM_WEBHOOK_SECRET when present so the
-// webhook route can verify the X-Telegram-Bot-Api-Secret-Token header.
+//   # Register the webhook, then verify everything:
+//   node scripts/set-telegram-webhook.mjs https://red-match.com
+//
+//   # Only verify (does not touch the webhook):
+//   node scripts/set-telegram-webhook.mjs --check
+//
+// Optional env:
+//   TELEGRAM_WEBHOOK_SECRET  sent as secret_token so the route can verify the
+//                            X-Telegram-Bot-Api-Secret-Token header.
+//   TELEGRAM_CHAT_ID         pins the channel explicitly; otherwise the id is
+//                            read from app_config (auto-discovered on promotion).
+//   SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY  used only to read the discovered
+//                            channel id when TELEGRAM_CHAT_ID is not set.
+
+const API = "https://api.telegram.org"
 
 const token = process.env.TELEGRAM_BOT_TOKEN?.trim()
 if (!token) {
-  console.error("TELEGRAM_BOT_TOKEN is not set")
+  console.error("✗ TELEGRAM_BOT_TOKEN is not set. Run this where the bot token is available (Vercel env, or `vercel env pull`).")
   process.exit(1)
 }
 
-// Resolve the public base URL: explicit arg wins, otherwise fall back to the
-// usual deployment env vars.
-const argUrl = process.argv[2]?.trim()
-const envUrl =
-  process.env.NEXT_PUBLIC_SITE_URL?.trim() ||
-  process.env.NEXT_PUBLIC_APP_URL?.trim() ||
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "") ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "")
+const checkOnly = process.argv.includes("--check")
 
-const base = (argUrl || envUrl).replace(/\/+$/, "")
-if (!base) {
-  console.error("No base URL. Pass it as an argument: node scripts/set-telegram-webhook.mjs https://your-domain.com")
-  process.exit(1)
-}
+// The permissions the access model actually relies on.
+const REQUIRED_ADMIN_RIGHTS = [
+  ["can_invite_users", "approve/decline join requests"],
+  ["can_post_messages", "publish red-card alerts to the channel"],
+]
 
-const webhookUrl = `${base}/api/telegram/webhook`
-const secret = process.env.TELEGRAM_WEBHOOK_SECRET?.trim()
+const REQUIRED_UPDATES = ["message", "my_chat_member", "chat_member", "chat_join_request"]
 
-const body = {
-  url: webhookUrl,
-  // The two non-default updates the access model needs, plus the message and
-  // membership updates the webhook already handles. `my_chat_member` is how the
-  // bot learns the channel id when it is promoted to admin.
-  allowed_updates: ["message", "my_chat_member", "chat_member", "chat_join_request"],
-  drop_pending_updates: false,
-}
-if (secret) body.secret_token = secret
-
-try {
-  const res = await fetch(`https://api.telegram.org/bot${token}/setWebhook`, {
+/** Calls the Bot API. The token only ever travels in the URL path. */
+async function tg(method, body) {
+  const res = await fetch(`${API}/bot${token}/${method}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    body: JSON.stringify(body ?? {}),
   })
-  const json = await res.json()
-  if (!json.ok) {
-    console.error(`setWebhook failed: ${json.description ?? `HTTP ${res.status}`}`)
+  return res.json()
+}
+
+/** Resolves the base URL: explicit arg wins, otherwise deployment env vars. */
+function resolveBaseUrl() {
+  const arg = process.argv[2]?.trim()
+  if (arg && !arg.startsWith("--")) return arg.replace(/\/+$/, "")
+  const env =
+    process.env.NEXT_PUBLIC_SITE_URL?.trim() ||
+    process.env.NEXT_PUBLIC_APP_URL?.trim() ||
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "") ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "")
+  return env.replace(/\/+$/, "")
+}
+
+/** Reads the channel id from env, or the auto-discovered value in app_config. */
+async function resolveChannelId() {
+  const fromEnv = process.env.TELEGRAM_CHAT_ID?.trim()
+  if (fromEnv) return { id: fromEnv, source: "TELEGRAM_CHAT_ID env" }
+
+  const url = process.env.SUPABASE_URL?.trim()
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()
+  if (!url || !key) return { id: null, source: "no TELEGRAM_CHAT_ID and no Supabase access" }
+
+  try {
+    const res = await fetch(`${url}/rest/v1/app_config?key=eq.telegram_chat_id&select=value`, {
+      headers: { apikey: key, Authorization: `Bearer ${key}` },
+    })
+    const rows = await res.json()
+    const value = Array.isArray(rows) && rows[0]?.value ? String(rows[0].value).trim() : null
+    return { id: value || null, source: "app_config (auto-discovered)" }
+  } catch {
+    return { id: null, source: "app_config read failed" }
+  }
+}
+
+async function registerWebhook() {
+  const base = resolveBaseUrl()
+  if (!base) {
+    console.error("✗ No base URL. Pass it explicitly: node scripts/set-telegram-webhook.mjs https://red-match.com")
     process.exit(1)
   }
-  console.log(`webhook registered: ${webhookUrl}`)
-  console.log(`allowed_updates: ${body.allowed_updates.join(", ")}`)
-  console.log(secret ? "secret token: configured" : "secret token: none (set TELEGRAM_WEBHOOK_SECRET to harden)")
-} catch (error) {
-  console.error(`request failed: ${error.message}`)
-  process.exit(1)
+  const webhookUrl = `${base}/api/telegram/webhook`
+  const secret = process.env.TELEGRAM_WEBHOOK_SECRET?.trim()
+
+  const body = { url: webhookUrl, allowed_updates: REQUIRED_UPDATES, drop_pending_updates: false }
+  if (secret) body.secret_token = secret
+
+  const json = await tg("setWebhook", body)
+  if (!json.ok) {
+    console.error(`✗ setWebhook failed: ${json.description ?? "unknown error"}`)
+    process.exit(1)
+  }
+  console.log(`✓ Webhook registered → ${webhookUrl}`)
+  console.log(`  secret token: ${secret ? "configured" : "NONE (set TELEGRAM_WEBHOOK_SECRET to harden)"}`)
 }
+
+async function verify() {
+  let ok = true
+
+  // 1) Webhook info: URL set, and chat_join_request among allowed_updates.
+  const info = await tg("getWebhookInfo")
+  const r = info.result ?? {}
+  const allowed = r.allowed_updates ?? []
+  console.log("\n— Webhook —")
+  console.log(`  url: ${r.url || "(none)"}`)
+  console.log(`  allowed_updates: ${allowed.length ? allowed.join(", ") : "(default — MISSING the ones we need)"}`)
+  console.log(`  pending updates: ${r.pending_update_count ?? 0}`)
+  if (r.last_error_message) console.log(`  ⚠ last error: ${r.last_error_message}`)
+
+  for (const u of ["chat_join_request", "my_chat_member", "chat_member"]) {
+    if (!allowed.includes(u)) {
+      console.log(`  ✗ '${u}' is NOT in allowed_updates — those updates will never arrive`)
+      ok = false
+    }
+  }
+  if (ok) console.log("  ✓ chat_join_request / my_chat_member / chat_member are all enabled")
+
+  // 2) Channel + bot admin rights.
+  console.log("\n— Channel & bot admin rights —")
+  const { id: channel, source } = await resolveChannelId()
+  if (!channel) {
+    console.log(`  ✗ Channel id unknown (${source}).`)
+    console.log("    Fix: with the webhook now registered, add the bot to the private channel as ADMINISTRATOR")
+    console.log("    (or re-promote it) — the my_chat_member update will auto-record the id. Or set TELEGRAM_CHAT_ID.")
+    return false
+  }
+  console.log(`  channel id: ${channel}  [${source}]`)
+
+  const me = await tg("getMe")
+  if (!me.ok) {
+    console.log(`  ✗ getMe failed: ${me.description}`)
+    return false
+  }
+  const member = await tg("getChatMember", { chat_id: channel, user_id: me.result.id })
+  if (!member.ok) {
+    console.log(`  ✗ getChatMember failed: ${member.description}`)
+    console.log("    The bot is probably not a member/admin of that channel yet.")
+    return false
+  }
+  const status = member.result.status
+  console.log(`  bot @${me.result.username} status in channel: ${status}`)
+  if (status !== "administrator") {
+    console.log("  ✗ The bot must be an ADMINISTRATOR of the channel.")
+    return false
+  }
+  for (const [right, why] of REQUIRED_ADMIN_RIGHTS) {
+    if (member.result[right]) {
+      console.log(`  ✓ ${right} — ${why}`)
+    } else {
+      console.log(`  ✗ ${right} is OFF — needed to ${why}`)
+      ok = false
+    }
+  }
+  return ok
+}
+
+if (!checkOnly) await registerWebhook()
+const verified = await verify()
+console.log(verified ? "\n✅ All checks passed." : "\n❌ Setup incomplete — see the ✗ lines above.")
+process.exit(verified ? 0 : 1)
