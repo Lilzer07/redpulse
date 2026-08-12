@@ -20,9 +20,9 @@ export type Subscription = {
 }
 
 export type TelegramSettings = {
-  bot_token: string | null
   chat_id: string | null
   verified_at: string | null
+  access_status: string
 }
 
 export type Alert = {
@@ -117,7 +117,7 @@ export async function getTelegramSettings(): Promise<TelegramSettings | null> {
 
   const { data } = await supabase
     .from("telegram_settings")
-    .select("bot_token, chat_id, verified_at")
+    .select("chat_id, verified_at, access_status")
     .eq("user_id", user.id)
     .maybeSingle()
 

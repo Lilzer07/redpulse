@@ -3,6 +3,9 @@
 import { revalidatePath } from "next/cache"
 import { createClient } from "@/lib/supabase/server"
 import { competitions } from "@/lib/data"
+import { createLinkToken, unlinkTelegram } from "@/lib/telegram/linking"
+import { authorizeTelegramDelivery } from "@/lib/subscriptions/authorization"
+import { sendTelegramMessage } from "@/lib/telegram/send"
 
 /**
  * Every action re-reads the session server-side and writes with that user's id.
@@ -67,59 +70,58 @@ export async function setAllCompetitions(enabled: boolean): Promise<ActionResult
 }
 
 /**
- * Saves the Telegram credentials and validates them against the real Telegram
- * API. verified_at is only set when Telegram itself confirms the bot and chat,
- * so a green state can never come from a simulated timeout.
+ * Starts Telegram linking: mints a one-time deep link the user opens to connect
+ * their chat to the single shared bot. No bot token is ever handled here or in
+ * the browser — the server owns it (spec section 1).
  */
-export async function saveTelegramSettings(
-  botToken: string,
-  chatId: string,
-): Promise<{ ok: true; verified: boolean } | { ok: false; error: string }> {
-  const token = botToken.trim()
-  const chat = chatId.trim()
-  if (!token || !chat) return { ok: false, error: "missing-fields" }
-
+export async function startTelegramLinking(): Promise<
+  { ok: true; deepLink: string; expiresAt: string } | { ok: false; error: string }
+> {
   try {
-    const { supabase, user } = await requireUser()
+    const { user } = await requireUser()
+    const result = await createLinkToken(user.id)
+    if (!result.ok) return { ok: false, error: result.error }
 
-    let verified = false
-    try {
-      // getMe validates the token; getChat validates the destination.
-      const me = await fetch(`https://api.telegram.org/bot${encodeURIComponent(token)}/getMe`, {
-        cache: "no-store",
-      })
-      if (me.ok) {
-        const chatRes = await fetch(
-          `https://api.telegram.org/bot${encodeURIComponent(token)}/getChat?chat_id=${encodeURIComponent(chat)}`,
-          { cache: "no-store" },
-        )
-        verified = chatRes.ok
-      }
-    } catch {
-      verified = false
-    }
+    revalidatePath("/dashboard/telegram")
+    return { ok: true, deepLink: result.deepLink, expiresAt: result.expiresAt }
+  } catch {
+    return { ok: false, error: "not-authenticated" }
+  }
+}
 
-    const { error } = await supabase.from("telegram_settings").upsert(
-      {
-        user_id: user.id,
-        bot_token: token,
-        chat_id: chat,
-        verified_at: verified ? new Date().toISOString() : null,
-        // Delivery authorization is a separate gate from billing: this records
-        // that the user linked a working chat, while the subscription check runs
-        // independently at send time. Left 'pending' until Telegram confirms, so
-        // the monitor never tries to push to an unverified chat.
-        access_status: verified ? "active" : "pending",
-        revoked_at: null,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "user_id" },
-    )
-    if (error) return { ok: false, error: error.message }
+/** Disconnects the user's Telegram chat and revokes delivery immediately. */
+export async function disconnectTelegram(): Promise<ActionResult> {
+  try {
+    const { user } = await requireUser()
+    const { ok } = await unlinkTelegram({ userId: user.id })
+    if (!ok) return { ok: false, error: "storage-unavailable" }
 
     revalidatePath("/dashboard/telegram")
     revalidatePath("/dashboard")
-    return { ok: true, verified }
+    return { ok: true }
+  } catch {
+    return { ok: false, error: "not-authenticated" }
+  }
+}
+
+/**
+ * Sends a real test message to the user's linked chat, gated by the same
+ * authorization used for real alerts. Never fakes success: an unconfigured bot
+ * or an unauthorized user is reported honestly.
+ */
+export async function sendTestAlert(): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    const { user } = await requireUser()
+
+    const auth = await authorizeTelegramDelivery(user.id)
+    if (!auth.allowed) return { ok: false, error: auth.reason }
+
+    const result = await sendTelegramMessage(
+      auth.chatId,
+      "RedMatch — message de test. Votre connexion Telegram fonctionne : les alertes carton rouge arriveront ici.",
+    )
+    if (result.status === "sent") return { ok: true }
+    return { ok: false, error: result.status === "not_configured" ? "telegram_not_configured" : result.error }
   } catch {
     return { ok: false, error: "not-authenticated" }
   }

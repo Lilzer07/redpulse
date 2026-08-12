@@ -31,11 +31,11 @@ export function isTelegramConfigured(): boolean {
  * No `parse_mode`: the message embeds third-party team and player names, and
  * plain text makes them incapable of breaking the markup or injecting into it.
  */
-export async function sendTelegramMessage(chatId: string, text: string, botToken?: string | null): Promise<SendResult> {
-  // Each account may bring its own bot; the shared env token is the fallback for
-  // accounts that haven't. If neither exists, nothing is sent and the caller is
-  // told so explicitly rather than being handed a fake success.
-  const token = botToken?.trim() || process.env.TELEGRAM_BOT_TOKEN?.trim()
+export async function sendTelegramMessage(chatId: string, text: string): Promise<SendResult> {
+  // A single shared bot serves every account (spec section 1): the token lives
+  // only here, server-side, in TELEGRAM_BOT_TOKEN. If it is absent, nothing is
+  // sent and the caller is told so explicitly rather than handed a fake success.
+  const token = process.env.TELEGRAM_BOT_TOKEN?.trim()
   if (!token) return { status: "not_configured" }
 
   const controller = new AbortController()
@@ -93,11 +93,7 @@ export async function deliverRedCardAlert(
     return { userId, authorized: false, delivered: false, reason: authorization.reason }
   }
 
-  const result = await sendTelegramMessage(
-    authorization.chatId,
-    formatTelegramAlert(event, analysis),
-    authorization.botToken,
-  )
+  const result = await sendTelegramMessage(authorization.chatId, formatTelegramAlert(event, analysis))
   if (result.status === "sent") return { userId, authorized: true, delivered: true, messageId: result.messageId }
   return {
     userId,
