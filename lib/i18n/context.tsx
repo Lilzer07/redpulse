@@ -16,22 +16,42 @@ type I18nValue = {
 const I18nContext = createContext<I18nValue | null>(null)
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-  // Always start from "fr" so the server and first client render match
-  // (no hydration mismatch), then adopt the stored/browser preference.
+  // Always start from "fr" so the server render and the first client render are
+  // byte-identical (React hydrates against "fr"). The stored/browser preference
+  // is adopted in an effect below, i.e. strictly AFTER hydration has completed.
   const [locale, setLocaleState] = useState<Locale>("fr")
 
+  // `useEffect` in a component that renders the whole tree still runs *during*
+  // hydration for the initial mount, so switching the locale here rewrites every
+  // translated string while React is still matching server HTML — that is what
+  // produced the "server rendered HTML didn't match the client" error. Deferring
+  // the switch to the next frame lets hydration finish first, after which the
+  // language change is a normal, safe client re-render.
   useEffect(() => {
-    let next: Locale | null = null
-    try {
-      const stored = window.localStorage.getItem(STORAGE_KEY) ?? window.localStorage.getItem(LEGACY_STORAGE_KEY)
-      if (stored === "fr" || stored === "en") next = stored
-    } catch {
-      // localStorage unavailable (private mode) — fall back to browser language.
+    let cancelled = false
+
+    const resolvePreference = (): Locale | null => {
+      let next: Locale | null = null
+      try {
+        const stored = window.localStorage.getItem(STORAGE_KEY) ?? window.localStorage.getItem(LEGACY_STORAGE_KEY)
+        if (stored === "fr" || stored === "en") next = stored
+      } catch {
+        // localStorage unavailable (private mode) — fall back to browser language.
+      }
+      if (!next && navigator.language?.toLowerCase().startsWith("en")) next = "en"
+      return next
     }
-    if (!next && typeof navigator !== "undefined" && navigator.language?.toLowerCase().startsWith("en")) {
-      next = "en"
+
+    const id = window.requestAnimationFrame(() => {
+      if (cancelled) return
+      const next = resolvePreference()
+      if (next && next !== "fr") setLocaleState(next)
+    })
+
+    return () => {
+      cancelled = true
+      window.cancelAnimationFrame(id)
     }
-    if (next && next !== "fr") setLocaleState(next)
   }, [])
 
   // Keep <html lang> in sync for accessibility and SEO.
