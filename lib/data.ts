@@ -189,7 +189,8 @@ export const pricingPlans: PricingPlan[] = [
     cta: "Commencer maintenant",
     href: "/checkout?plan=monthly",
     highlight: false,
-    checkoutUrl: "https://buy.stripe.com/cNi4gz9Et3fV0uK0co6EU01",
+    // Les deux Payment Links étaient inversés : celui-ci est bien le checkout 10 €/mois.
+    checkoutUrl: "https://buy.stripe.com/00w14n17XbMr6T8e3e6EU02",
   },
   {
     id: "lifetime",
@@ -211,7 +212,8 @@ export const pricingPlans: PricingPlan[] = [
     cta: "Obtenir l’accès à vie",
     href: "/checkout?plan=lifetime",
     highlight: true,
-    checkoutUrl: "https://buy.stripe.com/00w14n17XbMr6T8e3e6EU02",
+    // Les deux Payment Links étaient inversés : celui-ci est bien le checkout 50 € à vie.
+    checkoutUrl: "https://buy.stripe.com/cNi4gz9Et3fV0uK0co6EU01",
   },
 ]
 
