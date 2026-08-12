@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { pricingPlans } from "@/lib/data"
+import { ensureWebhookConfigured } from "@/lib/stripe/provision"
 
 export const dynamic = "force-dynamic"
 
@@ -34,6 +35,11 @@ export default async function CheckoutPage({
   if (!user) {
     redirect(`/auth/login?next=${encodeURIComponent(`/checkout?plan=${target.id}`)}`)
   }
+
+  // Make sure Stripe knows where to deliver events BEFORE the user can pay,
+  // otherwise a completed payment would never grant access. Idempotent and
+  // cached after the first success, so this costs nothing on later visits.
+  await ensureWebhookConfigured()
 
   // client_reference_id is the only fully reliable key the webhook can trust to
   // attribute the payment; prefilled_email just saves the user a keystroke.

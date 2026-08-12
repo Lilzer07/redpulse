@@ -6,6 +6,7 @@
 import { NextResponse } from "next/server"
 import type Stripe from "stripe"
 import { periodEndOf, resolveUserId, stripeClient, syncSubscription } from "@/lib/stripe/sync"
+import { getWebhookSigningSecret } from "@/lib/stripe/provision"
 import { logEvent } from "@/lib/logging"
 
 export const runtime = "nodejs"
@@ -13,12 +14,19 @@ export const dynamic = "force-dynamic"
 
 export async function POST(request: Request) {
   const stripe = stripeClient()
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET?.trim()
+  // Either an operator-provided env var or the secret the app provisioned for
+  // itself against Stripe. Verification is never skipped when it is missing.
+  const webhookSecret = await getWebhookSigningSecret()
 
   // Without a key or secret we cannot verify anything, and an unverified event
   // must never grant access — so refuse instead of guessing.
   if (!stripe || !webhookSecret) {
-    logEvent("stripe_webhook_rejected", { reason: "not_configured" })
+    // Name the missing piece: "no secret" and "no API key" have different fixes,
+    // and a generic message makes production debugging guesswork.
+    logEvent("stripe_webhook_rejected", {
+      reason: "not_configured",
+      missing: !stripe ? "stripe_api_key" : "signing_secret",
+    })
     return NextResponse.json({ ok: false, error: "not_configured" }, { status: 503 })
   }
 

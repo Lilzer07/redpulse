@@ -10,9 +10,24 @@
 
 create table if not exists app_config (
   key text primary key,
-  value jsonb not null,
+  value text not null,
   updated_at timestamptz not null default now()
 );
+
+-- The first cut of this migration used jsonb, which forced every plain secret to
+-- be JSON-encoded. Values here are opaque strings, so convert to text. Guarded
+-- so re-running on an already-correct table is a no-op.
+do $$
+begin
+  if exists (
+    select 1 from information_schema.columns
+    where table_name = 'app_config' and column_name = 'value' and data_type = 'jsonb'
+  ) then
+    alter table app_config
+      alter column value type text
+      using case when jsonb_typeof(value) = 'string' then value #>> '{}' else value::text end;
+  end if;
+end $$;
 
 alter table app_config enable row level security;
 
