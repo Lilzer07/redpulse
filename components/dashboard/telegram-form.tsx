@@ -2,14 +2,23 @@
 
 import { useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { Check, Loader2, Send, Link2, AlertTriangle, Copy, LogOut, Lock } from "lucide-react"
-import { startTelegramLinking, disconnectTelegram, sendTestAlert } from "@/app/dashboard/actions"
+import { Check, Loader2, Send, Link2, AlertTriangle, Copy, LogOut, Lock, Users } from "lucide-react"
+import {
+  startTelegramLinking,
+  disconnectTelegram,
+  sendTestAlert,
+  requestChannelInvite,
+} from "@/app/dashboard/actions"
 
 type Props = {
   /** True when the chat is linked and access is active. */
   connected: boolean
   /** True when the account holds an active/entitled subscription. */
   subscriptionActive: boolean
+  /** True once the user is actually inside the private channel. */
+  inChannel: boolean
+  /** A still-valid invite link, when one is pending. */
+  pendingInvite: string | null
 }
 
 /**
@@ -17,7 +26,7 @@ type Props = {
  * connecting mints a deep link the user opens in Telegram, and all trust
  * decisions happen on the server.
  */
-export function TelegramForm({ connected, subscriptionActive }: Props) {
+export function TelegramForm({ connected, subscriptionActive, inChannel, pendingInvite }: Props) {
   // --- State 3: subscription inactive -> linking is not offered at all -------
   if (!subscriptionActive) {
     return (
@@ -39,13 +48,112 @@ export function TelegramForm({ connected, subscriptionActive }: Props) {
     )
   }
 
-  // --- State 1: connected -> status + test + disconnect ----------------------
-  if (connected) {
+  // --- State 1: linked AND in the channel -> fully set up --------------------
+  if (connected && inChannel) {
     return <ConnectedPanel />
   }
 
-  // --- State 2: not connected (but entitled) -> generate a deep link ---------
+  // --- State 2: linked but NOT in the channel -> the join step ---------------
+  //
+  // Distinguished from the state above on purpose: this account is linked and
+  // paying but receives nothing until it joins, so telling it "connecté" would
+  // hide the one action still required.
+  if (connected) {
+    return <JoinChannelPanel pendingInvite={pendingInvite} />
+  }
+
+  // --- State 3: not linked (but entitled) -> generate a deep link ------------
   return <ConnectPanel />
+}
+
+/**
+ * The join step: the account is linked, but Telegram requires the user to open
+ * an invite themselves. The link is personal and single-use, so it is requested
+ * on demand rather than embedded in the page.
+ */
+function JoinChannelPanel({ pendingInvite }: { pendingInvite: string | null }) {
+  const [link, setLink] = useState(pendingInvite ?? "")
+  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle")
+  const [error, setError] = useState("")
+
+  async function requestInvite() {
+    setStatus("loading")
+    setError("")
+    const res = await requestChannelInvite()
+    if (res.ok) {
+      setLink(res.inviteLink)
+      setStatus("idle")
+      return
+    }
+    setError(
+      res.error === "no_subscription"
+        ? "Votre abonnement n'est plus actif."
+        : res.error === "not_connected"
+          ? "Votre compte Telegram n'est plus lié. Reconnectez-le."
+          : "Le canal n'est pas encore configuré côté serveur. Réessayez plus tard.",
+    )
+    setStatus("error")
+  }
+
+  return (
+    <Panel>
+      <Header
+        icon={<Users className="h-5 w-5" />}
+        title="Dernière étape : rejoindre le canal"
+        subtitle="Vos alertes sont publiées dans un canal privé."
+      />
+
+      <div className="mb-5 flex items-start gap-3 rounded-xl border border-[var(--warning,var(--danger))]/25 bg-primary/[0.06] px-4 py-3">
+        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          Votre compte Telegram est bien lié, mais vous ne recevrez aucune alerte avant{" "}
+          <span className="font-medium text-foreground">{"d'avoir rejoint le canal"}</span>.
+        </p>
+      </div>
+
+      {link ? (
+        <div className="space-y-3">
+          <a
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90"
+          >
+            <Users className="h-4 w-4" />
+            Rejoindre le canal RedMatch
+          </a>
+          <p className="text-xs text-muted-foreground">
+            Lien personnel et à usage unique. Une fois dans le canal, cette page se mettra à jour.
+          </p>
+        </div>
+      ) : (
+        <button
+          onClick={requestInvite}
+          disabled={status === "loading"}
+          className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {status === "loading" ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Génération…
+            </>
+          ) : (
+            <>
+              <Link2 className="h-4 w-4" />
+              Obtenir mon lien {"d'invitation"}
+            </>
+          )}
+        </button>
+      )}
+
+      {status === "error" && (
+        <div className="mt-4 flex items-center gap-3 rounded-xl border border-[var(--danger)]/30 bg-[var(--danger)]/[0.08] px-4 py-3">
+          <AlertTriangle className="h-4 w-4 shrink-0 text-[var(--danger)]" />
+          <p className="text-sm font-medium text-[var(--danger)]">{error}</p>
+        </div>
+      )}
+    </Panel>
+  )
 }
 
 function ConnectPanel() {
@@ -188,15 +296,15 @@ function ConnectedPanel() {
     <Panel>
       <Header
         icon={<Check className="h-5 w-5" />}
-        title="Telegram connecté"
-        subtitle="Vos alertes carton rouge arrivent en temps réel."
+        title="Tout est prêt"
+        subtitle="Vous êtes dans le canal : les alertes y arrivent en temps réel."
       />
 
       <div className="mb-5 flex items-center gap-3 rounded-xl border border-primary/25 bg-primary/[0.08] px-4 py-3">
         <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground">
           <Check className="h-4 w-4" />
         </span>
-        <p className="text-sm font-medium text-primary">Ce compte est lié et actif.</p>
+        <p className="text-sm font-medium text-primary">Compte lié et membre du canal.</p>
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row">

@@ -124,6 +124,48 @@ export async function getTelegramSettings(): Promise<TelegramSettings | null> {
   return data ?? null
 }
 
+/** Where the user stands in the onboarding journey. */
+export type TelegramJourney = {
+  /** The bot conversation is linked to this account. */
+  linked: boolean
+  /** The user is actually inside the private channel — the only state that receives alerts. */
+  inChannel: boolean
+  /** A pending invite the user can still open, when one is live. */
+  inviteLink: string | null
+}
+
+/**
+ * Reads the real channel state, not just the linkage.
+ *
+ * `linked` and `inChannel` are deliberately separate: joining the channel is a
+ * manual step in Telegram, so an account can be linked yet receive nothing. The
+ * dashboard has to be able to tell the user that instead of claiming success.
+ */
+export async function getTelegramJourney(): Promise<TelegramJourney> {
+  const { supabase, user } = await currentUser()
+  const empty: TelegramJourney = { linked: false, inChannel: false, inviteLink: null }
+  if (!user) return empty
+
+  const { data } = await supabase
+    .from("telegram_settings")
+    .select("telegram_user_id, channel_status, invite_link, invite_link_expires_at")
+    .eq("user_id", user.id)
+    .maybeSingle()
+
+  if (!data) return empty
+
+  // Only surface an invite that is still openable, so the UI never shows a link
+  // that Telegram would reject.
+  const expiresAt = data.invite_link_expires_at ? new Date(String(data.invite_link_expires_at)).getTime() : null
+  const inviteLive = Boolean(data.invite_link) && (expiresAt === null || expiresAt > Date.now())
+
+  return {
+    linked: data.telegram_user_id != null,
+    inChannel: String(data.channel_status ?? "none") === "member",
+    inviteLink: inviteLive ? ((data.invite_link as string | null) ?? null) : null,
+  }
+}
+
 export async function getAlerts(limit = 20): Promise<Alert[]> {
   const { supabase, user } = await currentUser()
   if (!user) return []

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache"
 import { createClient } from "@/lib/supabase/server"
 import { competitions } from "@/lib/data"
 import { createLinkToken, unlinkTelegram } from "@/lib/telegram/linking"
+import { grantChannelAccess } from "@/lib/telegram/access"
 import { authorizeTelegramDelivery } from "@/lib/subscriptions/authorization"
 import { sendMessage } from "@/lib/telegram/service"
 
@@ -84,6 +85,30 @@ export async function startTelegramLinking(): Promise<
 
     revalidatePath("/dashboard/telegram")
     return { ok: true, deepLink: result.deepLink, expiresAt: result.expiresAt }
+  } catch {
+    return { ok: false, error: "not-authenticated" }
+  }
+}
+
+/**
+ * Issues (or reuses) this user's personal invite link to the private channel.
+ *
+ * Needed because joining is a manual step in Telegram: the link is normally sent
+ * by the bot on `/start`, but a user who lost that message would otherwise be
+ * stuck — linked, paying, and receiving nothing. `grantChannelAccess` re-checks
+ * both the subscription and the linkage server-side, so this cannot hand out
+ * access to an unentitled account.
+ */
+export async function requestChannelInvite(): Promise<
+  { ok: true; inviteLink: string } | { ok: false; error: string }
+> {
+  try {
+    const { user } = await requireUser()
+    const result = await grantChannelAccess(user.id)
+    if (!result.ok) return { ok: false, error: result.reason }
+
+    revalidatePath("/dashboard/telegram")
+    return { ok: true, inviteLink: result.inviteLink }
   } catch {
     return { ok: false, error: "not-authenticated" }
   }
