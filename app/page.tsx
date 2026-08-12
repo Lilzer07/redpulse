@@ -6,7 +6,6 @@ import { Features } from "@/components/landing/features"
 import { HowItWorks } from "@/components/landing/how-it-works"
 import { LiveDemo } from "@/components/landing/live-demo"
 import { Pricing } from "@/components/landing/pricing"
-import { Testimonials } from "@/components/landing/testimonials"
 import { Faq } from "@/components/landing/faq"
 import { SiteFooter } from "@/components/landing/site-footer"
 
@@ -22,7 +21,6 @@ export default function Page() {
         <HowItWorks />
         <LiveDemo />
         <Pricing />
-        <Testimonials />
         <Faq />
       </main>
       <SiteFooter />

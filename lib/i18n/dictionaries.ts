@@ -34,7 +34,9 @@ const fr = {
       "Dès qu’un carton rouge tombe, RedMatch récupère le contexte du match, analyse la situation et vous envoie une notification Telegram : probabilité de but supplémentaire, victoire du favori et indice de confiance. En quelques secondes.",
     ctaPrimary: "Commencer",
     ctaSecondary: "Voir la démonstration",
-    trust: ["Analyse < 2 s", "Indice de confiance /100", "20+ compétitions"],
+    // "Analyse < 2 s" removed: the monitor polls every 15 minutes, so that
+    // headline promised a latency the product does not deliver.
+    trust: ["Vérification toutes les 15 min", "Indice de confiance /100", "21 compétitions"],
     imageAlt: "Stade de football illuminé la nuit",
   },
 
@@ -56,12 +58,8 @@ const fr = {
   },
 
   stats: {
-    labels: [
-      "Compétitions analysées",
-      "Temps moyen d’analyse",
-      "Disponibilité",
-      "Surveillance IA",
-    ],
+    // Matched BY INDEX against `stats` in lib/data.ts — keep both in sync.
+    labels: ["Compétitions couvertes", "Fréquence de vérification", "Surveillance continue"],
   },
 
   features: {
@@ -181,19 +179,6 @@ const fr = {
     },
   },
 
-  testimonials: {
-    eyebrow: "Avis clients",
-    title: "Ils ne ratent plus rien",
-    quotes: [
-      "La notification arrive avant même que le ralenti passe à la télé. C’est bluffant de rapidité.",
-      "Enfin un outil qui fait une seule chose, mais qui la fait parfaitement. Zéro configuration, ça marche.",
-      "Je suis 6 championnats en même temps sans stress. Les alertes sont fiables à 100%.",
-      "L’intégration Telegram a pris littéralement 30 secondes. Interface magnifique en plus.",
-      "Rapide, fiable, discret. Exactement ce que je cherchais pour suivre la Serie A et la Ligue 1.",
-      "10 € par mois largement rentabilisés. La latence est vraiment de quelques secondes, pas plus.",
-    ],
-  },
-
   faq: {
     eyebrow: "FAQ",
     title: "Questions fréquentes",
@@ -256,7 +241,7 @@ const fr = {
     ],
     mobileItems: ["Accueil", "Direct", "Compét.", "Telegram", "Facture"],
     systemOk: "Système opérationnel",
-    watching: "Surveillance active sur 22 compétitions.",
+    watching: "Surveillance active sur 21 compétitions.",
   },
 
   topbar: {
@@ -564,7 +549,7 @@ const en: typeof fr = {
       "The moment a red card is shown, RedMatch pulls the match context, analyses the situation and sends you a Telegram notification: chance of another goal, favourite’s win probability and a confidence score. In seconds.",
     ctaPrimary: "Get started",
     ctaSecondary: "Watch the demo",
-    trust: ["Analysis in < 2 s", "Confidence score /100", "20+ competitions"],
+    trust: ["Checked every 15 min", "Confidence score /100", "21 competitions"],
     imageAlt: "Football stadium lit up at night",
   },
 
@@ -586,7 +571,7 @@ const en: typeof fr = {
   },
 
   stats: {
-    labels: ["Competitions analysed", "Average analysis time", "Uptime", "AI monitoring"],
+    labels: ["Competitions covered", "Check frequency", "Continuous monitoring"],
   },
 
   features: {
@@ -703,19 +688,6 @@ const en: typeof fr = {
     },
   },
 
-  testimonials: {
-    eyebrow: "Customer reviews",
-    title: "They never miss a thing",
-    quotes: [
-      "The notification arrives before the replay even airs on TV. The speed is stunning.",
-      "Finally a tool that does one thing and does it perfectly. Zero setup, it just works.",
-      "I follow 6 leagues at once without stress. The alerts are 100% reliable.",
-      "The Telegram integration took literally 30 seconds. Gorgeous interface too.",
-      "Fast, reliable, discreet. Exactly what I wanted for following Serie A and Ligue 1.",
-      "€10 a month easily pays for itself. The latency really is a few seconds, no more.",
-    ],
-  },
-
   faq: {
     eyebrow: "FAQ",
     title: "Frequently asked questions",
@@ -771,7 +743,7 @@ const en: typeof fr = {
     items: ["Dashboard", "Live feed", "Competitions", "Telegram", "Billing", "Settings"],
     mobileItems: ["Home", "Live", "Comps", "Telegram", "Billing"],
     systemOk: "All systems operational",
-    watching: "Actively monitoring 22 competitions.",
+    watching: "Actively monitoring 21 competitions.",
   },
 
   topbar: {
