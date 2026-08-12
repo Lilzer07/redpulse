@@ -11,18 +11,30 @@ import { competitionById } from "./competitions"
 import type { RedCardAnalysis, RedCardEvent } from "./types"
 
 /**
+ * Stable identity of one expulsion, used to make per-user delivery idempotent.
+ * A replayed monitor pass produces the same key, so the unique index on
+ * (user_id, event_key) rejects the duplicate instead of alerting twice.
+ */
+export function alertEventKey(event: RedCardEvent): string {
+  return `${event.fixtureId}:${event.player}:${event.minute}`
+}
+
+/**
  * Records one alert row for one user.
  *
  * `delivered_at` is set only when Telegram actually accepted the message, so the
  * feed distinguishes "alert generated" from "alert delivered" instead of implying
  * a send that never happened.
+ *
+ * Returns `duplicate: true` when this user was already alerted for this exact
+ * expulsion, so the caller can skip the send rather than spam the subscriber.
  */
 export async function recordUserAlert(input: {
   userId: string
   event: RedCardEvent
   analysis: RedCardAnalysis
   deliveredAt: string | null
-}): Promise<{ ok: boolean; error?: string }> {
+}): Promise<{ ok: boolean; error?: string; duplicate?: boolean }> {
   const supabase = createAdminClient()
   if (!supabase) return { ok: false, error: "Service role key is not configured." }
 
@@ -31,6 +43,7 @@ export async function recordUserAlert(input: {
 
   const { error } = await supabase.from("alerts").insert({
     user_id: input.userId,
+    event_key: alertEventKey(event),
     // The dashboard filters by the catalogue slug, so store that rather than the
     // numeric API id.
     competition_id: competition?.slug ?? String(event.leagueId),
@@ -48,5 +61,30 @@ export async function recordUserAlert(input: {
     delivered_at: input.deliveredAt,
   })
 
+  // 23505 = unique violation: this user already has an alert for this expulsion.
+  if (error?.code === "23505") return { ok: true, duplicate: true }
   return error ? { ok: false, error: error.message } : { ok: true }
+}
+
+/** Stamps delivery once Telegram has actually accepted the message. */
+export async function markAlertDelivered(userId: string, event: RedCardEvent): Promise<void> {
+  const supabase = createAdminClient()
+  if (!supabase) return
+
+  await supabase
+    .from("alerts")
+    .update({ delivered_at: new Date().toISOString() })
+    .eq("user_id", userId)
+    .eq("event_key", alertEventKey(event))
+}
+
+/**
+ * Removes the claim row for a user who turned out not to be entitled, so an
+ * unauthorized account leaves no alert history behind.
+ */
+export async function deleteUserAlert(userId: string, event: RedCardEvent): Promise<void> {
+  const supabase = createAdminClient()
+  if (!supabase) return
+
+  await supabase.from("alerts").delete().eq("user_id", userId).eq("event_key", alertEventKey(event))
 }

@@ -11,7 +11,7 @@ import { analyseRedCard } from "./analysis"
 import { extractRedCards } from "./red-cards"
 import { acquireMonitorLock, claimRedCard, markDispatched, recordRunResult, releaseMonitorLock } from "./dedupe"
 import { describeFailure, hasApiKey } from "./client"
-import { recordUserAlert } from "./alerts"
+import { deleteUserAlert, markAlertDelivered, recordUserAlert } from "./alerts"
 import { reserveRequests } from "./budget"
 import { deliverRedCardAlert } from "@/lib/telegram/send"
 import { findEligibleRecipients } from "@/lib/subscriptions/authorization"
@@ -191,6 +191,12 @@ async function collectRedCards(fixtures: Fixture[]) {
  *
  * `deliverRedCardAlert` re-checks authorization per user, so this only has to
  * decide who to consider, not who is entitled.
+ *
+ * Order matters: the alert row is claimed *before* the message goes out. The
+ * unique (user_id, event_key) index turns that insert into a per-user lock, so a
+ * replayed pass (retry, overlapping trigger) can never send the same expulsion
+ * twice. Sending first would leak a duplicate message before the duplicate was
+ * detected.
  */
 async function dispatch(event: RedCardWithAnalysis): Promise<{ attempted: number; delivered: number }> {
   const competition = competitionById(event.leagueId)
@@ -199,22 +205,32 @@ async function dispatch(event: RedCardWithAnalysis): Promise<{ attempted: number
   const recipients = await findEligibleRecipients(competition.slug)
   if (!recipients.length) return { attempted: 0, delivered: 0 }
 
-  const outcomes = await Promise.all(recipients.map((userId) => deliverRedCardAlert(userId, event, event.analysis)))
+  let attempted = 0
+  let delivered = 0
 
-  // History is written only for users who were actually entitled. An unentitled
-  // account must leave no trace of an alert it was never allowed to receive.
-  await Promise.all(
-    outcomes
-      .filter((outcome) => outcome.authorized)
-      .map((outcome) =>
-        recordUserAlert({
-          userId: outcome.userId,
-          event,
-          analysis: event.analysis,
-          deliveredAt: outcome.delivered ? new Date().toISOString() : null,
-        }),
-      ),
+  const results = await Promise.all(
+    recipients.map(async (userId) => {
+      // Claim first: a duplicate here means this user was already alerted.
+      const claim = await recordUserAlert({ userId, event, analysis: event.analysis, deliveredAt: null })
+      if (claim.duplicate || !claim.ok) return { authorized: false, delivered: false }
+
+      const outcome = await deliverRedCardAlert(userId, event, event.analysis)
+
+      // An unentitled account must leave no trace of an alert it was never
+      // allowed to receive, so the speculative row is removed again.
+      if (!outcome.authorized) {
+        await deleteUserAlert(userId, event)
+        return outcome
+      }
+      if (outcome.delivered) await markAlertDelivered(userId, event)
+      return outcome
+    }),
   )
 
-  return { attempted: outcomes.length, delivered: outcomes.filter((o) => o.delivered).length }
+  for (const r of results) {
+    if (r.authorized) attempted += 1
+    if (r.delivered) delivered += 1
+  }
+
+  return { attempted, delivered }
 }
