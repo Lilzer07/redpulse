@@ -10,7 +10,7 @@ export function Stats() {
 
   return (
     <section className="relative mx-auto max-w-6xl px-5 py-16">
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {stats.map((s, i) => (
           <motion.div
             key={i}

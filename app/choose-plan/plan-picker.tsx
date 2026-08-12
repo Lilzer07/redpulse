@@ -1,31 +1,16 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { Check, Flame, Loader2 } from "lucide-react"
+import { Check, Flame } from "lucide-react"
 import { pricingPlans, type PricingPlan } from "@/lib/data"
 import { useI18n } from "@/lib/i18n/context"
-import type { SubscriptionPlan } from "@/lib/user-data"
-import { activatePlanWithoutPayment } from "./actions"
 
-function PlanCard({
-  plan,
-  index,
-  pending,
-  onChoose,
-}: {
-  plan: PricingPlan
-  index: number
-  pending: SubscriptionPlan | null
-  onChoose: (plan: SubscriptionPlan) => void
-}) {
+function PlanCard({ plan, index }: { plan: PricingPlan; index: number }) {
   const { t } = useI18n()
   const highlight = plan.highlight
   // Same translated copy as the landing page, so prices never drift apart.
   const copy = t.pricing.plans[plan.id as keyof typeof t.pricing.plans]
   const badge = "badge" in copy ? copy.badge : undefined
-  const isPending = pending === plan.id
 
   return (
     <motion.div
@@ -88,67 +73,32 @@ function PlanCard({
           ))}
         </ul>
 
-        {/* Checkout is not live yet, so the paid path is disabled rather than
-            pretending to charge. Replace with the Stripe checkout call. */}
-        <button
-          type="button"
-          disabled
+        {/* Live Stripe checkout: /checkout tags the payment link with the user's
+            id, and access is granted only by the signed Stripe webhook. */}
+        <a
+          href={`/checkout?plan=${plan.id}`}
           className={[
-            "mt-7 h-12 w-full cursor-not-allowed rounded-xl text-base font-semibold opacity-50",
+            "mt-7 inline-flex h-12 w-full items-center justify-center rounded-xl text-base font-semibold transition-colors",
             highlight
-              ? "bg-primary text-primary-foreground"
-              : "border border-white/15 bg-white/5 text-foreground",
+              ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:bg-primary/90"
+              : "border border-white/15 bg-white/5 text-foreground hover:bg-white/10",
           ].join(" ")}
         >
-          {t.choosePlan.comingSoon}
-        </button>
-
-        {/* TEMPORARY — see app/choose-plan/actions.ts. Remove with Stripe. */}
-        <button
-          type="button"
-          onClick={() => onChoose(plan.id as SubscriptionPlan)}
-          disabled={pending !== null}
-          className="mt-3 inline-flex h-9 items-center justify-center gap-2 rounded-lg text-sm font-medium text-muted-foreground underline decoration-white/20 underline-offset-4 transition-colors hover:text-foreground disabled:opacity-60"
-        >
-          {isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
-          {t.choosePlan.continueWithoutPaying}
-        </button>
+          {copy.cta}
+        </a>
       </div>
     </motion.div>
   )
 }
 
 export function PlanPicker() {
-  const { t } = useI18n()
-  const router = useRouter()
-  const [pending, setPending] = useState<SubscriptionPlan | null>(null)
-  const [error, setError] = useState<string | null>(null)
-
-  async function handleChoose(plan: SubscriptionPlan) {
-    setPending(plan)
-    setError(null)
-    const result = await activatePlanWithoutPayment(plan)
-    if (result.ok) {
-      router.replace("/dashboard")
-      return
-    }
-    setPending(null)
-    setError(t.choosePlan.error)
-  }
-
   return (
     <div className="w-full">
       <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2">
         {pricingPlans.map((plan, i) => (
-          <PlanCard key={plan.id} plan={plan} index={i} pending={pending} onChoose={handleChoose} />
+          <PlanCard key={plan.id} plan={plan} index={i} />
         ))}
       </div>
-
-      {error && (
-        <p role="alert" className="mt-6 text-center text-sm text-destructive">
-          {error}
-        </p>
-      )}
     </div>
   )
 }

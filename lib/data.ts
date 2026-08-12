@@ -95,64 +95,36 @@ export const steps = [
   { step: "04", title: "Telegram enrichi envoyé", description: "Vous recevez l’analyse complète dans Telegram en quelques secondes." },
 ]
 
-export const stats = [
-  { value: 20, suffix: "+", label: "Compétitions analysées" },
-  { value: 2, prefix: "<", suffix: "s", label: "Temps moyen d’analyse" },
-  { value: 99.99, suffix: "%", label: "Disponibilité", decimals: 2 },
-  { value: 24, suffix: "h/24", label: "Surveillance IA" },
-]
-
-export type Testimonial = {
-  name: string
-  handle: string
-  quote: string
-  initials: string
+export type Stat = {
+  value: number
+  prefix?: string
+  suffix?: string
+  decimals?: number
+  /** Developer-facing fallback; the rendered text comes from `t.stats.labels`. */
+  label: string
 }
 
-export const testimonials: Testimonial[] = [
-  {
-    name: "Thomas Renard",
-    handle: "@thomas_r",
-    initials: "TR",
-    quote:
-      "La notification arrive avant même que le ralenti passe à la télé. C’est bluffant de rapidité.",
-  },
-  {
-    name: "Léa Moreau",
-    handle: "@lea.m",
-    initials: "LM",
-    quote:
-      "Enfin un outil qui fait une seule chose, mais qui la fait parfaitement. Zéro configuration, ça marche.",
-  },
-  {
-    name: "Karim Benali",
-    handle: "@karimb",
-    initials: "KB",
-    quote:
-      "Je suis 6 championnats en même temps sans stress. Les alertes sont fiables à 100%.",
-  },
-  {
-    name: "Sophie Laurent",
-    handle: "@sophiel",
-    initials: "SL",
-    quote:
-      "L’intégration Telegram a pris littéralement 30 secondes. Interface magnifique en plus.",
-  },
-  {
-    name: "Marco Rossi",
-    handle: "@marco_rossi",
-    initials: "MR",
-    quote:
-      "Rapide, fiable, discret. Exactement ce que je cherchais pour suivre la Serie A et la Ligue 1.",
-  },
-  {
-    name: "Julien Fabre",
-    handle: "@jfabre",
-    initials: "JF",
-    quote:
-      "10 € par mois largement rentabilisés. La latence est vraiment de quelques secondes, pas plus.",
-  },
+/**
+ * Only claims we can actually stand behind.
+ *
+ * Deliberately removed: a "99.99% uptime" figure that was never measured and is
+ * not guaranteed anywhere, and a "< 2s average analysis" headline that
+ * misrepresented the product — the monitor polls every 15 minutes, so what a
+ * user waits for is that cadence, not the speed of a single analysis.
+ *
+ * Labels are matched BY INDEX against `t.stats.labels`: keep both lists the
+ * same length and order.
+ */
+export const stats: Stat[] = [
+  { value: competitions.length, label: "Compétitions couvertes" },
+  { value: 15, suffix: " min", label: "Fréquence de vérification" },
+  { value: 24, suffix: "h/24", label: "Surveillance continue" },
 ]
+
+// Testimonials were removed on purpose: they were attributed to invented people
+// with invented claims ("alerts are 100% reliable", "latency of a few seconds").
+// Fabricated reviews are unlawful in the EU and the latency claims were false.
+// Do not reintroduce testimonials unless they come from real, consenting users.
 
 export const faqs = [
   {
@@ -193,6 +165,11 @@ export type PricingPlan = {
   cta: string
   href: string
   highlight: boolean
+  /**
+   * Stripe Payment Link for this plan. Access is never granted from this URL:
+   * entitlement only comes from the signed Stripe webhook (spec section 3).
+   */
+  checkoutUrl: string
 }
 
 export const pricingPlans: PricingPlan[] = [
@@ -210,8 +187,9 @@ export const pricingPlans: PricingPlan[] = [
       "Toutes les mises à jour",
     ],
     cta: "Commencer maintenant",
-    href: "/dashboard/billing",
+    href: "/checkout?plan=monthly",
     highlight: false,
+    checkoutUrl: "https://buy.stripe.com/cNi4gz9Et3fV0uK0co6EU01",
   },
   {
     id: "lifetime",
@@ -231,8 +209,9 @@ export const pricingPlans: PricingPlan[] = [
       "Badge exclusif « Membre Fondateur »",
     ],
     cta: "Obtenir l’accès à vie",
-    href: "/dashboard/billing",
+    href: "/checkout?plan=lifetime",
     highlight: true,
+    checkoutUrl: "https://buy.stripe.com/00w14n17XbMr6T8e3e6EU02",
   },
 ]
 

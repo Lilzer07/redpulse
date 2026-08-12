@@ -41,8 +41,16 @@ export function formatAnalysisBlock(analysis: RedCardAnalysis): string {
  * sequences. Plain text removes any need to escape them and makes a malformed
  * name incapable of breaking or injecting into the message.
  */
-export function formatTelegramAlert(event: RedCardEvent, analysis: RedCardAnalysis): string {
-  return [
+export function formatTelegramAlert(
+  event: RedCardEvent,
+  analysis: RedCardAnalysis,
+  /**
+   * Optional one-sentence AI reading. Absent when the gateway was unavailable,
+   * in which case the alert simply ships without it.
+   */
+  aiReading?: string | null,
+): string {
+  const lines = [
     "🚨 CARTON ROUGE",
     "",
     `${countryFlag(event.country)} ${event.leagueName}`,
@@ -52,8 +60,15 @@ export function formatTelegramAlert(event: RedCardEvent, analysis: RedCardAnalys
     `🟥 Joueur : ${event.player}`,
     `⏱️ ${formatMinute(event.minute, event.minuteExtra)}`,
     "",
-    "🤖 Analyse IA",
+    // The figures below come from RedMatch's deterministic model, not from a
+    // language model. Labelling them "Analyse IA" would misattribute them, so
+    // the AI sentence gets its own clearly separated section instead.
+    "📊 Analyse RedMatch",
     "",
     formatAnalysisBlock(analysis),
-  ].join("\n")
+  ]
+
+  if (aiReading) lines.push("", "🤖 Lecture IA", "", aiReading)
+
+  return lines.join("\n")
 }
