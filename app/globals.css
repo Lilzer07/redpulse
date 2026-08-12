@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: "Anton", sans-serif;
+  --font-body: "Inter", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background: #08090b;
+  color: #eceef1;
+  overscroll-behavior: none;
+}
+
+::selection {
+  background: #ff5a1f;
+  color: #08090b;
+}
+
+h1,
+h2,
+h3,
+.display {
+  font-family: var(--font-display);
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  line-height: 0.92;
+  font-weight: 400;
+}
+
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #ff5a1f;
+  font-weight: 600;
+}
+
+/* Signature element: a short ignition-orange pulse line under eyebrows,
+   echoing the "engine start" motif from Scene 1 across the whole site. */
+.ignition-rule {
+  display: inline-block;
+  width: 28px;
+  height: 2px;
+  background: #ff5a1f;
+  margin-right: 10px;
+  position: relative;
+  top: -3px;
+  animation: ignitionPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes ignitionPulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    width: 28px;
+  }
+  50% {
+    opacity: 1;
+    width: 42px;
+  }
+}
+
+.webgl-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.dom-layer {
+  position: relative;
+  z-index: 10;
+}
+
+html.lenis {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
