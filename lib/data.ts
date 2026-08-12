@@ -193,6 +193,11 @@ export type PricingPlan = {
   cta: string
   href: string
   highlight: boolean
+  /**
+   * Stripe Payment Link for this plan. Access is never granted from this URL:
+   * entitlement only comes from the signed Stripe webhook (spec section 3).
+   */
+  checkoutUrl: string
 }
 
 export const pricingPlans: PricingPlan[] = [
@@ -212,6 +217,7 @@ export const pricingPlans: PricingPlan[] = [
     cta: "Commencer maintenant",
     href: "/dashboard/billing",
     highlight: false,
+    checkoutUrl: "https://buy.stripe.com/cNi4gz9Et3fV0uK0co6EU01",
   },
   {
     id: "lifetime",
@@ -233,6 +239,7 @@ export const pricingPlans: PricingPlan[] = [
     cta: "Obtenir l’accès à vie",
     href: "/dashboard/billing",
     highlight: true,
+    checkoutUrl: "https://buy.stripe.com/00w14n17XbMr6T8e3e6EU02",
   },
 ]
 

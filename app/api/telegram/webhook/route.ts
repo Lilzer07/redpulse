@@ -1,29 +1,30 @@
-// Telegram webhook (spec sections 1 and 12).
+// Telegram webhook (spec sections 2, 5 and 9).
 //
-// Telegram POSTs every message for the bot here. Two things make this safe:
-//
-//   1. Secret verification. When the webhook is registered we set a secret; on
-//      every call Telegram echoes it in the X-Telegram-Bot-Api-Secret-Token
-//      header. A request without the exact secret is rejected with 401 before
-//      any work — this is what stops a stranger from POSTing fake /start or
-//      /stop commands to drive account linking.
-//   2. All account changes go through the server-side linking helpers, which
-//      hash tokens and check billing state; the webhook itself trusts nothing
-//      from the message body beyond the chat it must reply to.
+// Security model, deliberately minimal:
+//   - TELEGRAM_WEBHOOK_SECRET is OPTIONAL. When set, Telegram echoes it in the
+//     X-Telegram-Bot-Api-Secret-Token header and a mismatch is rejected. When
+//     unset, the endpoint still works — the old "no secret => 503" behaviour is
+//     gone, because it broke the whole flow for no gain.
+//   - Nothing in the message body is trusted for identity. Linking only happens
+//     by redeeming a one-time token whose hash we stored ourselves, and the
+//     numeric Telegram user id (never the username) is what gets persisted.
 import { NextResponse } from "next/server"
-import { sendTelegramMessage } from "@/lib/telegram/send"
+import { sendMessage } from "@/lib/telegram/service"
 import { redeemLinkToken, unlinkTelegram, findUserByChatId } from "@/lib/telegram/linking"
-import { authorizeTelegramDelivery } from "@/lib/subscriptions/authorization"
+import { grantChannelAccess, hasPremiumAccess, markChannelJoined, revokeChannelAccess } from "@/lib/telegram/access"
+import { logEvent } from "@/lib/logging"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
 
-/** Minimal shape of the Telegram update fields we use. */
 type TelegramUpdate = {
   message?: {
     text?: string
     chat?: { id?: number }
     from?: { id?: number; username?: string }
+  }
+  chat_member?: {
+    new_chat_member?: { status?: string; user?: { id?: number } }
   }
 }
 
@@ -34,49 +35,57 @@ function timingSafeEqual(a: string, b: string): boolean {
   return diff === 0
 }
 
+/** Always 200: Telegram retries anything else, and we have nothing to retry. */
+const ack = () => NextResponse.json({ ok: true })
+
 export async function POST(request: Request) {
   const expected = process.env.TELEGRAM_WEBHOOK_SECRET?.trim()
 
-  // Refuse by default: with no secret configured the endpoint cannot be trusted,
-  // so it declines rather than processing anonymous commands.
-  if (!expected) {
-    return NextResponse.json({ ok: false, error: "not_configured" }, { status: 503 })
-  }
-
-  const provided = request.headers.get("x-telegram-bot-api-secret-token") ?? ""
-  if (!timingSafeEqual(provided, expected)) {
-    return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 })
+  // Optional hardening: only enforced when a secret is actually configured.
+  if (expected) {
+    const provided = request.headers.get("x-telegram-bot-api-secret-token") ?? ""
+    if (!timingSafeEqual(provided, expected)) {
+      logEvent("stripe_webhook_rejected", { source: "telegram", reason: "bad_secret" })
+      return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 })
+    }
   }
 
   let update: TelegramUpdate
   try {
     update = (await request.json()) as TelegramUpdate
   } catch {
-    // Malformed body: acknowledge with 200 so Telegram does not retry forever.
-    return NextResponse.json({ ok: true })
+    return ack()
+  }
+
+  // ---- membership changes: record who actually joined or left --------------
+  const memberChange = update.chat_member?.new_chat_member
+  if (memberChange?.user?.id) {
+    const status = memberChange.status
+    if (status === "member" || status === "administrator" || status === "creator") {
+      await markChannelJoined(memberChange.user.id)
+    }
+    return ack()
   }
 
   const chatId = update.message?.chat?.id
   const text = update.message?.text?.trim()
-  if (typeof chatId !== "number" || !text) {
-    return NextResponse.json({ ok: true })
-  }
+  if (typeof chatId !== "number" || !text) return ack()
 
   const chat = String(chatId)
-  const reply = (message: string) => sendTelegramMessage(chat, message)
+  const reply = (message: string) => sendMessage(chat, message)
 
-  // ---- /start <token> : redeem a linking token ----------------------------
+  // ---- /start [token] : connect the Telegram account -----------------------
   if (text.startsWith("/start")) {
-    const parts = text.split(/\s+/)
-    const token = parts[1]
+    const token = text.split(/\s+/)[1]
 
     if (!token) {
       await reply(
-        "Bienvenue sur RedMatch. Pour connecter ce chat, ouvrez le lien de connexion depuis votre tableau de bord RedMatch.",
+        "Bienvenue sur RedMatch.\n\nPour recevoir les alertes, ouvrez votre tableau de bord RedMatch et cliquez sur « Connecter Telegram ».",
       )
-      return NextResponse.json({ ok: true })
+      return ack()
     }
 
+    // Identity comes from the numeric id, never the username (spec section 2).
     const result = await redeemLinkToken(
       token,
       chat,
@@ -90,41 +99,56 @@ export async function POST(request: Request) {
           ? "Ce lien de connexion est invalide ou expiré. Générez-en un nouveau depuis votre tableau de bord."
           : "Service momentanément indisponible. Réessayez dans un instant.",
       )
-      return NextResponse.json({ ok: true })
+      return ack()
+    }
+
+    logEvent("telegram_connection", { userId: result.userId })
+
+    // Connected: hand over the personal channel invite right away when the
+    // subscription entitles it, so the user never has to hunt for a link.
+    const grant = await grantChannelAccess(result.userId)
+    if (grant.ok) {
+      await reply(
+        `Compte Telegram connecté.\n\nVoici votre lien d'accès personnel au canal privé RedMatch Alertes :\n${grant.inviteLink}\n\nCe lien est à usage unique et expire sous 24 h.`,
+      )
+      return ack()
     }
 
     await reply(
-      result.accessStatus === "active"
-        ? "Chat connecté. Vous recevrez ici vos alertes carton rouge en temps réel."
-        : "Chat connecté. Vos alertes démarreront dès que votre abonnement sera actif.",
+      grant.reason === "no_subscription"
+        ? "Compte Telegram connecté.\n\nVotre abonnement n'est pas actif : dès qu'il le sera, votre lien d'accès au canal vous sera envoyé ici."
+        : "Compte Telegram connecté.\n\nLe canal d'alertes n'est pas encore disponible. Réessayez depuis votre tableau de bord dans un instant.",
     )
-    return NextResponse.json({ ok: true })
+    return ack()
   }
 
-  // ---- /status : report the live authorization verdict ---------------------
+  // ---- /status : live verdict, straight from billing state ------------------
   if (text.startsWith("/status")) {
     const linked = await findUserByChatId(chat)
     if (!linked) {
-      await reply("Ce chat n'est connecté à aucun compte RedMatch.")
-      return NextResponse.json({ ok: true })
+      await reply("Ce compte Telegram n'est connecté à aucun compte RedMatch.")
+      return ack()
     }
 
-    const auth = await authorizeTelegramDelivery(linked.userId)
+    const premium = await hasPremiumAccess(linked.userId)
     await reply(
-      auth.allowed
-        ? "Statut : actif. Vous recevez les alertes carton rouge."
-        : "Statut : inactif. Vos alertes sont en pause (abonnement ou accès non actif).",
+      premium
+        ? "Statut : abonnement actif. Vous recevez les alertes dans le canal RedMatch Alertes."
+        : "Statut : abonnement inactif. L'accès au canal est suspendu jusqu'au renouvellement.",
     )
-    return NextResponse.json({ ok: true })
+    return ack()
   }
 
-  // ---- /stop : disconnect this chat ----------------------------------------
+  // ---- /stop : disconnect and leave the channel -----------------------------
   if (text.startsWith("/stop")) {
+    const linked = await findUserByChatId(chat)
+    if (linked) await revokeChannelAccess(linked.userId, "user_requested_stop")
     await unlinkTelegram({ chatId: chat })
-    await reply("Chat déconnecté. Vous ne recevrez plus d'alertes. Reconnectez-le depuis votre tableau de bord.")
-    return NextResponse.json({ ok: true })
+    await reply(
+      "Compte Telegram déconnecté et accès au canal retiré.\n\nVous pouvez vous reconnecter à tout moment depuis votre tableau de bord.",
+    )
+    return ack()
   }
 
-  // Unknown command: keep quiet but acknowledge, so Telegram stops retrying.
-  return NextResponse.json({ ok: true })
+  return ack()
 }

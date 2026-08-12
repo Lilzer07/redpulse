@@ -15,11 +15,10 @@ import "server-only"
 
 import { createHash, randomBytes } from "node:crypto"
 import { createAdminClient } from "@/lib/supabase/admin"
+import { getBotUsername } from "./service"
 
 /** One-time linking tokens are valid for this long. Short by design. */
 const LINK_TTL_MS = 15 * 60 * 1000
-
-const TELEGRAM_API = "https://api.telegram.org"
 
 /** SHA-256, hex. Matches the digest computed in SQL for redemption. */
 function hashToken(plain: string): string {
@@ -29,23 +28,6 @@ function hashToken(plain: string): string {
 export type LinkTokenResult =
   | { ok: true; deepLink: string; expiresAt: string }
   | { ok: false; error: "not_configured" | "storage_unavailable" | "bot_unreachable" }
-
-/**
- * Resolves the bot's @username from the token via getMe, so the deep link points
- * at the right bot without a second env var. Never returns or logs the token.
- */
-async function getBotUsername(): Promise<string | null> {
-  const token = process.env.TELEGRAM_BOT_TOKEN?.trim()
-  if (!token) return null
-  try {
-    const res = await fetch(`${TELEGRAM_API}/bot${token}/getMe`, { cache: "no-store" })
-    const payload = (await res.json().catch(() => null)) as { ok?: boolean; result?: { username?: string } } | null
-    if (!res.ok || !payload?.ok || !payload.result?.username) return null
-    return payload.result.username
-  } catch {
-    return null
-  }
-}
 
 /**
  * Mints a one-time linking token for a user and returns the deep link to open.
@@ -130,6 +112,11 @@ export async function unlinkTelegram(by: { userId: string } | { chatId: string }
     revoked_at: new Date().toISOString(),
     link_token_hash: null,
     link_token_expires_at: null,
+    // Disconnecting must also kill channel entitlement, otherwise a stale invite
+    // would keep working after the user asked to stop.
+    invite_link: null,
+    invite_link_expires_at: null,
+    channel_status: "removed",
     updated_at: new Date().toISOString(),
   }
 
