@@ -11,7 +11,13 @@
 import { NextResponse } from "next/server"
 import { rememberChannelId, sendMessage } from "@/lib/telegram/service"
 import { redeemLinkToken, unlinkTelegram, findUserByChatId } from "@/lib/telegram/linking"
-import { grantChannelAccess, hasPremiumAccess, markChannelJoined, revokeChannelAccess } from "@/lib/telegram/access"
+import {
+  approveChannelJoin,
+  grantChannelAccess,
+  hasPremiumAccess,
+  markChannelJoined,
+  revokeChannelAccess,
+} from "@/lib/telegram/access"
 import { logEvent } from "@/lib/logging"
 
 export const runtime = "nodejs"
@@ -25,6 +31,11 @@ type TelegramUpdate = {
   }
   chat_member?: {
     new_chat_member?: { status?: string; user?: { id?: number } }
+  }
+  /** A user tapped a join-request invite link and awaits approval. */
+  chat_join_request?: {
+    chat?: { id?: number }
+    from?: { id?: number }
   }
   /** The bot's OWN membership changing — how we learn the channel id. */
   my_chat_member?: {
@@ -84,6 +95,17 @@ export async function POST(request: Request) {
     return ack()
   }
 
+  // ---- join requests: the paywall at the channel door ----------------------
+  //
+  // With join-request invite links, tapping a link lands here instead of adding
+  // the user. approveChannelJoin re-checks the subscription server-side and only
+  // then admits them, so a shared or stale link cannot buy channel access.
+  const joinRequest = update.chat_join_request
+  if (joinRequest?.from?.id) {
+    await approveChannelJoin(joinRequest.from.id)
+    return ack()
+  }
+
   // ---- membership changes: record who actually joined or left --------------
   const memberChange = update.chat_member?.new_chat_member
   if (memberChange?.user?.id) {
@@ -136,7 +158,7 @@ export async function POST(request: Request) {
     const grant = await grantChannelAccess(result.userId)
     if (grant.ok) {
       await reply(
-        `Compte Telegram connecté.\n\nVoici votre lien d'accès personnel au canal privé RedMatch Alertes :\n${grant.inviteLink}\n\nCe lien est à usage unique et expire sous 24 h.`,
+        `Compte Telegram connecté.\n\nVoici votre lien d'accès personnel au canal privé RedMatch Alertes :\n${grant.inviteLink}\n\nOuvrez-le puis validez la demande d'adhésion : l'accès est accordé automatiquement si votre abonnement est actif. Ce lien est personnel, à usage unique, et expire sous 15 minutes.`,
       )
       return ack()
     }

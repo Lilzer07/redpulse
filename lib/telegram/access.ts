@@ -7,7 +7,13 @@
 import "server-only"
 
 import { createAdminClient } from "@/lib/supabase/admin"
-import { createInviteLink, removeUserFromChannel, revokeInviteLink } from "./service"
+import {
+  approveChatJoinRequest,
+  createInviteLink,
+  declineChatJoinRequest,
+  removeUserFromChannel,
+  revokeInviteLink,
+} from "./service"
 import { logEvent } from "@/lib/logging"
 
 /** Stripe statuses that entitle a user to premium access. */
@@ -150,6 +156,73 @@ export async function revokeChannelAccess(userId: string, reason: string): Promi
 
   logEvent("telegram_user_removed", { userId, reason })
   return { ok: true }
+}
+
+export type JoinDecision = "approved" | "declined" | "unknown_user" | "not_configured" | "error"
+
+/**
+ * Decides a pending channel join request (spec: paid access only).
+ *
+ * This is the real security gate of the join-request model. A `chat_join_request`
+ * update carries a Telegram user id we do not implicitly trust: we resolve it to
+ * a RedMatch account and RE-CHECK the live subscription before letting Telegram
+ * add anyone. An unknown account, or one without an active subscription, is
+ * declined — a leaked invite link is therefore worthless without a paid account
+ * behind it.
+ *
+ * On approval the invite link is revoked immediately, which restores the
+ * "one join per link" guarantee that `member_limit` used to provide before the
+ * switch to join requests.
+ */
+export async function approveChannelJoin(telegramUserId: number): Promise<JoinDecision> {
+  const supabase = createAdminClient()
+  if (!supabase) return "error"
+
+  const { data } = await supabase
+    .from("telegram_settings")
+    .select("user_id, invite_link")
+    .eq("telegram_user_id", telegramUserId)
+    .maybeSingle()
+
+  // No linked RedMatch account for this Telegram user: refuse and clear it.
+  if (!data?.user_id) {
+    const declined = await declineChatJoinRequest(telegramUserId)
+    logEvent("telegram_join_declined", { reason: "unknown_user" })
+    return declined.ok ? "unknown_user" : "error"
+  }
+
+  const userId = String(data.user_id)
+
+  // The authoritative check: billing is re-read from the database, never trusted
+  // from the update itself.
+  if (!(await hasPremiumAccess(userId))) {
+    const declined = await declineChatJoinRequest(telegramUserId)
+    logEvent("telegram_join_declined", { userId, reason: "no_subscription" })
+    return declined.ok ? "declined" : "error"
+  }
+
+  const approved = await approveChatJoinRequest(telegramUserId)
+  if (!approved.ok) {
+    logEvent("telegram_invite_failed", { userId, reason: approved.reason })
+    return approved.reason === "not_configured" ? "not_configured" : "error"
+  }
+
+  // Single-use: burn the link now that it has admitted its owner, and record the
+  // membership so the dashboard reflects the joined state.
+  if (data.invite_link) await revokeInviteLink(String(data.invite_link))
+  await supabase
+    .from("telegram_settings")
+    .update({
+      channel_status: "member",
+      access_status: "active",
+      invite_link: null,
+      invite_link_expires_at: null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("user_id", userId)
+
+  logEvent("telegram_join_approved", { userId })
+  return "approved"
 }
 
 /** Marks the user as having actually joined, from a chat_member update. */
