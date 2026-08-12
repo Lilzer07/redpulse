@@ -18,6 +18,8 @@ export type LogEvent =
   | "telegram_user_removed"
   | "telegram_alert_sent"
   | "telegram_alert_failed"
+  | "telegram_channel_detected"
+  | "telegram_channel_published"
   | "ai_analysis_generated"
   | "ai_analysis_failed"
 

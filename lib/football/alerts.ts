@@ -66,25 +66,4 @@ export async function recordUserAlert(input: {
   return error ? { ok: false, error: error.message } : { ok: true }
 }
 
-/** Stamps delivery once Telegram has actually accepted the message. */
-export async function markAlertDelivered(userId: string, event: RedCardEvent): Promise<void> {
-  const supabase = createAdminClient()
-  if (!supabase) return
 
-  await supabase
-    .from("alerts")
-    .update({ delivered_at: new Date().toISOString() })
-    .eq("user_id", userId)
-    .eq("event_key", alertEventKey(event))
-}
-
-/**
- * Removes the claim row for a user who turned out not to be entitled, so an
- * unauthorized account leaves no alert history behind.
- */
-export async function deleteUserAlert(userId: string, event: RedCardEvent): Promise<void> {
-  const supabase = createAdminClient()
-  if (!supabase) return
-
-  await supabase.from("alerts").delete().eq("user_id", userId).eq("event_key", alertEventKey(event))
-}

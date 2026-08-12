@@ -1,8 +1,8 @@
 // Monitoring loop (spec section 6).
 //
 // One run: find the live fixtures in the watched competitions, read their events,
-// detect expulsions, claim each one exactly once, then fan the claimed ones out to
-// entitled subscribers.
+// detect expulsions, claim each one exactly once, then publish the claimed ones to
+// the private channel and record them in each subscriber's history.
 import "server-only"
 
 import { competitionById } from "./competitions"
@@ -11,10 +11,13 @@ import { analyseRedCard } from "./analysis"
 import { extractRedCards } from "./red-cards"
 import { acquireMonitorLock, claimRedCard, markDispatched, recordRunResult, releaseMonitorLock } from "./dedupe"
 import { describeFailure, hasApiKey } from "./client"
-import { deleteUserAlert, markAlertDelivered, recordUserAlert } from "./alerts"
+import { recordUserAlert } from "./alerts"
 import { reserveRequests } from "./budget"
-import { deliverRedCardAlert } from "@/lib/telegram/send"
-import { findEligibleRecipients } from "@/lib/subscriptions/authorization"
+import { generateCommentary } from "@/lib/ai/commentary"
+import { logEvent } from "@/lib/logging"
+import { formatTelegramAlert } from "@/lib/telegram/format"
+import { sendChannelMessage } from "@/lib/telegram/service"
+import { authorizeTelegramDelivery, findEligibleRecipients } from "@/lib/subscriptions/authorization"
 import type { Fixture, RedCardWithAnalysis } from "./types"
 
 /**
@@ -131,7 +134,13 @@ export async function runMonitorCycle(): Promise<MonitorRunResult> {
       const withAnalysis: RedCardWithAnalysis = { ...event, analysis }
       newRedCards.push(withAnalysis)
 
-      const outcome = await dispatch(withAnalysis)
+      // Composed once per expulsion, after the claim: the AI call only happens
+      // for an alert that is genuinely going out, never for a duplicate. It
+      // returns null on failure, in which case the alert ships with its figures
+      // alone rather than waiting on the gateway.
+      const commentary = await generateCommentary(event, analysis)
+
+      const outcome = await dispatch(withAnalysis, commentary?.reading ?? null)
       attempted += outcome.attempted
       delivered += outcome.delivered
 
@@ -187,48 +196,61 @@ async function collectRedCards(fixtures: Fixture[]) {
 }
 
 /**
- * Fans one expulsion out to the users subscribed to its competition.
+ * Publishes one expulsion to the private channel, then records it in each
+ * entitled subscriber's history.
  *
- * `deliverRedCardAlert` re-checks authorization per user, so this only has to
- * decide who to consider, not who is entitled.
+ * The channel replaces per-user direct messages: every subscriber reads the same
+ * post, so the message is composed and sent exactly once. Access is enforced by
+ * channel membership (granted on payment, revoked on lapse) rather than by
+ * re-deciding per recipient at send time.
  *
- * Order matters: the alert row is claimed *before* the message goes out. The
- * unique (user_id, event_key) index turns that insert into a per-user lock, so a
- * replayed pass (retry, overlapping trigger) can never send the same expulsion
- * twice. Sending first would leak a duplicate message before the duplicate was
- * detected.
+ * Publishing before writing history is safe here because the caller only reaches
+ * this function for a *claimed* expulsion — `claimRedCard` is the deduplication
+ * gate, so a replayed pass never gets this far and cannot double-post.
  */
-async function dispatch(event: RedCardWithAnalysis): Promise<{ attempted: number; delivered: number }> {
+async function dispatch(
+  event: RedCardWithAnalysis,
+  aiReading: string | null,
+): Promise<{ attempted: number; delivered: number }> {
   const competition = competitionById(event.leagueId)
   if (!competition) return { attempted: 0, delivered: 0 }
 
+  const publication = await sendChannelMessage(formatTelegramAlert(event, event.analysis, aiReading))
+
+  if (publication.ok) {
+    logEvent("telegram_channel_published", { fixtureId: event.fixtureId, competition: competition.slug })
+  } else {
+    logEvent("telegram_alert_failed", {
+      fixtureId: event.fixtureId,
+      reason: publication.reason === "not_configured" ? "channel_not_configured" : publication.detail,
+    })
+  }
+
+  // History is per user so the dashboard can show "your" alerts, but it is a
+  // record of the publication, not a second delivery channel.
   const recipients = await findEligibleRecipients(competition.slug)
   if (!recipients.length) return { attempted: 0, delivered: 0 }
 
-  let attempted = 0
-  let delivered = 0
+  const publishedAt = publication.ok ? new Date().toISOString() : null
 
   const results = await Promise.all(
     recipients.map(async (userId) => {
-      // Claim first: a duplicate here means this user was already alerted.
-      const claim = await recordUserAlert({ userId, event, analysis: event.analysis, deliveredAt: null })
-      if (claim.duplicate || !claim.ok) return { authorized: false, delivered: false }
+      // Only stamp delivery for users who could actually read the post: an
+      // active subscription and live channel access. Stamping everyone would
+      // claim a delivery for someone whose access had already been revoked.
+      const authorization = await authorizeTelegramDelivery(userId)
+      const deliveredAt = authorization.allowed ? publishedAt : null
 
-      const outcome = await deliverRedCardAlert(userId, event, event.analysis)
-
-      // An unentitled account must leave no trace of an alert it was never
-      // allowed to receive, so the speculative row is removed again.
-      if (!outcome.authorized) {
-        await deleteUserAlert(userId, event)
-        return outcome
-      }
-      if (outcome.delivered) await markAlertDelivered(userId, event)
-      return outcome
+      const claim = await recordUserAlert({ userId, event, analysis: event.analysis, deliveredAt })
+      if (!claim.ok || claim.duplicate) return { attempted: false, delivered: false }
+      return { attempted: authorization.allowed, delivered: Boolean(deliveredAt) }
     }),
   )
 
+  let attempted = 0
+  let delivered = 0
   for (const r of results) {
-    if (r.authorized) attempted += 1
+    if (r.attempted) attempted += 1
     if (r.delivered) delivered += 1
   }
 

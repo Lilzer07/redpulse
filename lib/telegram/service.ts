@@ -9,6 +9,8 @@
 // own single-use invite link so membership can be traced and revoked per user.
 import "server-only"
 
+import { getConfigValue, setConfigValue } from "@/lib/config-store"
+
 const TELEGRAM_API = "https://api.telegram.org"
 
 /** Per-member invite links stay valid for this long. */
@@ -18,13 +20,32 @@ function botToken(): string | null {
   return process.env.TELEGRAM_BOT_TOKEN?.trim() || null
 }
 
-function channelId(): string | null {
-  return process.env.TELEGRAM_CHAT_ID?.trim() || null
+/** Where an auto-discovered channel id is persisted. */
+const CHANNEL_CONFIG_KEY = "telegram_chat_id"
+
+/**
+ * Resolves the target channel.
+ *
+ * TELEGRAM_CHAT_ID wins when set, so an operator can always pin the channel
+ * explicitly. Otherwise the id learned when the bot was promoted in a channel is
+ * used (see `rememberChannelId`), which spares the user from copying a numeric id
+ * by hand — the bot cannot create or join a channel on its own, but it can
+ * recognise the moment it is added to one.
+ */
+async function channelId(): Promise<string | null> {
+  const fromEnv = process.env.TELEGRAM_CHAT_ID?.trim()
+  if (fromEnv) return fromEnv
+  return await getConfigValue(CHANNEL_CONFIG_KEY)
 }
 
-/** True when both the bot token and the target channel are configured. */
-export function isTelegramConfigured(): boolean {
-  return Boolean(botToken() && channelId())
+/** Persists a channel id discovered from a Telegram update. */
+export async function rememberChannelId(chatId: string | number): Promise<boolean> {
+  return await setConfigValue(CHANNEL_CONFIG_KEY, String(chatId))
+}
+
+/** True when both the bot token and the target channel are known. */
+export async function isTelegramConfigured(): Promise<boolean> {
+  return Boolean(botToken() && (await channelId()))
 }
 
 export type TelegramFailure =
@@ -70,20 +91,30 @@ export async function getBotUsername(): Promise<string | null> {
   return result.ok ? (result.result.username ?? null) : null
 }
 
-/** Sends a message to any chat id (a member DM, or the channel itself). */
+/**
+ * Sends a plain-text message to any chat id (a member DM, or the channel).
+ *
+ * No `parse_mode`, deliberately: alert bodies embed third-party team and player
+ * names, and a name containing `<` or `&` would either break the markup or make
+ * Telegram reject the whole message. Plain text removes any need to escape them,
+ * and no message we send needs rich formatting.
+ */
 export async function sendMessage(chatId: string, text: string): Promise<{ ok: true } | TelegramFailure> {
   const result = await call<unknown>("sendMessage", {
     chat_id: chatId,
     text,
-    parse_mode: "HTML",
     disable_web_page_preview: true,
   })
   return result.ok ? { ok: true } : result
 }
 
-/** Publishes an alert into the private channel. */
+/**
+ * Publishes an alert into the private channel.
+ *
+ * Plain text on purpose: alert bodies carry names straight from API-Football.
+ */
 export async function sendChannelMessage(text: string): Promise<{ ok: true } | TelegramFailure> {
-  const channel = channelId()
+  const channel = await channelId()
   if (!channel) return { ok: false, reason: "not_configured" }
   return sendMessage(channel, text)
 }
@@ -97,7 +128,7 @@ export type InviteLink = { inviteLink: string; expiresAt: string }
  * be shared onward, and `expire_date` caps the window if it is never used.
  */
 export async function createInviteLink(label: string): Promise<({ ok: true } & InviteLink) | TelegramFailure> {
-  const channel = channelId()
+  const channel = await channelId()
   if (!channel) return { ok: false, reason: "not_configured" }
 
   const expiresAt = new Date(Date.now() + INVITE_TTL_MS)
@@ -116,7 +147,7 @@ export async function createInviteLink(label: string): Promise<({ ok: true } & I
 
 /** Revokes a previously issued invite link so it can no longer be used. */
 export async function revokeInviteLink(inviteLink: string): Promise<{ ok: true } | TelegramFailure> {
-  const channel = channelId()
+  const channel = await channelId()
   if (!channel) return { ok: false, reason: "not_configured" }
 
   const result = await call<unknown>("revokeChatInviteLink", { chat_id: channel, invite_link: inviteLink })
@@ -131,7 +162,7 @@ export async function revokeInviteLink(inviteLink: string): Promise<{ ok: true }
  * exactly what a re-subscription needs.
  */
 export async function removeUserFromChannel(telegramUserId: number): Promise<{ ok: true } | TelegramFailure> {
-  const channel = channelId()
+  const channel = await channelId()
   if (!channel) return { ok: false, reason: "not_configured" }
 
   const banned = await call<unknown>("banChatMember", {
@@ -152,7 +183,7 @@ export type MemberStatus = "creator" | "administrator" | "member" | "restricted"
 export async function getChatMember(
   telegramUserId: number,
 ): Promise<({ ok: true; status: MemberStatus }) | TelegramFailure> {
-  const channel = channelId()
+  const channel = await channelId()
   if (!channel) return { ok: false, reason: "not_configured" }
 
   const result = await call<{ status?: MemberStatus }>("getChatMember", {
@@ -165,7 +196,7 @@ export async function getChatMember(
 
 /** Reads the channel title, used by the admin "Tester Telegram" action. */
 export async function getChannelInfo(): Promise<({ ok: true; title: string }) | TelegramFailure> {
-  const channel = channelId()
+  const channel = await channelId()
   if (!channel) return { ok: false, reason: "not_configured" }
 
   const result = await call<{ title?: string }>("getChat", { chat_id: channel })

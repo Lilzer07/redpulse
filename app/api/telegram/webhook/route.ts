@@ -9,7 +9,7 @@
 //     by redeeming a one-time token whose hash we stored ourselves, and the
 //     numeric Telegram user id (never the username) is what gets persisted.
 import { NextResponse } from "next/server"
-import { sendMessage } from "@/lib/telegram/service"
+import { rememberChannelId, sendMessage } from "@/lib/telegram/service"
 import { redeemLinkToken, unlinkTelegram, findUserByChatId } from "@/lib/telegram/linking"
 import { grantChannelAccess, hasPremiumAccess, markChannelJoined, revokeChannelAccess } from "@/lib/telegram/access"
 import { logEvent } from "@/lib/logging"
@@ -25,6 +25,11 @@ type TelegramUpdate = {
   }
   chat_member?: {
     new_chat_member?: { status?: string; user?: { id?: number } }
+  }
+  /** The bot's OWN membership changing — how we learn the channel id. */
+  my_chat_member?: {
+    chat?: { id?: number; type?: string; title?: string }
+    new_chat_member?: { status?: string }
   }
 }
 
@@ -54,6 +59,28 @@ export async function POST(request: Request) {
   try {
     update = (await request.json()) as TelegramUpdate
   } catch {
+    return ack()
+  }
+
+  // ---- the bot itself was added to a channel: learn the channel id ---------
+  //
+  // Telegram gives no API to create or join a channel, so promoting the bot is
+  // the one step that has to happen on the user's side. This captures the id at
+  // that exact moment, which is what makes TELEGRAM_CHAT_ID optional instead of
+  // something the user must copy by hand.
+  const botMembership = update.my_chat_member
+  if (botMembership?.chat?.id) {
+    const { id, type } = botMembership.chat
+    const status = botMembership.new_chat_member?.status
+    // Only a channel/supergroup, and only once the bot is an admin: posting
+    // alerts and minting invite links both require admin rights, so a plain
+    // "member" status would record a channel we cannot actually serve.
+    const isBroadcast = type === "channel" || type === "supergroup"
+    const isAdmin = status === "administrator" || status === "creator"
+    if (isBroadcast && isAdmin) {
+      const stored = await rememberChannelId(id)
+      logEvent("telegram_channel_detected", { chatType: type, stored })
+    }
     return ack()
   }
 

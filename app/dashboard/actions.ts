@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server"
 import { competitions } from "@/lib/data"
 import { createLinkToken, unlinkTelegram } from "@/lib/telegram/linking"
 import { authorizeTelegramDelivery } from "@/lib/subscriptions/authorization"
-import { sendTelegramMessage } from "@/lib/telegram/send"
+import { sendMessage } from "@/lib/telegram/service"
 
 /**
  * Every action re-reads the session server-side and writes with that user's id.
@@ -116,12 +116,12 @@ export async function sendTestAlert(): Promise<{ ok: true } | { ok: false; error
     const auth = await authorizeTelegramDelivery(user.id)
     if (!auth.allowed) return { ok: false, error: auth.reason }
 
-    const result = await sendTelegramMessage(
+    const result = await sendMessage(
       auth.chatId,
       "RedMatch — message de test. Votre connexion Telegram fonctionne : les alertes carton rouge arriveront ici.",
     )
-    if (result.status === "sent") return { ok: true }
-    return { ok: false, error: result.status === "not_configured" ? "telegram_not_configured" : result.error }
+    if (result.ok) return { ok: true }
+    return { ok: false, error: result.reason === "not_configured" ? "telegram_not_configured" : result.detail }
   } catch {
     return { ok: false, error: "not-authenticated" }
   }
