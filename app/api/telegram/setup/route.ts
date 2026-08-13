@@ -60,7 +60,7 @@ function summarise(
     return {
       ready: false,
       nextStep:
-        "Add the bot to the private channel as ADMINISTRATOR (or re-promote it). The channel id is then recorded automatically.",
+        "Bot not yet linked to a channel id. Ensure it is an ADMINISTRATOR of the private channel, then post any message in that channel (or demote/re-promote the bot). Either event records the id automatically.",
     }
   }
   if (readiness.botStatus !== "administrator") {
