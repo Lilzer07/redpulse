@@ -34,9 +34,10 @@ const fr = {
       "Dès qu’un carton rouge tombe, RedMatch récupère le contexte du match, analyse la situation et vous envoie une notification Telegram : probabilité de but supplémentaire, victoire du favori et indice de confiance. En quelques secondes.",
     ctaPrimary: "Commencer",
     ctaSecondary: "Voir la démonstration",
-    // "Analyse < 2 s" removed: the monitor polls every 15 minutes, so that
-    // headline promised a latency the product does not deliver.
-    trust: ["Vérification toutes les 15 min", "Indice de confiance /100", "21 compétitions"],
+    // Reflects MONITOR_CONFIG.intervalSeconds (60s). Keep this in step with the
+    // real cadence: the earlier "Analyse < 2 s" was removed precisely because it
+    // promised a latency the product did not deliver.
+    trust: ["Vérification toutes les 60 s", "Indice de confiance /100", "21 compétitions"],
     imageAlt: "Stade de football illuminé la nuit",
   },
 
@@ -546,12 +547,12 @@ const en: typeof fr = {
     badge: "Real-time football AI copilot",
     titleBefore: "Every red card hides an",
     titleHighlight: "opportunity",
-    titleAfter: " — our AI spots it.",
+    titleAfter: " �� our AI spots it.",
     paragraph:
       "The moment a red card is shown, RedMatch pulls the match context, analyses the situation and sends you a Telegram notification: chance of another goal, favourite’s win probability and a confidence score. In seconds.",
     ctaPrimary: "Get started",
     ctaSecondary: "Watch the demo",
-    trust: ["Checked every 15 min", "Confidence score /100", "21 competitions"],
+    trust: ["Checked every 60 s", "Confidence score /100", "21 competitions"],
     imageAlt: "Football stadium lit up at night",
   },
 
