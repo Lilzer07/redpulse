@@ -17,10 +17,13 @@ name: Red card monitor
 
 on:
   schedule:
-    # Every 15 minutes, matching MONITOR_CONFIG.intervalSeconds. This cadence is
-    # what keeps the free API tier (100 requests/day) from being exhausted.
-    - cron: "*/15 * * * *"
-  # Lets you trigger a pass by hand from the Actions tab to verify the setup.
+    # GitHub's scheduler cannot go below 5 minutes, so a "*/1" cron is not an
+    # option for the 60s cadence in MONITOR_CONFIG.intervalSeconds. Instead each
+    # scheduled job fires every 5 minutes and then polls internally once per
+    # minute (see PASSES/INTERVAL below), which yields a true 60s cadence from a
+    # free trigger.
+    - cron: "*/5 * * * *"
+  # Lets you trigger a burst by hand from the Actions tab to verify the setup.
   workflow_dispatch:
 
 # A late run must not pile up on top of a running one.

@@ -30,23 +30,30 @@ import type { Fixture, RedCardWithAnalysis } from "./types"
  */
 export const MONITOR_CONFIG = {
   /**
-   * Suggested interval between polls, in seconds.
+   * Interval between polls, in seconds.
    *
-   * Sized for API-Football's free tier (100 requests/day). A poll costs
-   * 1 + (live fixtures) requests, so polling every minute would exhaust the day's
-   * quota within minutes of the first match kicking off. 15 minutes keeps a full
-   * match day inside the budget while still catching a red card well within the
-   * window that matters for in-play betting.
+   * 60s gives near-real-time detection and REQUIRES a paid API-Football plan:
+   * the live-fixture list alone costs 1440 requests/day at this rate, versus the
+   * free tier's 100. Set FOOTBALL_DAILY_REQUEST_BUDGET to the subscribed plan's
+   * allowance (see ./budget), otherwise the quota is spent within roughly the
+   * first 90 minutes of the day and monitoring stops until midnight UTC.
    *
-   * Raise the cadence here (and DAILY_REQUEST_BUDGET in ./budget) together after
-   * upgrading the API plan — the budget guard, not this value, is what enforces
-   * the limit.
+   * The budget guard in ./budget, not this value, is what enforces the limit, so
+   * an under-funded cadence degrades gracefully (fewer fixtures inspected, then a
+   * `quota_exhausted` no-op) instead of erroring against the provider.
    */
-  intervalSeconds: 900,
+  intervalSeconds: 60,
   /** Simultaneous /fixtures/events requests. */
   eventConcurrency: 4,
-  /** Lock lifetime; slightly under the interval so a crashed run self-heals. */
-  lockTtlSeconds: 120,
+  /**
+   * Lock lifetime; deliberately just under `intervalSeconds` so a crashed run
+   * self-heals before the next pass rather than blocking it. It MUST stay below
+   * the cadence: a TTL longer than the interval would make every scheduled pass
+   * skip as "locked" — which is why dropping to a 60s cadence required lowering
+   * this from 120s. If a slow pass ever outlives its lock, `claimRedCard` — not
+   * this lock — is what still guarantees an alert is never published twice.
+   */
+  lockTtlSeconds: 55,
 }
 
 export type MonitorRunResult = {

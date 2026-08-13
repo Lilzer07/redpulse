@@ -12,19 +12,47 @@ import { createAdminClient } from "@/lib/supabase/admin"
 /**
  * Requests available per UTC day.
  *
- * Matches the free tier. Raise this if the account is upgraded — it is the only
- * value that needs to change, since the reservation logic derives from it.
+ * Sized for a PAID API-Football plan, because the 60-second cadence in
+ * MONITOR_CONFIG cannot fit in the free tier: the live-fixture list alone costs
+ * 1440 requests/day at that rate, 14x the free allowance.
+ *
+ * Override with FOOTBALL_DAILY_REQUEST_BUDGET to match the plan actually
+ * subscribed to, so switching tiers never requires a code change:
+ *   free = 100 | Pro = 7500 | Ultra = 75000 | Mega = 150000
+ *
+ * This value is the real enforcement point. Lowering the cadence without
+ * lowering this is safe; raising the cadence without raising this is not — the
+ * budget simply runs out mid-afternoon and monitoring stops until midnight UTC.
  */
-export const DAILY_REQUEST_BUDGET = 100
+export const DAILY_REQUEST_BUDGET = readBudgetFromEnv() ?? 7500
 
 /**
  * Requests deliberately left unspent by the monitor.
  *
- * Keeps a little headroom so the dashboard's own reachability check (and any
- * manual diagnosis) still works after the monitor has been running all day,
- * rather than every request being consumed by polling.
+ * Keeps headroom so the dashboard's own reachability check (and any manual
+ * diagnosis) still works after the monitor has been running all day, rather than
+ * every request being consumed by polling. Scaled as a small fraction of the
+ * budget so it stays meaningful on a large plan without starving a small one.
  */
-export const RESERVED_FOR_DIAGNOSTICS = 5
+export const RESERVED_FOR_DIAGNOSTICS = Math.min(50, Math.max(5, Math.floor(DAILY_REQUEST_BUDGET * 0.005)))
+
+/**
+ * Reads the plan's daily allowance from the environment.
+ *
+ * Anything non-numeric or non-positive is ignored rather than trusted: a typo
+ * that silently became 0 would halt monitoring entirely, and one that became a
+ * huge number would overspend a paid plan.
+ */
+function readBudgetFromEnv(): number | null {
+  const raw = process.env.FOOTBALL_DAILY_REQUEST_BUDGET
+  if (!raw) return null
+  const parsed = Number.parseInt(raw.trim(), 10)
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    console.log("[v0] FOOTBALL_DAILY_REQUEST_BUDGET is not a positive integer; falling back to the default.")
+    return null
+  }
+  return parsed
+}
 
 /**
  * Reserves up to `wanted` requests, returning how many may actually be spent.
