@@ -61,7 +61,13 @@ export async function POST(request: Request) {
   if (expected) {
     const provided = request.headers.get("x-telegram-bot-api-secret-token") ?? ""
     if (!timingSafeEqual(provided, expected)) {
-      logEvent("stripe_webhook_rejected", { source: "telegram", reason: "bad_secret" })
+      // NOTE: this is a Telegram rejection, nothing to do with Stripe. The event
+      // was previously mislabelled "stripe_webhook_rejected", which made the logs
+      // look like Stripe auth was gating this route — it never was. A 401 here
+      // means the secret_token Telegram sends (set when the webhook was
+      // registered) no longer matches TELEGRAM_WEBHOOK_SECRET, so re-register the
+      // webhook (POST /api/telegram/setup) to sync the two.
+      logEvent("telegram_webhook_rejected", { reason: "bad_secret" })
       return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 })
     }
   }
