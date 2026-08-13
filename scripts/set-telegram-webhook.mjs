@@ -45,7 +45,10 @@ const REQUIRED_ADMIN_RIGHTS = [
   ["can_post_messages", "publish red-card alerts to the channel"],
 ]
 
-const REQUIRED_UPDATES = ["message", "my_chat_member", "chat_member", "chat_join_request"]
+// Keep in sync with REQUIRED_WEBHOOK_UPDATES in lib/telegram/service.ts.
+// `channel_post` lets any message in the channel re-teach the channel id when
+// the my_chat_member promotion event was missed (self-healing discovery).
+const REQUIRED_UPDATES = ["message", "my_chat_member", "chat_member", "chat_join_request", "channel_post"]
 
 /** Calls the Bot API. The token only ever travels in the URL path. */
 async function tg(method, body) {

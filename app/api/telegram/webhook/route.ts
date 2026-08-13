@@ -42,6 +42,25 @@ type TelegramUpdate = {
     chat?: { id?: number; type?: string; title?: string }
     new_chat_member?: { status?: string }
   }
+  /**
+   * A post in a channel the bot administers. Used as a self-healing fallback for
+   * channel-id discovery when the `my_chat_member` promotion event was missed.
+   */
+  channel_post?: {
+    chat?: { id?: number; type?: string; title?: string }
+  }
+}
+
+/**
+ * Persists a broadcast channel's id when an update proves the bot is attached to
+ * it. Guarded on chat type: a private DM's `chat.id` is a user id and must never
+ * be mistaken for the alert channel. Idempotent — safe to call on every post.
+ */
+async function rememberBroadcastChannel(chat: { id?: number; type?: string } | undefined): Promise<void> {
+  if (!chat?.id) return
+  if (chat.type !== "channel" && chat.type !== "supergroup") return
+  const stored = await rememberChannelId(chat.id)
+  logEvent("telegram_channel_detected", { chatType: chat.type, stored })
 }
 
 function timingSafeEqual(a: string, b: string): boolean {
@@ -98,6 +117,16 @@ export async function POST(request: Request) {
       const stored = await rememberChannelId(id)
       logEvent("telegram_channel_detected", { chatType: type, stored })
     }
+    return ack()
+  }
+
+  // ---- any post in the channel: self-healing channel-id discovery ----------
+  //
+  // Receiving a channel_post at all means the bot is an admin of that channel,
+  // so this re-teaches the id whenever the promotion moment was missed — the
+  // operator just posts any message in the channel instead of re-promoting.
+  if (update.channel_post?.chat) {
+    await rememberBroadcastChannel(update.channel_post.chat)
     return ack()
   }
 

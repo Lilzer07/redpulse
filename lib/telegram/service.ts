@@ -248,7 +248,19 @@ export async function getChatMember(
  * `scripts/set-telegram-webhook.mjs` keeps its own copy because a plain .mjs
  * script cannot import from TypeScript; the two lists must stay in sync.
  */
-export const REQUIRED_WEBHOOK_UPDATES = ["message", "my_chat_member", "chat_member", "chat_join_request"] as const
+export const REQUIRED_WEBHOOK_UPDATES = [
+  "message",
+  "my_chat_member",
+  "chat_member",
+  "chat_join_request",
+  // `channel_post` is what makes channel-id discovery self-healing: `my_chat_member`
+  // only fires at the *moment* the bot's status changes, so if the bot was already
+  // an admin when the webhook was (re)registered — or the promotion update was
+  // dropped during a webhook outage — that one chance is gone. Any message posted
+  // in the channel then re-teaches the id, with no numeric copy-paste and no need
+  // to demote/re-promote the bot.
+  "channel_post",
+] as const
 
 export type WebhookStatus = {
   url: string | null
