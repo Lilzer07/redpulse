@@ -26,6 +26,8 @@ export type LogEvent =
   | "telegram_webhook_registered"
   | "telegram_webhook_register_failed"
   | "telegram_webhook_rejected"
+  | "telegram_test_alert_sent"
+  | "telegram_test_alert_failed"
   | "ai_analysis_generated"
   | "ai_analysis_failed"
 
