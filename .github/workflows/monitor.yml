@@ -17,10 +17,13 @@ name: Red card monitor
 
 on:
   schedule:
-    # Every 15 minutes, matching MONITOR_CONFIG.intervalSeconds. This cadence is
-    # what keeps the free API tier (100 requests/day) from being exhausted.
-    - cron: "*/15 * * * *"
-  # Lets you trigger a pass by hand from the Actions tab to verify the setup.
+    # GitHub's scheduler cannot go below 5 minutes, so a "*/1" cron is not an
+    # option for the 60s cadence in MONITOR_CONFIG.intervalSeconds. Instead each
+    # scheduled job fires every 5 minutes and then polls internally once per
+    # minute (see PASSES/INTERVAL below), which yields a true 60s cadence from a
+    # free trigger.
+    - cron: "*/5 * * * *"
+  # Lets you trigger a burst by hand from the Actions tab to verify the setup.
   workflow_dispatch:
 
 # A late run must not pile up on top of a running one.
@@ -31,12 +34,18 @@ concurrency:
 jobs:
   poll:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    # Must exceed the burst duration (PASSES x INTERVAL) plus request time, or
+    # GitHub kills the job mid-burst and the tail of the window goes unmonitored.
+    timeout-minutes: 8
     steps:
-      - name: Trigger monitoring pass
+      - name: Trigger monitoring burst
         env:
           MONITOR_URL: ${{ secrets.MONITOR_URL }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          # PASSES x INTERVAL must equal the cron period (5 min), so bursts meet
+          # end-to-end without either a gap or an overlap.
+          PASSES: "5"
+          INTERVAL: "60"
         run: |
           set -euo pipefail
 
@@ -45,19 +54,45 @@ jobs:
             exit 1
           fi
 
-          # -f is deliberately omitted: a non-2xx body carries the reason, which is
-          # more useful in the log than curl's generic failure message.
-          status=$(curl -sS -m 120 -o response.json -w '%{http_code}' \
-            -X POST "$MONITOR_URL" \
-            -H "Authorization: Bearer $CRON_SECRET")
+          failures=0
 
-          echo "HTTP $status"
-          cat response.json
-          echo
+          for pass in $(seq 1 "$PASSES"); do
+            echo "--- pass $pass/$PASSES ---"
 
-          # 503 means the API key is missing on the deployment: surfaced as a
-          # failure so it is visible, rather than silently polling forever.
-          if [ "$status" != "200" ]; then
-            echo "::error::Monitoring pass failed with HTTP $status"
+            # -f is deliberately omitted: a non-2xx body carries the reason, which
+            # is more useful in the log than curl's generic failure message.
+            # '|| true' keeps a network error from aborting the whole burst under
+            # 'set -e'; the status check below is what decides success.
+            status=$(curl -sS -m 45 -o response.json -w '%{http_code}' \
+              -X POST "$MONITOR_URL" \
+              -H "Authorization: Bearer $CRON_SECRET" || echo "000")
+
+            echo "HTTP $status"
+            cat response.json 2>/dev/null || true
+            echo
+
+            # A single failed pass must not abort the burst: a transient blip would
+            # otherwise cost the remaining minutes of monitoring in this window.
+            # Failures are counted and reported once at the end.
+            if [ "$status" != "200" ]; then
+              echo "::warning::Pass $pass failed with HTTP $status"
+              failures=$((failures + 1))
+            fi
+
+            # No trailing sleep after the final pass — it would just idle the
+            # runner and risk colliding with the next scheduled burst.
+            if [ "$pass" -lt "$PASSES" ]; then
+              sleep "$INTERVAL"
+            fi
+          done
+
+          # Only a fully failed burst fails the job. HTTP 503 (API key missing on
+          # the deployment) or 401 (wrong CRON_SECRET) reproduce on every pass, so
+          # real misconfiguration still surfaces loudly instead of silently
+          # polling forever.
+          if [ "$failures" -ge "$PASSES" ]; then
+            echo "::error::All $PASSES passes failed — check CRON_SECRET and FOOTBALL_API_KEY on the deployment."
             exit 1
           fi
+
+          echo "Burst complete: $((PASSES - failures))/$PASSES passes succeeded."

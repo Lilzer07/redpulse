@@ -109,15 +109,19 @@ export type Stat = {
  *
  * Deliberately removed: a "99.99% uptime" figure that was never measured and is
  * not guaranteed anywhere, and a "< 2s average analysis" headline that
- * misrepresented the product — the monitor polls every 15 minutes, so what a
- * user waits for is that cadence, not the speed of a single analysis.
+ * misrepresented the product — what a user waits for is the polling cadence, not
+ * the speed of a single analysis.
+ *
+ * The cadence figure below must track MONITOR_CONFIG.intervalSeconds in
+ * lib/football/monitor.ts. Changing one without the other turns this into the
+ * same kind of unverifiable claim the two figures above were removed for.
  *
  * Labels are matched BY INDEX against `t.stats.labels`: keep both lists the
  * same length and order.
  */
 export const stats: Stat[] = [
   { value: competitions.length, label: "Compétitions couvertes" },
-  { value: 15, suffix: " min", label: "Fréquence de vérification" },
+  { value: 60, suffix: " s", label: "Fréquence de vérification" },
   { value: 24, suffix: "h/24", label: "Surveillance continue" },
 ]
 
