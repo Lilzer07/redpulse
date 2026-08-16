@@ -30,7 +30,7 @@ import { NextResponse } from "next/server"
 
 import { guardMachineRequest } from "@/lib/api/guard"
 import { analyseRedCard } from "@/lib/football/analysis"
-import { competitionById } from "@/lib/football/competitions"
+import { leagueLogoUrl } from "@/lib/football/competitions"
 import type { RedCardEvent } from "@/lib/football/types"
 import { generateCommentary } from "@/lib/ai/commentary"
 import { formatTelegramAlert } from "@/lib/telegram/format"
@@ -57,6 +57,7 @@ function buildFakeEvent(): RedCardEvent {
     leagueId: 61, // Ligue 1 — a real, watched competition.
     leagueName: "Ligue 1",
     country: "France",
+    leagueLogo: leagueLogoUrl(61),
     season: now.getUTCFullYear(),
     homeTeam: "Testville FC",
     awayTeam: "Démo Rovers",

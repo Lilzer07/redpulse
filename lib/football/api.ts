@@ -2,7 +2,7 @@
 import "server-only"
 
 import { apiFootballObjectRequest, apiFootballRequest, describeFailure } from "./client"
-import { competitionById, enabledLeagueIds, isWatchedLeague } from "./competitions"
+import { competitionById, enabledLeagueIds, isWatchedLeague, leagueLogoUrl } from "./competitions"
 import type { Fixture, FixtureEvent, RawEvent, RawFixture, RawLeague, RawStatus } from "./types"
 
 /** Statuses in which a fixture is actually being played (spec section 6). */
@@ -75,7 +75,7 @@ export async function fetchLeagueName(leagueId: number): Promise<string | null> 
  * All live fixtures across the watched competitions.
  *
  * Uses a single `fixtures?live=` call listing every league id rather than one
- * call per competition: 21 separate requests per poll would burn the quota for
+ * call per competition: one request per watched league per poll would burn the quota for
  * no benefit (spec section 6, "ne pas faire des centaines d'appels inutiles").
  * Cached for 30s so overlapping callers share one upstream request.
  */
@@ -140,6 +140,13 @@ export function parseFixture(raw: RawFixture): Fixture | null {
     // to whatever the API reports for leagues we don't have configured.
     leagueName: configured?.name ?? (typeof raw.league?.name === "string" ? raw.league.name : `League ${leagueId}`),
     country: configured?.country ?? (typeof raw.league?.country === "string" ? raw.league.country : "—"),
+    // Prefer the badge API-Football sends with the fixture; fall back to the
+    // logo derived from the real league id. Never a hardcoded per-competition
+    // asset, so the badge always matches the fixture's actual competition.
+    leagueLogo:
+      typeof raw.league?.logo === "string" && raw.league.logo.trim()
+        ? raw.league.logo
+        : leagueLogoUrl(leagueId),
     season: typeof raw.league?.season === "number" ? raw.league.season : null,
     status: typeof status === "string" ? status.toUpperCase() : "NS",
     elapsed: typeof elapsed === "number" ? elapsed : null,

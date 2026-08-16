@@ -20,7 +20,7 @@ export type RawFixture = {
     date?: string
     status?: { short?: string; long?: string; elapsed?: number | null; extra?: number | null }
   }
-  league?: { id?: number; name?: string; country?: string; season?: number; round?: string }
+  league?: { id?: number; name?: string; country?: string; season?: number; round?: string; logo?: string }
   teams?: { home?: { id?: number; name?: string }; away?: { id?: number; name?: string } }
   goals?: { home?: number | null; away?: number | null }
 }
@@ -56,6 +56,8 @@ export type Fixture = {
   leagueId: number
   leagueName: string
   country: string
+  /** Competition badge URL from API-Football (`league.logo`), with a derived fallback. */
+  leagueLogo: string
   season: number | null
   /** API-Football short status: 1H, HT, 2H, ET, BT, P, LIVE, FT... */
   status: string
@@ -89,6 +91,8 @@ export type RedCardEvent = {
   leagueId: number
   leagueName: string
   country: string
+  /** Competition badge URL from API-Football (`league.logo`), with a derived fallback. */
+  leagueLogo: string
   season: number | null
   homeTeam: string
   awayTeam: string
