@@ -118,7 +118,7 @@ export default function SignUpPage() {
             type="checkbox"
             checked={acceptedTerms}
             onChange={(e) => setAcceptedTerms(e.target.checked)}
-            className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border-white/20 bg-background/60 text-primary accent-[var(--primary)]"
+            className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border-[rgb(var(--overlay)/0.2)] bg-background/60 text-primary accent-[var(--primary)]"
           />
           <span className="text-xs leading-relaxed text-muted-foreground">
             {t.auth.termsPrefix}{" "}

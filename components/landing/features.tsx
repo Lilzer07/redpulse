@@ -38,7 +38,7 @@ export function Features() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
               transition={{ duration: 0.6, delay: (i % 3) * 0.08 }}
-              className="group relative overflow-hidden rounded-3xl border border-white/8 bg-white/[0.02] p-7 transition-colors duration-300 hover:border-primary/30"
+              className="group relative overflow-hidden rounded-3xl border border-[rgb(var(--overlay)/0.08)] bg-[rgb(var(--overlay)/0.02)] p-7 transition-colors duration-300 hover:border-primary/30"
             >
               <div
                 className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-primary/10 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100"

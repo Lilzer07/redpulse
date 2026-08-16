@@ -19,7 +19,7 @@ export function LanguageSwitcher({ className = "" }: { className?: string }) {
     <div
       role="group"
       aria-label={t.nav.language}
-      className={`isolate flex items-center gap-0.5 rounded-xl border border-white/10 bg-white/[0.03] p-0.5 ${className}`}
+      className={`isolate flex items-center gap-0.5 rounded-xl border border-[rgb(var(--overlay)/0.1)] bg-[rgb(var(--overlay)/0.03)] p-0.5 ${className}`}
     >
       {locales.map((l) => {
         const active = l === locale

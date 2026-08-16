@@ -54,7 +54,7 @@ export function BillingPanel({ subscription, active }: Props) {
   // No row at all: the account never completed a payment.
   if (!subscription) {
     return (
-      <div className="rounded-3xl border border-white/8 bg-white/[0.02] p-6 lg:p-8">
+      <div className="rounded-3xl border border-[rgb(var(--overlay)/0.08)] bg-[rgb(var(--overlay)/0.02)] p-6 lg:p-8">
         <h2 className="text-xl font-bold text-foreground">{b.noneTitle}</h2>
         <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">{b.noneBody}</p>
         <a
@@ -123,7 +123,7 @@ export function BillingPanel({ subscription, active }: Props) {
 
       {/* Only recurring plans have anything to manage in the portal. */}
       {isLifetime ? (
-        <p className="mt-7 rounded-xl border border-white/8 bg-white/[0.02] px-4 py-3 text-xs leading-relaxed text-muted-foreground">
+        <p className="mt-7 rounded-xl border border-[rgb(var(--overlay)/0.08)] bg-[rgb(var(--overlay)/0.02)] px-4 py-3 text-xs leading-relaxed text-muted-foreground">
           {b.lifetimeNote}
         </p>
       ) : (
@@ -131,7 +131,7 @@ export function BillingPanel({ subscription, active }: Props) {
           <button
             onClick={openPortal}
             disabled={status === "loading"}
-            className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] text-sm font-medium text-foreground transition-colors hover:bg-white/[0.06] disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-[rgb(var(--overlay)/0.1)] bg-[rgb(var(--overlay)/0.03)] text-sm font-medium text-foreground transition-colors hover:bg-[rgb(var(--overlay)/0.06)] disabled:cursor-not-allowed disabled:opacity-40"
           >
             {status === "loading" ? (
               <>

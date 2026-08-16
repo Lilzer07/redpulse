@@ -26,7 +26,7 @@ function Section({
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay }}
-      className="rounded-3xl border border-white/8 bg-white/[0.02] p-6 lg:p-7"
+      className="rounded-3xl border border-[rgb(var(--overlay)/0.08)] bg-[rgb(var(--overlay)/0.02)] p-6 lg:p-7"
     >
       <div className="mb-5">
         <h2 className="font-semibold text-foreground">{title}</h2>
@@ -38,7 +38,7 @@ function Section({
 }
 
 const fieldClass =
-  "h-12 w-full rounded-xl border border-white/8 bg-background/60 px-4 text-base text-foreground outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-primary/50"
+  "h-12 w-full rounded-xl border border-[rgb(var(--overlay)/0.08)] bg-background/60 px-4 text-base text-foreground outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-primary/50"
 
 // Index-aligned with `settings.notifications.items` in the dictionaries.
 const notifIds = ["instant", "digest", "product"] as const
@@ -158,7 +158,7 @@ export default function SettingsPage() {
             {notifIds.map((id, i) => (
               <label
                 key={id}
-                className="flex cursor-pointer items-center justify-between gap-4 rounded-xl px-2 py-3 transition-colors hover:bg-white/[0.02]"
+                className="flex cursor-pointer items-center justify-between gap-4 rounded-xl px-2 py-3 transition-colors hover:bg-[rgb(var(--overlay)/0.02)]"
               >
                 <span>
                   <span className="block font-medium text-foreground">
@@ -198,14 +198,14 @@ export default function SettingsPage() {
           </div>
 
           {/* Passwords are changed through the emailed reset link, never shown in a field. */}
-          <div className="mt-5 flex flex-wrap items-center justify-between gap-4 border-t border-white/5 pt-5">
+          <div className="mt-5 flex flex-wrap items-center justify-between gap-4 border-t border-[rgb(var(--overlay)/0.05)] pt-5">
             <div>
               <p className="font-medium text-foreground">{t.settings.password}</p>
               <p className="mt-1 text-sm text-muted-foreground">{t.settings.passwordDesc}</p>
             </div>
             <Link
               href="/auth/forgot-password"
-              className="h-11 shrink-0 rounded-xl border border-white/10 bg-white/[0.03] px-5 text-sm font-medium leading-[2.75rem] text-foreground transition-colors hover:bg-white/[0.06]"
+              className="h-11 shrink-0 rounded-xl border border-[rgb(var(--overlay)/0.1)] bg-[rgb(var(--overlay)/0.03)] px-5 text-sm font-medium leading-[2.75rem] text-foreground transition-colors hover:bg-[rgb(var(--overlay)/0.06)]"
             >
               {t.settings.changePassword}
             </Link>
@@ -216,7 +216,7 @@ export default function SettingsPage() {
           {saved ? <p className="text-sm text-primary">{t.settings.saved}</p> : null}
           <button
             onClick={() => setName(displayName ?? "")}
-            className="h-11 rounded-xl border border-white/10 bg-white/[0.03] px-5 text-sm font-medium text-foreground transition-colors hover:bg-white/[0.06]"
+            className="h-11 rounded-xl border border-[rgb(var(--overlay)/0.1)] bg-[rgb(var(--overlay)/0.03)] px-5 text-sm font-medium text-foreground transition-colors hover:bg-[rgb(var(--overlay)/0.06)]"
           >
             {t.settings.cancel}
           </button>

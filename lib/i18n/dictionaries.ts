@@ -248,6 +248,7 @@ const fr = {
   topbar: {
     search: "Rechercher",
     notifications: "Notifications",
+    account: "Mon compte",
   },
 
   dashboard: {
@@ -390,8 +391,17 @@ const fr = {
     namePlaceholder: "Votre nom",
     email: "Adresse e-mail",
     password: "Mot de passe",
-    passwordDesc: "Vous recevrez un lien sécurisé par e-mail pour le modifier.",
+    passwordDesc: "Choisissez un nouveau mot de passe à tout moment.",
     changePassword: "Modifier le mot de passe",
+    // In-place password change, directly in Settings.
+    newPassword: "Nouveau mot de passe",
+    confirmPassword: "Confirmer le mot de passe",
+    passwordUpdating: "Mise à jour…",
+    passwordUpdated: "Mot de passe mis à jour.",
+    passwordMismatch: "Les mots de passe ne correspondent pas.",
+    passwordTooShort: "Le mot de passe doit contenir au moins 8 caractères.",
+    passwordError: "Impossible de modifier le mot de passe. Réessayez.",
+    passwordForgot: "Recevoir un lien par e-mail",
     regional: { title: "Préférences régionales", description: "Langue et fuseau horaire." },
     language: "Langue",
     timezone: "Fuseau horaire",
@@ -404,9 +414,12 @@ const fr = {
         { label: "Nouveautés produit", desc: "Nouvelles compétitions et fonctionnalités." },
       ],
     },
-    appearance: { title: "Apparence" },
+    appearance: { title: "Apparence", description: "Choisissez l’apparence de l’interface." },
     darkMode: "Mode sombre",
-    darkModeDesc: "RedMatch est optimisé pour le mode sombre.",
+    lightMode: "Mode clair",
+    systemMode: "Système",
+    themeDesc: "Le changement s’applique immédiatement à toute l’application.",
+    themeSystemHint: "« Système » suit le réglage de votre téléphone ou de votre ordinateur.",
     account: {
       title: "Compte",
       signedInAs: "Connecté en tant que",

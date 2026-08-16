@@ -50,12 +50,12 @@ export function IntegrationStatus({ status }: { status: IntegrationStatusView })
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45 }}
-      className="rounded-3xl border border-white/8 bg-white/[0.015] p-5 lg:p-6"
+      className="rounded-3xl border border-[rgb(var(--overlay)/0.08)] bg-[rgb(var(--overlay)/0.015)] p-5 lg:p-6"
       aria-label={s.title}
     >
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/[0.04] text-muted-foreground">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[rgb(var(--overlay)/0.04)] text-muted-foreground">
             <Activity className="h-4 w-4" />
           </span>
           <h2 className="text-base font-semibold text-foreground">{s.title}</h2>
@@ -85,7 +85,7 @@ export function IntegrationStatus({ status }: { status: IntegrationStatusView })
         <Metric label={s.redCards} value={String(status.redCardsDetected)} />
       </dl>
 
-      <p className="mt-5 border-t border-white/8 pt-4 text-xs text-muted-foreground">
+      <p className="mt-5 border-t border-[rgb(var(--overlay)/0.08)] pt-4 text-xs text-muted-foreground">
         {s.lastCheck}: <span className="text-foreground/80">{lastCheck}</span>
       </p>
 

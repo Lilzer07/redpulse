@@ -33,7 +33,7 @@ export function Faq() {
             <AccordionItem
               key={i}
               value={`item-${i}`}
-              className="overflow-hidden rounded-2xl border border-white/8 bg-white/[0.02] px-5"
+              className="overflow-hidden rounded-2xl border border-[rgb(var(--overlay)/0.08)] bg-[rgb(var(--overlay)/0.02)] px-5"
             >
               <AccordionTrigger className="py-5 text-left text-base font-medium text-foreground hover:no-underline">
                 {f.q}

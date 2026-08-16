@@ -41,13 +41,13 @@ export function TelegramPhone() {
       <div className="absolute -inset-8 -z-10 rounded-[3rem] bg-primary/20 blur-3xl" aria-hidden />
 
       {/* Phone frame */}
-      <div className="relative rounded-[2.8rem] border border-white/10 bg-[#0a0b0a] p-3 shadow-[0_40px_120px_-20px_rgba(0,0,0,0.9)] ring-1 ring-white/5">
+      <div className="relative rounded-[2.8rem] border border-[rgb(var(--overlay)/0.1)] bg-[#0a0b0a] p-3 shadow-[0_40px_120px_-20px_rgba(0,0,0,0.9)] ring-1 ring-[rgb(var(--overlay)/0.05)]">
         <div className="relative overflow-hidden rounded-[2.2rem] bg-gradient-to-b from-[#0f110f] to-[#070807]">
           {/* Notch */}
           <div className="absolute left-1/2 top-2 z-20 h-6 w-28 -translate-x-1/2 rounded-full bg-black" aria-hidden />
 
           {/* Telegram header */}
-          <div className="flex items-center gap-3 border-b border-white/5 bg-white/[0.03] px-4 pb-3 pt-9 backdrop-blur">
+          <div className="flex items-center gap-3 border-b border-[rgb(var(--overlay)/0.05)] bg-[rgb(var(--overlay)/0.03)] px-4 pb-3 pt-9 backdrop-blur">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary to-secondary">
               <Send className="h-4 w-4 text-primary-foreground" aria-hidden />
             </div>
@@ -72,7 +72,7 @@ export function TelegramPhone() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ type: "spring", stiffness: 260, damping: 26 }}
-                  className="rounded-2xl rounded-tl-md border border-white/10 bg-white/[0.03] p-3.5"
+                  className="rounded-2xl rounded-tl-md border border-[rgb(var(--overlay)/0.1)] bg-[rgb(var(--overlay)/0.03)] p-3.5"
                 >
                   {/* Trigger: red card */}
                   <div className="mb-2 flex items-center gap-2">
@@ -85,7 +85,7 @@ export function TelegramPhone() {
                   <p className="text-[11px] font-medium uppercase tracking-wide text-primary">{n.competition}</p>
                   <p className="mt-0.5 text-sm font-semibold text-foreground">
                     {n.home}{" "}
-                    <span className="rounded bg-white/5 px-1.5 py-0.5 text-xs font-semibold text-foreground">
+                    <span className="rounded bg-[rgb(var(--overlay)/0.05)] px-1.5 py-0.5 text-xs font-semibold text-foreground">
                       {n.score}
                     </span>{" "}
                     {n.away}

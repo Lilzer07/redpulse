@@ -34,7 +34,7 @@ function CompetitionBadge({ c }: { c: Competition }) {
 
   return (
     <span
-      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/[0.04] ring-1 ring-inset ring-white/10"
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[rgb(var(--overlay)/0.04)] ring-1 ring-inset ring-[rgb(var(--overlay)/0.1)]"
       aria-hidden
     >
       <Shield className="h-5 w-5 text-muted-foreground" />
@@ -108,11 +108,11 @@ export function CompetitionsManager({ enabledIds }: { enabledIds: string[] }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t.competitions.search}
-            className="h-11 w-full rounded-xl border border-white/8 bg-white/[0.02] pl-10 pr-4 text-base text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary/50"
+            className="h-11 w-full rounded-xl border border-[rgb(var(--overlay)/0.08)] bg-[rgb(var(--overlay)/0.02)] pl-10 pr-4 text-base text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary/50"
           />
         </div>
 
-        <div className="flex items-center justify-between gap-4 rounded-xl border border-white/8 bg-white/[0.02] px-4 py-2.5 sm:justify-start">
+        <div className="flex items-center justify-between gap-4 rounded-xl border border-[rgb(var(--overlay)/0.08)] bg-[rgb(var(--overlay)/0.02)] px-4 py-2.5 sm:justify-start">
           <span className="text-sm text-muted-foreground">
             <span className="font-semibold text-primary">{activeCount}</span> / {competitions.length}{" "}
             {t.competitions.active}
@@ -145,7 +145,7 @@ export function CompetitionsManager({ enabledIds }: { enabledIds: string[] }) {
                     className={`flex cursor-pointer items-center gap-3 rounded-2xl border p-4 transition-colors ${
                       on
                         ? "border-primary/25 bg-primary/[0.06]"
-                        : "border-white/8 bg-white/[0.02] hover:border-white/15"
+                        : "border-[rgb(var(--overlay)/0.08)] bg-[rgb(var(--overlay)/0.02)] hover:border-[rgb(var(--overlay)/0.15)]"
                     }`}
                   >
                     <CompetitionBadge c={c} />

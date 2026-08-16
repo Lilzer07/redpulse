@@ -15,7 +15,7 @@ type Props = {
 const accentMap = {
   green: "text-primary bg-primary/10",
   red: "text-[var(--danger)] bg-[var(--danger)]/10",
-  neutral: "text-foreground bg-white/5",
+  neutral: "text-foreground bg-[rgb(var(--overlay)/0.05)]",
 }
 
 export function StatCard({ label, value, icon: Icon, hint, accent = "neutral", delay = 0 }: Props) {
@@ -24,7 +24,7 @@ export function StatCard({ label, value, icon: Icon, hint, accent = "neutral", d
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] }}
-      className="rounded-2xl border border-white/8 bg-white/[0.02] p-5"
+      className="rounded-2xl border border-[rgb(var(--overlay)/0.08)] bg-[rgb(var(--overlay)/0.02)] p-5"
     >
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">{label}</p>

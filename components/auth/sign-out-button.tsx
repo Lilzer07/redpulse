@@ -44,7 +44,7 @@ export function SignOutButton({
     <button
       onClick={handleSignOut}
       disabled={pending}
-      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground disabled:opacity-60 ${className}`}
+      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-[rgb(var(--overlay)/0.05)] hover:text-foreground disabled:opacity-60 ${className}`}
     >
       <LogOut className="h-4.5 w-4.5" aria-hidden />
       {t.auth.signOut}

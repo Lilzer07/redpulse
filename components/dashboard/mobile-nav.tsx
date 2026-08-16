@@ -22,7 +22,7 @@ export function MobileNav() {
   const { t } = useI18n()
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 flex items-stretch justify-around border-t border-white/8 bg-[#070807]/95 backdrop-blur-lg lg:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-50 flex items-stretch justify-around border-t border-[rgb(var(--overlay)/0.08)] bg-shell/95 backdrop-blur-lg lg:hidden">
       {items.map((item, i) => {
         const active =
           item.href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(item.href)

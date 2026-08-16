@@ -87,12 +87,12 @@ export function SiteNav() {
               key={l.href}
               href={l.href}
               onClick={() => setOpen(false)}
-              className="rounded-lg px-4 py-3 text-sm text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
+              className="rounded-lg px-4 py-3 text-sm text-muted-foreground transition-colors hover:bg-[rgb(var(--overlay)/0.05)] hover:text-foreground"
             >
               {l.label}
             </a>
           ))}
-          <div className="mt-2 flex flex-col gap-2 border-t border-white/10 pt-3">
+          <div className="mt-2 flex flex-col gap-2 border-t border-[rgb(var(--overlay)/0.1)] pt-3">
             <ButtonLink href="/auth/login" variant="ghost">
               {t.nav.login}
             </ButtonLink>

@@ -11,7 +11,7 @@ export function TelegramHelp() {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.1 }}
-      className="rounded-3xl border border-white/8 bg-white/[0.02] p-6 lg:p-7"
+      className="rounded-3xl border border-[rgb(var(--overlay)/0.08)] bg-[rgb(var(--overlay)/0.02)] p-6 lg:p-7"
     >
       <h3 className="font-semibold text-foreground">{t.telegram.helpTitle}</h3>
       <ol className="mt-4 space-y-4">

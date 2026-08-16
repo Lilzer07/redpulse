@@ -21,7 +21,7 @@ function PlanCard({ plan, index }: { plan: PricingPlan; index: number }) {
         "relative flex w-full flex-col overflow-hidden rounded-[2rem] p-7",
         highlight
           ? "border-2 border-primary bg-gradient-to-b from-primary/[0.08] to-transparent shadow-2xl shadow-primary/20"
-          : "border border-white/10 bg-gradient-to-b from-white/[0.04] to-transparent",
+          : "border border-[rgb(var(--overlay)/0.1)] bg-gradient-to-b from-[rgb(var(--overlay)/0.04)] to-transparent",
       ].join(" ")}
     >
       {highlight && (
@@ -38,7 +38,7 @@ function PlanCard({ plan, index }: { plan: PricingPlan; index: number }) {
               "inline-flex rounded-full px-3 py-1 text-xs font-medium",
               highlight
                 ? "border border-primary/30 bg-primary/15 text-primary"
-                : "border border-white/10 bg-white/5 text-muted-foreground",
+                : "border border-[rgb(var(--overlay)/0.1)] bg-[rgb(var(--overlay)/0.05)] text-muted-foreground",
             ].join(" ")}
           >
             {copy.name}
@@ -81,7 +81,7 @@ function PlanCard({ plan, index }: { plan: PricingPlan; index: number }) {
             "mt-7 inline-flex h-12 w-full items-center justify-center rounded-xl text-base font-semibold transition-colors",
             highlight
               ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:bg-primary/90"
-              : "border border-white/15 bg-white/5 text-foreground hover:bg-white/10",
+              : "border border-[rgb(var(--overlay)/0.15)] bg-[rgb(var(--overlay)/0.05)] text-foreground hover:bg-[rgb(var(--overlay)/0.1)]",
           ].join(" ")}
         >
           {copy.cta}

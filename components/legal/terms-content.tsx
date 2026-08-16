@@ -11,7 +11,7 @@ export function TermsContent() {
 
   return (
     <main className="min-h-screen bg-background">
-      <header className="flex items-center justify-between gap-4 border-b border-white/8 p-5">
+      <header className="flex items-center justify-between gap-4 border-b border-[rgb(var(--overlay)/0.08)] p-5">
         <Link href="/" aria-label={t.nav.home}>
           <Logo />
         </Link>
