@@ -12,7 +12,8 @@ export function formatMinute(minute: number, minuteExtra: number | null): string
 }
 
 export function formatScoreline(event: Pick<RedCardEvent, "homeTeam" | "awayTeam" | "homeScore" | "awayScore">): string {
-  return `${event.homeTeam} ${event.homeScore} - ${event.awayScore} ${event.awayTeam}`
+  // En dash without surrounding spaces ("1–0") keeps the line compact on mobile.
+  return `${event.homeTeam} ${event.homeScore}–${event.awayScore} ${event.awayTeam}`
 }
 
 /**
@@ -23,9 +24,9 @@ export function formatScoreline(event: Pick<RedCardEvent, "homeTeam" | "awayTeam
  */
 export function formatAnalysisBlock(analysis: RedCardAnalysis): string {
   const lines = [
-    `But supplémentaire : ${analysis.extraGoalProb}%`,
-    `Victoire ${analysis.favorite} : ${analysis.favoriteWinProb}%`,
-    `Confiance : ${analysis.confidence}/100`,
+    `⚽ But supplémentaire : ${analysis.extraGoalProb} %`,
+    `🏆 Victoire ${analysis.favorite} : ${analysis.favoriteWinProb} %`,
+    `🎯 Confiance : ${analysis.confidence}/100`,
   ]
   // Stay honest when the estimate rests on incomplete match data rather than
   // presenting a weaker figure with the same authority as a solid one.
@@ -57,8 +58,10 @@ export function formatTelegramAlert(
     "",
     formatScoreline(event),
     "",
-    `🟥 Joueur : ${event.player}`,
+    `🔴 Joueur : ${event.player}`,
     `⏱️ ${formatMinute(event.minute, event.minuteExtra)}`,
+    // Always name the team reduced to ten so the alert is unambiguous.
+    `👥 Expulsion : ${event.team}`,
     "",
     // The figures below come from RedMatch's deterministic model, not from a
     // language model. Labelling them "Analyse IA" would misattribute them, so
@@ -68,7 +71,9 @@ export function formatTelegramAlert(
     formatAnalysisBlock(analysis),
   ]
 
-  if (aiReading) lines.push("", "🤖 Lecture IA", "", aiReading)
+  // Header sits directly above the sentence (no blank line between) to keep the
+  // reading tight against its label.
+  if (aiReading) lines.push("", "🤖 Lecture IA", aiReading)
 
   return lines.join("\n")
 }
