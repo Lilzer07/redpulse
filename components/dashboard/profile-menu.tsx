@@ -10,7 +10,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
 import { createClient } from "@/lib/supabase/client"
@@ -63,12 +62,14 @@ export function ProfileMenu() {
       {/* `w-auto` overrides the wrapper default of `w-(--anchor-width)`, which
           would otherwise clamp the menu to the 40px avatar. */}
       <DropdownMenuContent align="end" sideOffset={8} className="w-auto min-w-56 p-1.5">
-        <DropdownMenuLabel className="px-2 py-1.5">
+        {/* Plain div, not DropdownMenuLabel: Base UI requires that label to live
+            inside a Menu.Group, and this header is decoration, not a menu item. */}
+        <div className="px-2 py-1.5">
           {displayName ? (
             <span className="block truncate text-sm font-medium text-foreground">{displayName}</span>
           ) : null}
-          <span className="block truncate text-xs font-normal text-muted-foreground">{email}</span>
-        </DropdownMenuLabel>
+          <span className="block truncate text-xs text-muted-foreground">{email}</span>
+        </div>
 
         <DropdownMenuSeparator />
 
