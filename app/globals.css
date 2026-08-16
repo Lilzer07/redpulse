@@ -39,6 +39,18 @@
   --color-foreground: var(--foreground);
   --color-background: var(--background);
 
+  /* Theme-aware equivalents of the white-alpha overlays the UI used to
+     hardcode. In dark mode these resolve to the exact previous values, so the
+     existing look is preserved pixel-for-pixel; in light mode they flip to
+     black-alpha so the same components stay legible. */
+  --color-hairline: var(--hairline);
+  --color-hairline-soft: var(--hairline-soft);
+  --color-hairline-strong: var(--hairline-strong);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-shell: var(--shell);
+
   --font-sans: var(--font-inter), 'Inter Fallback', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'Geist Mono', ui-monospace, monospace;
 
@@ -51,8 +63,77 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* RedMatch — dark mode only */
+/* RedMatch — light theme.
+   Kept deliberately restrained: same brand green, same radii, same structure as
+   the dark theme, only the surfaces and text invert. The green is darkened just
+   enough to stay readable on white (AA on body text). */
 :root {
+  color-scheme: light;
+
+  --background: #ffffff;
+  --foreground: #0a0f0c;
+
+  --card: #fbfcfb;
+  --card-foreground: #0a0f0c;
+
+  --popover: #ffffff;
+  --popover-foreground: #0a0f0c;
+
+  --primary: #0e9f4d;
+  --primary-foreground: #ffffff;
+
+  --secondary: #0b7a3c;
+  --secondary-foreground: #ffffff;
+
+  --muted: #f3f5f3;
+  --muted-foreground: #5b665f;
+
+  --accent: #e8f7ee;
+  --accent-foreground: #0b7a3c;
+
+  /* Red card red — reserved for red-card events only */
+  --danger: #d92c20;
+  --danger-foreground: #ffffff;
+  --destructive: #d92c20;
+
+  --border: rgba(10, 15, 12, 0.1);
+  --input: rgba(10, 15, 12, 0.14);
+  --ring: #0e9f4d;
+
+  --chart-1: #0e9f4d;
+  --chart-2: #0b7a3c;
+  --chart-3: #34a06a;
+  --chart-4: #7cc79c;
+  --chart-5: #d92c20;
+
+  --radius: 1rem;
+
+  --sidebar: #f7f8f7;
+  --sidebar-foreground: #0a0f0c;
+  --sidebar-primary: #0e9f4d;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e8f7ee;
+  --sidebar-accent-foreground: #0b7a3c;
+  --sidebar-border: rgba(10, 15, 12, 0.09);
+  --sidebar-ring: #0e9f4d;
+
+  /* Overlay scale (light): black-alpha counterparts of the dark white-alphas. */
+  --hairline: rgba(10, 15, 12, 0.1);
+  --hairline-soft: rgba(10, 15, 12, 0.06);
+  --hairline-strong: rgba(10, 15, 12, 0.14);
+  --surface-1: rgba(10, 15, 12, 0.025);
+  --surface-2: rgba(10, 15, 12, 0.04);
+  --surface-3: rgba(10, 15, 12, 0.07);
+  --shell: #f7f8f7;
+
+  /* Base RGB triplet for every translucent overlay in the UI. Components use it
+     as `rgb(var(--overlay)/<alpha>)`, so a single variable flips every hairline,
+     panel tint and hover state between themes. */
+  --overlay: 10 15 12;
+}
+
+/* RedMatch — dark theme (the original palette, unchanged). */
+.dark {
   color-scheme: dark;
 
   --background: #050505;
@@ -101,6 +182,21 @@
   --sidebar-accent-foreground: #18c964;
   --sidebar-border: rgba(255, 255, 255, 0.07);
   --sidebar-ring: #18c964;
+
+  /* Overlay scale (dark): the exact values previously hardcoded as
+     `white/8`, `white/[0.02]`, `white/[0.03]`, `white/[0.06]`, so swapping the
+     utilities for tokens changes nothing visually in dark mode. */
+  --hairline: rgba(255, 255, 255, 0.08);
+  --hairline-soft: rgba(255, 255, 255, 0.05);
+  --hairline-strong: rgba(255, 255, 255, 0.1);
+  --surface-1: rgba(255, 255, 255, 0.02);
+  --surface-2: rgba(255, 255, 255, 0.03);
+  --surface-3: rgba(255, 255, 255, 0.06);
+  --shell: #070807;
+
+  /* White in dark mode: `rgb(var(--overlay)/0.08)` is byte-identical to the
+     `white/8` the components used before, so nothing shifts visually. */
+  --overlay: 255 255 255;
 }
 
 @layer base {
@@ -137,10 +233,10 @@
 
 /* Subtle grain / glow helpers */
 .glass {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--surface-2);
   backdrop-filter: blur(18px) saturate(140%);
   -webkit-backdrop-filter: blur(18px) saturate(140%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--hairline);
 }
 
 .glow-green {
@@ -148,7 +244,15 @@
     0 20px 60px -20px rgba(24, 201, 100, 0.35);
 }
 
+/* Starts at the current text colour so the gradient reads on either theme. */
 .text-gradient-green {
+  background: linear-gradient(180deg, var(--foreground) 0%, #2f8d5c 130%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+/* Keeps the original dark-theme gradient exactly as it was. */
+.dark .text-gradient-green {
   background: linear-gradient(180deg, #ffffff 0%, #9be9bf 130%);
   -webkit-background-clip: text;
   background-clip: text;
@@ -199,7 +303,7 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--hairline-strong);
   border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {

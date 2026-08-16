@@ -27,8 +27,8 @@ export function LiveDemo() {
         <p className="mt-4 text-pretty text-muted-foreground">{t.demo.subtitle}</p>
       </div>
 
-      <div className="mt-12 overflow-hidden rounded-3xl border border-white/8 bg-white/[0.02]">
-        <div className="flex items-center justify-between border-b border-white/8 px-5 py-4">
+      <div className="mt-12 overflow-hidden rounded-3xl border border-[rgb(var(--overlay)/0.08)] bg-[rgb(var(--overlay)/0.02)]">
+        <div className="flex items-center justify-between border-b border-[rgb(var(--overlay)/0.08)] px-5 py-4">
           <div className="flex items-center gap-2">
             <span className="relative flex h-2.5 w-2.5 items-center justify-center">
               <span className="absolute h-2.5 w-2.5 animate-ping rounded-full bg-[var(--danger)]/60" />
@@ -49,7 +49,7 @@ export function LiveDemo() {
           <span className="text-right">{t.demo.columns.confidence}</span>
         </div>
 
-        <div className="divide-y divide-white/5">
+        <div className="divide-y divide-[rgb(var(--overlay)/0.05)]">
           <AnimatePresence initial={false}>
             {rows.map((r) => (
               <motion.div
@@ -63,7 +63,7 @@ export function LiveDemo() {
               >
                 <span className="font-medium text-primary">{r.competition}</span>
                 <span className="font-medium text-foreground">
-                  {r.home} <span className="rounded bg-white/5 px-1.5 py-0.5 text-xs tabular-nums">{r.score}</span>{" "}
+                  {r.home} <span className="rounded bg-[rgb(var(--overlay)/0.05)] px-1.5 py-0.5 text-xs tabular-nums">{r.score}</span>{" "}
                   {r.away}
                 </span>
                 <span className="flex items-center gap-1.5 text-[var(--danger)]">

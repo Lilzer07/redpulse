@@ -249,11 +249,11 @@ function ConnectPanel() {
               <Send className="h-4 w-4" />
               Ouvrir dans Telegram
             </a>
-            <div className="flex items-center gap-2 rounded-xl border border-white/8 bg-background/60 px-3 py-2">
+            <div className="flex items-center gap-2 rounded-xl border border-[rgb(var(--overlay)/0.08)] bg-background/60 px-3 py-2">
               <span className="truncate text-xs text-muted-foreground">{deepLink}</span>
               <button
                 onClick={copy}
-                className="ml-auto flex h-8 shrink-0 items-center gap-1.5 rounded-lg bg-white/5 px-2.5 text-xs font-medium text-foreground transition-colors hover:bg-white/10"
+                className="ml-auto flex h-8 shrink-0 items-center gap-1.5 rounded-lg bg-[rgb(var(--overlay)/0.05)] px-2.5 text-xs font-medium text-foreground transition-colors hover:bg-[rgb(var(--overlay)/0.1)]"
               >
                 {copied ? <Check className="h-3.5 w-3.5 text-primary" /> : <Copy className="h-3.5 w-3.5" />}
                 {copied ? "Copié" : "Copier"}
@@ -329,7 +329,7 @@ function ConnectedPanel() {
         <button
           onClick={disconnect}
           disabled={disconnecting}
-          className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.02] text-base font-semibold text-foreground transition-colors hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl border border-[rgb(var(--overlay)/0.1)] bg-[rgb(var(--overlay)/0.02)] text-base font-semibold text-foreground transition-colors hover:bg-[rgb(var(--overlay)/0.05)] disabled:cursor-not-allowed disabled:opacity-40"
         >
           {disconnecting ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogOut className="h-4 w-4" />}
           Déconnecter
@@ -368,7 +368,7 @@ function Panel({ children }: { children: React.ReactNode }) {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="rounded-3xl border border-white/8 bg-white/[0.02] p-6 lg:p-8"
+      className="rounded-3xl border border-[rgb(var(--overlay)/0.08)] bg-[rgb(var(--overlay)/0.02)] p-6 lg:p-8"
     >
       {children}
     </motion.div>

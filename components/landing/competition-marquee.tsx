@@ -32,19 +32,19 @@ function CompetitionMark({ c }: { c: Competition }) {
 
   return (
     <span
-      className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/[0.04] ring-1 ring-inset ring-white/10"
+      className="flex h-9 w-9 items-center justify-center rounded-xl bg-[rgb(var(--overlay)/0.04)] ring-1 ring-inset ring-[rgb(var(--overlay)/0.1)]"
       aria-hidden
     >
-      <Shield className="h-4 w-4 text-white/25" />
+      <Shield className="h-4 w-4 text-[rgb(var(--overlay)/0.25)]" />
     </span>
   )
 }
 
 function Chip({ c }: { c: Competition }) {
   return (
-    <div className="group flex shrink-0 items-center gap-3 rounded-2xl border border-white/5 bg-white/[0.02] px-5 py-3 transition-colors duration-300 hover:border-primary/30 hover:bg-white/[0.04]">
+    <div className="group flex shrink-0 items-center gap-3 rounded-2xl border border-[rgb(var(--overlay)/0.05)] bg-[rgb(var(--overlay)/0.02)] px-5 py-3 transition-colors duration-300 hover:border-primary/30 hover:bg-[rgb(var(--overlay)/0.04)]">
       <CompetitionMark c={c} />
-      <span className="whitespace-nowrap text-sm font-medium text-white/40 transition-colors duration-300 group-hover:text-white/80">
+      <span className="whitespace-nowrap text-sm font-medium text-[rgb(var(--overlay)/0.4)] transition-colors duration-300 group-hover:text-[rgb(var(--overlay)/0.8)]">
         {c.name}
       </span>
     </div>

@@ -33,7 +33,7 @@ export function Sidebar({ userEmail }: { userEmail?: string }) {
   const { t } = useI18n()
 
   return (
-    <aside className="hidden w-64 shrink-0 flex-col border-r border-white/8 bg-[#070807] p-4 lg:flex">
+    <aside className="hidden w-64 shrink-0 flex-col border-r border-[rgb(var(--overlay)/0.08)] bg-shell p-4 lg:flex">
       <Link href="/" className="mb-8 flex items-center gap-2 px-2 pt-2" aria-label={t.nav.home}>
         <Logo />
       </Link>
@@ -68,7 +68,7 @@ export function Sidebar({ userEmail }: { userEmail?: string }) {
       </nav>
 
       {userEmail && (
-        <div className="mt-4 border-t border-white/8 pt-3">
+        <div className="mt-4 border-t border-[rgb(var(--overlay)/0.08)] pt-3">
           <p className="truncate px-3 text-xs text-muted-foreground" title={userEmail}>
             {userEmail}
           </p>
@@ -76,7 +76,7 @@ export function Sidebar({ userEmail }: { userEmail?: string }) {
         </div>
       )}
 
-      <div className="mt-4 rounded-2xl border border-white/8 bg-white/[0.02] p-4">
+      <div className="mt-4 rounded-2xl border border-[rgb(var(--overlay)/0.08)] bg-[rgb(var(--overlay)/0.02)] p-4">
         <div className="flex items-center gap-2">
           <span className="h-2 w-2 animate-pulse rounded-full bg-primary" aria-hidden />
           <p className="text-xs font-medium text-foreground">{t.sidebar.systemOk}</p>

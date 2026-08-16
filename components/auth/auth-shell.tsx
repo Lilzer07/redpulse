@@ -38,7 +38,7 @@ export function AuthShell({
           transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
           className="w-full max-w-md"
         >
-          <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-7 shadow-2xl shadow-black/40">
+          <div className="rounded-2xl border border-[rgb(var(--overlay)/0.08)] bg-[rgb(var(--overlay)/0.02)] p-7 shadow-2xl shadow-black/40">
             <h1 className="text-2xl font-bold tracking-tight text-balance text-foreground">{title}</h1>
             {subtitle && <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{subtitle}</p>}
             <div className="mt-6">{children}</div>
@@ -62,7 +62,7 @@ export function AuthShell({
 }
 
 export const authFieldClass =
-  "h-12 w-full rounded-xl border border-white/8 bg-background/60 px-4 text-base text-foreground outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-primary/50"
+  "h-12 w-full rounded-xl border border-[rgb(var(--overlay)/0.08)] bg-background/60 px-4 text-base text-foreground outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-primary/50"
 
 export const authButtonClass =
   "h-12 w-full rounded-xl bg-primary text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"

@@ -84,7 +84,7 @@ export function Hero() {
               href="#demo"
               size="lg"
               variant="outline"
-              className="h-12 rounded-xl border-white/15 bg-white/5 px-6 text-base font-medium text-foreground backdrop-blur hover:bg-white/10"
+              className="h-12 rounded-xl border-[rgb(var(--overlay)/0.15)] bg-[rgb(var(--overlay)/0.05)] px-6 text-base font-medium text-foreground backdrop-blur hover:bg-[rgb(var(--overlay)/0.1)]"
             >
               <Play className="mr-1 h-4 w-4" />
               {t.hero.ctaSecondary}

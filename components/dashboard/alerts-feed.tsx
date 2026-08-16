@@ -18,7 +18,7 @@ function Metric({
   danger?: boolean
 }) {
   return (
-    <div className="flex items-center gap-2 rounded-xl border border-white/8 bg-white/[0.02] px-3 py-2">
+    <div className="flex items-center gap-2 rounded-xl border border-[rgb(var(--overlay)/0.08)] bg-[rgb(var(--overlay)/0.02)] px-3 py-2">
       <Icon className={`h-4 w-4 shrink-0 ${danger ? "text-[var(--danger)]" : "text-primary"}`} aria-hidden />
       <div className="min-w-0">
         <p className="truncate text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
@@ -37,8 +37,8 @@ function EmptyState({ hasCompetitions }: { hasCompetitions: boolean }) {
   const e = t.feed.empty
 
   return (
-    <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-white/10 bg-white/[0.015] px-6 py-12 text-center">
-      <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/[0.04] text-muted-foreground">
+    <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-[rgb(var(--overlay)/0.1)] bg-[rgb(var(--overlay)/0.015)] px-6 py-12 text-center">
+      <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[rgb(var(--overlay)/0.04)] text-muted-foreground">
         <Inbox className="h-5 w-5" aria-hidden />
       </span>
       <p className="font-medium text-foreground">{e.title}</p>
@@ -76,7 +76,7 @@ export function AlertsFeed({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: Math.min(i * 0.04, 0.3) }}
-          className="overflow-hidden rounded-2xl border border-white/8 bg-white/[0.015] p-4"
+          className="overflow-hidden rounded-2xl border border-[rgb(var(--overlay)/0.08)] bg-[rgb(var(--overlay)/0.015)] p-4"
         >
           {/* Header row */}
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
@@ -94,7 +94,7 @@ export function AlertsFeed({
                   {t.feed.sent}
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-[rgb(var(--overlay)/0.05)] px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
                   {t.feed.pending}
                 </span>
               )}
@@ -104,7 +104,7 @@ export function AlertsFeed({
           {/* Match */}
           <p className="mt-2 text-base font-semibold text-foreground">
             {r.home_team}{" "}
-            <span className="rounded-md bg-white/5 px-2 py-0.5 text-sm tabular-nums">{r.score}</span>{" "}
+            <span className="rounded-md bg-[rgb(var(--overlay)/0.05)] px-2 py-0.5 text-sm tabular-nums">{r.score}</span>{" "}
             {r.away_team}
           </p>
 

@@ -9,7 +9,7 @@ export function SiteFooter() {
   const columns = t.footer.columns
 
   return (
-    <footer className="relative border-t border-white/10 bg-background">
+    <footer className="relative border-t border-[rgb(var(--overlay)/0.1)] bg-background">
       <div className="mx-auto grid max-w-7xl gap-12 px-6 py-16 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
         <div className="space-y-4">
           <Logo />
@@ -33,7 +33,7 @@ export function SiteFooter() {
           </div>
         ))}
       </div>
-      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 border-t border-white/10 px-6 py-6 text-sm text-muted-foreground sm:flex-row">
+      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 border-t border-[rgb(var(--overlay)/0.1)] px-6 py-6 text-sm text-muted-foreground sm:flex-row">
         <p>{t.footer.rights}</p>
         <p className="text-pretty">{t.footer.notBetting}</p>
       </div>

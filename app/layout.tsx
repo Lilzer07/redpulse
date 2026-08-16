@@ -35,8 +35,12 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  colorScheme: 'dark',
-  themeColor: '#050505',
+  // Both schemes are supported now; the active one is driven by next-themes.
+  colorScheme: 'light dark',
+  themeColor: [
+    { media: '(prefers-color-scheme: dark)', color: '#050505' },
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+  ],
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -47,8 +51,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  // `suppressHydrationWarning` is required by next-themes: it writes the theme
+  // class on <html> before React hydrates.
   return (
-    <html lang="fr" className={`dark ${inter.variable}`}>
+    <html lang="fr" className={inter.variable} suppressHydrationWarning>
       <body className="font-sans antialiased bg-background text-foreground">
         <Providers>{children}</Providers>
         {process.env.NODE_ENV === 'production' && <Analytics />}
