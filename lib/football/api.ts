@@ -75,7 +75,7 @@ export async function fetchLeagueName(leagueId: number): Promise<string | null> 
  * All live fixtures across the watched competitions.
  *
  * Uses a single `fixtures?live=` call listing every league id rather than one
- * call per competition: 21 separate requests per poll would burn the quota for
+ * call per competition: one request per watched league per poll would burn the quota for
  * no benefit (spec section 6, "ne pas faire des centaines d'appels inutiles").
  * Cached for 30s so overlapping callers share one upstream request.
  */

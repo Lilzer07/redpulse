@@ -37,7 +37,7 @@ const fr = {
     // Reflects MONITOR_CONFIG.intervalSeconds (60s). Keep this in step with the
     // real cadence: the earlier "Analyse < 2 s" was removed precisely because it
     // promised a latency the product did not deliver.
-    trust: ["Vérification toutes les 60 s", "Indice de confiance /100", "21 compétitions"],
+    trust: ["Vérification toutes les 60 s", "Indice de confiance /100", "25 compétitions"],
     imageAlt: "Stade de football illuminé la nuit",
   },
 
@@ -91,7 +91,7 @@ const fr = {
       },
       {
         title: "Grandes compétitions",
-        description: "Les championnats et coupes les plus importants d’Europe, surveillés en continu.",
+        description: "Les championnats et coupes les plus suivis, en Europe et au-delà, surveillés en continu.",
       },
       {
         title: "Données en temps réel",
@@ -194,7 +194,7 @@ const fr = {
       },
       {
         q: "Quelles compétitions sont analysées ?",
-        a: "Plus de 20 compétitions européennes majeures : Premier League, Ligue 1, LaLiga, Serie A, Bundesliga, Liga Portugal, leurs divisions secondaires, ainsi que la Champions League, l’Europa League, la Conference League et les principales coupes nationales.",
+        a: "Plus de 20 compétitions majeures : Premier League, Ligue 1, LaLiga, Serie A, Bundesliga, Liga Portugal, Eredivisie, Jupiler Pro League, Süper Lig, Saudi Pro League, les divisions secondaires des cinq grands championnats, ainsi que la Champions League, l’Europa League, la Conference League et les principales coupes nationales.",
       },
       {
         q: "Vais-je voir des statistiques complexes comme les xG ?",
@@ -221,6 +221,10 @@ const fr = {
     Italie: "Italie",
     Allemagne: "Allemagne",
     Portugal: "Portugal",
+    "Pays-Bas": "Pays-Bas",
+    Turquie: "Turquie",
+    Belgique: "Belgique",
+    "Arabie saoudite": "Arabie saoudite",
     Europe: "Europe",
   } as Record<string, string>,
 
@@ -242,7 +246,7 @@ const fr = {
     ],
     mobileItems: ["Accueil", "Direct", "Compét.", "Telegram", "Facture"],
     systemOk: "Système opérationnel",
-    watching: "Surveillance active sur 21 compétitions.",
+    watching: "Surveillance active sur 25 compétitions.",
   },
 
   topbar: {
@@ -565,7 +569,7 @@ const en: typeof fr = {
       "The moment a red card is shown, RedMatch pulls the match context, analyses the situation and sends you a Telegram notification: chance of another goal, favourite’s win probability and a confidence score. In seconds.",
     ctaPrimary: "Get started",
     ctaSecondary: "Watch the demo",
-    trust: ["Checked every 60 s", "Confidence score /100", "21 competitions"],
+    trust: ["Checked every 60 s", "Confidence score /100", "25 competitions"],
     imageAlt: "Football stadium lit up at night",
   },
 
@@ -616,7 +620,7 @@ const en: typeof fr = {
       },
       {
         title: "Major competitions",
-        description: "Europe’s most important leagues and cups, monitored continuously.",
+        description: "The most followed leagues and cups, in Europe and beyond, monitored continuously.",
       },
       {
         title: "Real-time data",
@@ -718,7 +722,7 @@ const en: typeof fr = {
       },
       {
         q: "Which competitions are analysed?",
-        a: "More than 20 major European competitions: the Premier League, Ligue 1, LaLiga, Serie A, Bundesliga, Liga Portugal, their second divisions, plus the Champions League, Europa League, Conference League and the main domestic cups.",
+        a: "More than 20 major competitions: the Premier League, Ligue 1, LaLiga, Serie A, Bundesliga, Liga Portugal, Eredivisie, Jupiler Pro League, Süper Lig, Saudi Pro League, the second divisions of the big five leagues, plus the Champions League, Europa League, Conference League and the main domestic cups.",
       },
       {
         q: "Will I see complex stats like xG?",
@@ -745,6 +749,10 @@ const en: typeof fr = {
     Italie: "Italy",
     Allemagne: "Germany",
     Portugal: "Portugal",
+    "Pays-Bas": "Netherlands",
+    Turquie: "Turkey",
+    Belgique: "Belgium",
+    "Arabie saoudite": "Saudi Arabia",
     Europe: "Europe",
   },
 
@@ -759,7 +767,7 @@ const en: typeof fr = {
     items: ["Dashboard", "Live feed", "Competitions", "Telegram", "Billing", "Settings"],
     mobileItems: ["Home", "Live", "Comps", "Telegram", "Billing"],
     systemOk: "All systems operational",
-    watching: "Actively monitoring 21 competitions.",
+    watching: "Actively monitoring 25 competitions.",
   },
 
   topbar: {
