@@ -32,6 +32,12 @@ export const competitions: Competition[] = [
   { id: "2-bundesliga", name: "2. Bundesliga", country: "Allemagne", tier: "league", color: "#E30613", abbr: "B2", logo: "/logos/2-bundesliga.png" },
   { id: "liga-portugal", name: "Liga Portugal", country: "Portugal", tier: "league", color: "#006940", abbr: "LP", logo: "/logos/liga-portugal.png" },
   { id: "liga-portugal-2", name: "Liga Portugal 2", country: "Portugal", tier: "league", color: "#00843D", abbr: "P2", logo: "/logos/liga-portugal-2.png" },
+  // Newer leagues: badge resolved from the real API-Football league id rather
+  // than a bundled asset, so no logo is hardcoded per competition.
+  { id: "eredivisie", name: "Eredivisie", country: "Pays-Bas", tier: "league", color: "#FF6600", abbr: "ERE", logo: "https://media.api-sports.io/football/leagues/88.png" },
+  { id: "super-lig", name: "Süper Lig", country: "Turquie", tier: "league", color: "#E30A17", abbr: "SL", logo: "https://media.api-sports.io/football/leagues/203.png" },
+  { id: "jupiler-pro-league", name: "Jupiler Pro League", country: "Belgique", tier: "league", color: "#E4022E", abbr: "JPL", logo: "https://media.api-sports.io/football/leagues/144.png" },
+  { id: "saudi-pro-league", name: "Saudi Pro League", country: "Arabie saoudite", tier: "league", color: "#006C35", abbr: "SPL", logo: "https://media.api-sports.io/football/leagues/307.png" },
   { id: "champions-league", name: "Champions League", country: "Europe", tier: "european", color: "#0B1B54", abbr: "UCL", logo: "/logos/champions-league.png" },
   { id: "europa-league", name: "Europa League", country: "Europe", tier: "european", color: "#FF6900", abbr: "UEL", logo: "/logos/europa-league.png" },
   { id: "conference-league", name: "Conference League", country: "Europe", tier: "european", color: "#00B54A", abbr: "UECL", logo: "/logos/conference-league.png" },

@@ -72,6 +72,7 @@ export function extractRedCards(fixture: Fixture, events: FixtureEvent[]): RedCa
     leagueId: fixture.leagueId,
     leagueName: fixture.leagueName,
     country: fixture.country,
+    leagueLogo: fixture.leagueLogo,
     season: fixture.season,
     homeTeam: fixture.homeTeam,
     awayTeam: fixture.awayTeam,

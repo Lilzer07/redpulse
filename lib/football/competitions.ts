@@ -24,7 +24,7 @@ export type CompetitionConfig = {
 }
 
 /**
- * The 21 competitions RedMatch watches.
+ * The competitions RedMatch watches.
  *
  * Ids are the documented API-Football v3 league ids. They are asserted at
  * runtime by the connection test (`verifyCompetitions`), which fetches each
@@ -56,11 +56,31 @@ export const COMPETITIONS: CompetitionConfig[] = [
   { id: 94, slug: "liga-portugal", name: "Liga Portugal", country: "Portugal", type: "league", enabled: true },
   { id: 95, slug: "liga-portugal-2", name: "Liga Portugal 2", country: "Portugal", type: "league", enabled: true },
   { id: 96, slug: "taca-de-portugal", name: "Taça de Portugal", country: "Portugal", type: "cup", enabled: true },
+  // Netherlands
+  { id: 88, slug: "eredivisie", name: "Eredivisie", country: "Pays-Bas", type: "league", enabled: true },
+  // Turkey
+  { id: 203, slug: "super-lig", name: "Süper Lig", country: "Turquie", type: "league", enabled: true },
+  // Belgium
+  { id: 144, slug: "jupiler-pro-league", name: "Jupiler Pro League", country: "Belgique", type: "league", enabled: true },
+  // Saudi Arabia
+  { id: 307, slug: "saudi-pro-league", name: "Saudi Pro League", country: "Arabie saoudite", type: "league", enabled: true },
   // Europe
   { id: 2, slug: "champions-league", name: "Champions League", country: "Europe", type: "european", enabled: true },
   { id: 3, slug: "europa-league", name: "Europa League", country: "Europe", type: "european", enabled: true },
   { id: 848, slug: "conference-league", name: "Conference League", country: "Europe", type: "european", enabled: true },
 ]
+
+/**
+ * Official API-Football competition badge for a league id.
+ *
+ * Used as the single source of truth for competition logos: no logo is ever
+ * hardcoded per competition — it is always derived from the real league id, so a
+ * newly added competition gets its badge automatically. This is also the
+ * documented fallback when a fixture payload omits `league.logo`.
+ */
+export function leagueLogoUrl(leagueId: number): string {
+  return `https://media.api-sports.io/football/leagues/${leagueId}.png`
+}
 
 const BY_ID = new Map(COMPETITIONS.map((c) => [c.id, c]))
 const BY_SLUG = new Map(COMPETITIONS.map((c) => [c.slug, c]))
@@ -94,6 +114,10 @@ const COUNTRY_FLAGS: Record<string, string> = {
   Italie: "🇮🇹",
   Allemagne: "🇩🇪",
   Portugal: "🇵🇹",
+  "Pays-Bas": "🇳🇱",
+  Turquie: "🇹🇷",
+  Belgique: "🇧🇪",
+  "Arabie saoudite": "🇸🇦",
   Europe: "🇪🇺",
 }
 
