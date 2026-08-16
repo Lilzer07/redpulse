@@ -1,10 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
 import { motion } from "framer-motion"
 import { Topbar } from "@/components/dashboard/topbar"
 import { Switch } from "@/components/ui/switch"
+import { ThemeSelector } from "@/components/dashboard/theme-selector"
+import { PasswordForm } from "@/components/dashboard/password-form"
 import { useI18n } from "@/lib/i18n/context"
 import { useSession } from "@/lib/session-context"
 import { SignOutButton } from "@/components/auth/sign-out-button"
@@ -53,7 +54,6 @@ export default function SettingsPage() {
     product: profile?.notify_product ?? true,
   })
   const [timezone, setTimezone] = useState(profile?.timezone ?? "Europe/Paris")
-  const [darkMode, setDarkMode] = useState(true)
   const [name, setName] = useState(displayName ?? "")
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -178,14 +178,12 @@ export default function SettingsPage() {
           </div>
         </Section>
 
-        <Section title={t.settings.appearance.title} delay={0.18}>
-          <label className="flex cursor-pointer items-center justify-between gap-4">
-            <span>
-              <span className="block font-medium text-foreground">{t.settings.darkMode}</span>
-              <span className="block text-sm text-muted-foreground">{t.settings.darkModeDesc}</span>
-            </span>
-            <Switch checked={darkMode} onCheckedChange={setDarkMode} aria-label={t.settings.darkMode} />
-          </label>
+        <Section
+          title={t.settings.appearance.title}
+          description={t.settings.appearance.description}
+          delay={0.18}
+        >
+          <ThemeSelector />
         </Section>
 
         {/* Reachable on every viewport — the sidebar sign-out is desktop-only. */}
@@ -197,18 +195,9 @@ export default function SettingsPage() {
             <SignOutButton />
           </div>
 
-          {/* Passwords are changed through the emailed reset link, never shown in a field. */}
-          <div className="mt-5 flex flex-wrap items-center justify-between gap-4 border-t border-[rgb(var(--overlay)/0.05)] pt-5">
-            <div>
-              <p className="font-medium text-foreground">{t.settings.password}</p>
-              <p className="mt-1 text-sm text-muted-foreground">{t.settings.passwordDesc}</p>
-            </div>
-            <Link
-              href="/auth/forgot-password"
-              className="h-11 shrink-0 rounded-xl border border-[rgb(var(--overlay)/0.1)] bg-[rgb(var(--overlay)/0.03)] px-5 text-sm font-medium leading-[2.75rem] text-foreground transition-colors hover:bg-[rgb(var(--overlay)/0.06)]"
-            >
-              {t.settings.changePassword}
-            </Link>
+          {/* Password can now be changed in place, at any time. */}
+          <div className="mt-5 border-t border-[rgb(var(--overlay)/0.05)] pt-5">
+            <PasswordForm />
           </div>
         </Section>
 

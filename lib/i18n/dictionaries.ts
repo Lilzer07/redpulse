@@ -765,6 +765,7 @@ const en: typeof fr = {
   topbar: {
     search: "Search",
     notifications: "Notifications",
+    account: "My account",
   },
 
   dashboard: {
@@ -906,8 +907,17 @@ const en: typeof fr = {
     namePlaceholder: "Your name",
     email: "Email address",
     password: "Password",
-    passwordDesc: "We'll email you a secure link to change it.",
+    passwordDesc: "Set a new password at any time.",
     changePassword: "Change password",
+    // In-place password change, directly in Settings.
+    newPassword: "New password",
+    confirmPassword: "Confirm password",
+    passwordUpdating: "Updating…",
+    passwordUpdated: "Password updated.",
+    passwordMismatch: "Passwords do not match.",
+    passwordTooShort: "Password must be at least 8 characters.",
+    passwordError: "Could not change the password. Please try again.",
+    passwordForgot: "Email me a link instead",
     regional: { title: "Regional preferences", description: "Language and time zone." },
     language: "Language",
     timezone: "Time zone",
@@ -920,9 +930,12 @@ const en: typeof fr = {
         { label: "Product news", desc: "New competitions and features." },
       ],
     },
-    appearance: { title: "Appearance" },
+    appearance: { title: "Appearance", description: "Choose how the interface looks." },
     darkMode: "Dark mode",
-    darkModeDesc: "RedMatch is optimised for dark mode.",
+    lightMode: "Light mode",
+    systemMode: "System",
+    themeDesc: "The change applies immediately across the whole app.",
+    themeSystemHint: "“System” follows your phone or computer setting.",
     account: {
       title: "Account",
       signedInAs: "Signed in as",
