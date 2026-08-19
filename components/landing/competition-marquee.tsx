@@ -71,7 +71,7 @@ export function CompetitionMarquee() {
   const second = competitions.slice(half)
 
   return (
-    <section className="relative overflow-hidden py-16" aria-label={t.marquee.label}>
+    <section id="competitions" className="relative scroll-mt-24 overflow-hidden py-16" aria-label={t.marquee.label}>
       <div className="mb-8 text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.25em] text-muted-foreground">
           {t.marquee.title}

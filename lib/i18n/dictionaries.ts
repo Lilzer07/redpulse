@@ -206,9 +206,31 @@ const fr = {
   footer: {
     tagline: "La surveillance football en temps réel. Ne manquez plus jamais un carton rouge.",
     columns: [
-      { title: "Produit", links: ["Fonctionnalités", "Compétitions", "Tarification", "Démonstration"] },
-      { title: "Entreprise", links: ["À propos", "Blog", "Carrières", "Contact"] },
-      { title: "Légal", links: ["Confidentialité", "Conditions", "Cookies", "Mentions légales"] },
+      {
+        title: "Produit",
+        links: [
+          { label: "Fonctionnalités", href: "#fonctionnalites" },
+          { label: "Compétitions", href: "#competitions" },
+          { label: "Tarification", href: "#tarifs" },
+          { label: "Démonstration", href: "#demo" },
+        ],
+      },
+      {
+        title: "Entreprise",
+        links: [
+          { label: "Fonctionnement", href: "#fonctionnement" },
+          { label: "FAQ", href: "#faq" },
+          { label: "Contact", href: "mailto:redmatch.support@gmail.com" },
+        ],
+      },
+      {
+        title: "Légal",
+        links: [
+          { label: "Conditions", href: "/terms" },
+          { label: "Confidentialité", href: "/terms" },
+          { label: "Mentions légales", href: "/terms" },
+        ],
+      },
     ],
     rights: "© 2026 RedMatch. Tous droits réservés.",
     notBetting: "Outil de surveillance football en temps réel — pas un service de paris.",
