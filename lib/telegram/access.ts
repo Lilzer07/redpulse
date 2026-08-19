@@ -158,6 +158,51 @@ export async function revokeChannelAccess(userId: string, reason: string): Promi
   return { ok: true }
 }
 
+/**
+ * Ejects every user who is physically in the channel but no longer entitled.
+ *
+ * This is the enforcement step the SQL expiry sweep cannot perform:
+ * `expire_lapsed_subscriptions` flips billing and access rows inside Postgres,
+ * but Postgres cannot call Telegram, so a lapsed member stays physically in the
+ * channel and keeps receiving broadcasts until something kicks them.
+ *
+ * It is deliberately driven by physical presence (`channel_status`), not by the
+ * reason access ended: natural expiry, a failed payment, an explicit
+ * cancellation and a non-renewal all leave a non-entitled account sitting in the
+ * channel, and one pass handles them all — including cases the SQL sweep never
+ * flips (e.g. `canceled`) or where a Stripe webhook was missed. Billing is
+ * re-read live per user via `hasPremiumAccess`, never trusted from a cached flag.
+ *
+ * The removal is a temporary kick (ban + immediate unban in
+ * `removeUserFromChannel`), so a later valid payment re-admits the same account
+ * automatically with a fresh invite.
+ */
+export async function sweepChannelMembership(): Promise<{ checked: number; removed: number }> {
+  const supabase = createAdminClient()
+  if (!supabase) return { checked: 0, removed: 0 }
+
+  // Only accounts with a real foothold in the channel: joined members and
+  // pending invitees. Never-linked or already-removed users are skipped.
+  const { data, error } = await supabase
+    .from("telegram_settings")
+    .select("user_id, telegram_user_id, channel_status")
+    .not("telegram_user_id", "is", null)
+    .in("channel_status", ["member", "invited"])
+
+  if (error || !data) return { checked: 0, removed: 0 }
+
+  let removed = 0
+  for (const row of data) {
+    const userId = String(row.user_id)
+    if (await hasPremiumAccess(userId)) continue
+    const result = await revokeChannelAccess(userId, "expiry_sweep")
+    if (result.ok) removed += 1
+  }
+
+  logEvent("telegram_membership_swept", { checked: data.length, removed })
+  return { checked: data.length, removed }
+}
+
 export type JoinDecision = "approved" | "declined" | "unknown_user" | "not_configured" | "error"
 
 /**
