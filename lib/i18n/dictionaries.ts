@@ -758,9 +758,31 @@ const en: typeof fr = {
   footer: {
     tagline: "Real-time football monitoring. Never miss a red card again.",
     columns: [
-      { title: "Product", links: ["Features", "Competitions", "Pricing", "Demo"] },
-      { title: "Company", links: ["About", "Blog", "Careers", "Contact"] },
-      { title: "Legal", links: ["Privacy", "Terms", "Cookies", "Legal notice"] },
+      {
+        title: "Product",
+        links: [
+          { label: "Features", href: "#fonctionnalites" },
+          { label: "Competitions", href: "#competitions" },
+          { label: "Pricing", href: "#tarifs" },
+          { label: "Demo", href: "#demo" },
+        ],
+      },
+      {
+        title: "Company",
+        links: [
+          { label: "How it works", href: "#fonctionnement" },
+          { label: "FAQ", href: "#faq" },
+          { label: "Contact", href: "mailto:redmatch.support@gmail.com" },
+        ],
+      },
+      {
+        title: "Legal",
+        links: [
+          { label: "Terms", href: "/terms" },
+          { label: "Privacy", href: "/terms" },
+          { label: "Legal notice", href: "/terms" },
+        ],
+      },
     ],
     rights: "© 2026 RedMatch. All rights reserved.",
     notBetting: "A real-time football monitoring tool — not a betting service.",
