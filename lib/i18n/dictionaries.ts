@@ -212,6 +212,8 @@ const fr = {
     ],
     rights: "© 2026 RedMatch. Tous droits réservés.",
     notBetting: "Outil de surveillance football en temps réel — pas un service de paris.",
+    supportLabel: "Support",
+    supportEmail: "redmatch.support@gmail.com",
   },
 
   countries: {
@@ -740,6 +742,8 @@ const en: typeof fr = {
     ],
     rights: "© 2026 RedMatch. All rights reserved.",
     notBetting: "A real-time football monitoring tool — not a betting service.",
+    supportLabel: "Support",
+    supportEmail: "redmatch.support@gmail.com",
   },
 
   countries: {

@@ -35,6 +35,16 @@ export function SiteFooter() {
       </div>
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 border-t border-[rgb(var(--overlay)/0.1)] px-6 py-6 text-sm text-muted-foreground sm:flex-row">
         <p>{t.footer.rights}</p>
+        <p className="flex items-center gap-1.5 text-pretty">
+          <span>{t.footer.supportLabel}</span>
+          <span aria-hidden="true">·</span>
+          <a
+            href={`mailto:${t.footer.supportEmail}`}
+            className="font-medium text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+          >
+            {t.footer.supportEmail}
+          </a>
+        </p>
         <p className="text-pretty">{t.footer.notBetting}</p>
       </div>
     </footer>
