@@ -118,13 +118,42 @@ export async function findEligibleRecipients(competitionSlug: string): Promise<s
  * here, because doing it in two round-trips from the app would leave a window
  * where a subscription is expired but access is still active.
  */
-export async function runExpirySweep(): Promise<{ ok: boolean; expiredTotal?: number; error?: string }> {
+export async function runExpirySweep(): Promise<{
+  ok: boolean
+  expiredTotal?: number
+  channelChecked?: number
+  channelRemoved?: number
+  error?: string
+}> {
   const supabase = createAdminClient()
   if (!supabase) return { ok: false, error: "Service role key is not configured." }
 
+  // 1. Flip billing/access rows first. Postgres cannot call Telegram, so this
+  //    only updates state — it never ejects anyone from the channel.
   const { data, error } = await supabase.rpc("expire_lapsed_subscriptions")
   if (error) return { ok: false, error: error.message }
-  return { ok: true, expiredTotal: typeof data === "number" ? data : undefined }
+
+  // 2. Then enforce that state on Telegram: kick every member who is no longer
+  //    entitled, whatever the reason (expiry, failed payment, cancellation,
+  //    non-renewal). Dynamic import avoids a static cycle with lib/telegram.
+  //    A Telegram failure must not fail the billing sweep, so it is contained.
+  let channelChecked: number | undefined
+  let channelRemoved: number | undefined
+  try {
+    const { sweepChannelMembership } = await import("@/lib/telegram/access")
+    const swept = await sweepChannelMembership()
+    channelChecked = swept.checked
+    channelRemoved = swept.removed
+  } catch {
+    // Swallow: the DB is already consistent and the next sweep retries the kick.
+  }
+
+  return {
+    ok: true,
+    expiredTotal: typeof data === "number" ? data : undefined,
+    channelChecked,
+    channelRemoved,
+  }
 }
 
 /** Manual revocation, e.g. from a future Stripe cancellation webhook. */
