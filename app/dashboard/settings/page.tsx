@@ -6,6 +6,7 @@ import { Topbar } from "@/components/dashboard/topbar"
 import { Switch } from "@/components/ui/switch"
 import { ThemeSelector } from "@/components/dashboard/theme-selector"
 import { PasswordForm } from "@/components/dashboard/password-form"
+import { CancelSubscriptionLink } from "@/components/dashboard/cancel-subscription-link"
 import { useI18n } from "@/lib/i18n/context"
 import { useSession } from "@/lib/session-context"
 import { SignOutButton } from "@/components/auth/sign-out-button"
@@ -199,6 +200,9 @@ export default function SettingsPage() {
           <div className="mt-5 border-t border-[rgb(var(--overlay)/0.05)] pt-5">
             <PasswordForm />
           </div>
+
+          {/* Kept intentionally low-key at the very bottom of the account block. */}
+          <CancelSubscriptionLink />
         </Section>
 
         <div className="flex items-center justify-end gap-3">

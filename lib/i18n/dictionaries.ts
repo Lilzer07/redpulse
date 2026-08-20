@@ -382,7 +382,7 @@ const fr = {
 
   billing: {
     title: "Facturation",
-    subtitle: "Gérez votre abonnement.",
+    subtitle: "",
     locale: "fr-FR",
     noneTitle: "Aucun abonnement",
     noneBody: "Ce compte n'a pas encore d'abonnement actif. Choisissez une offre pour recevoir les alertes.",
@@ -451,6 +451,13 @@ const fr = {
     account: {
       title: "Compte",
       signedInAs: "Connecté en tant que",
+      cancelSub: "Résilier mon abonnement",
+      cancelConfirm: "Résilier maintenant ? L'accès au tableau de bord et au canal Telegram est coupé immédiatement.",
+      cancelPending: "Résiliation…",
+      cancelDone: "Abonnement résilié.",
+      cancelError: "Résiliation impossible pour le moment.",
+      cancelNone: "Aucun abonnement à résilier.",
+      keep: "Garder mon abonnement",
     },
     cancel: "Annuler",
     save: "Enregistrer les modifications",
@@ -926,7 +933,7 @@ const en: typeof fr = {
 
   billing: {
     title: "Billing",
-    subtitle: "Manage your subscription.",
+    subtitle: "",
     locale: "en-GB",
     noneTitle: "No subscription",
     noneBody: "This account has no active subscription yet. Pick a plan to start receiving alerts.",
@@ -995,6 +1002,13 @@ const en: typeof fr = {
     account: {
       title: "Account",
       signedInAs: "Signed in as",
+      cancelSub: "Cancel my subscription",
+      cancelConfirm: "Cancel now? Dashboard and Telegram channel access are cut immediately.",
+      cancelPending: "Cancelling…",
+      cancelDone: "Subscription cancelled.",
+      cancelError: "Couldn't cancel right now.",
+      cancelNone: "No subscription to cancel.",
+      keep: "Keep my subscription",
     },
     cancel: "Cancel",
     save: "Save changes",
