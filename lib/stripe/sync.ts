@@ -290,44 +290,62 @@ export function periodEndOf(sub: Stripe.Subscription): string | null {
 }
 
 /**
- * Cancels the signed-in user's subscription and cuts access immediately.
+ * Voluntarily cancels the signed-in user's subscription with IMMEDIATE effect.
+ *
+ * A voluntary cancellation is authoritative and instant: the user loses access
+ * the moment they confirm, even with paid days remaining. Two things happen, in
+ * this order, and the local revoke is what actually decides access:
+ *
+ *   1. Best-effort IMMEDIATE cancellation in Stripe (`subscriptions.cancel`, not
+ *      `cancel_at_period_end`) so Stripe's own status becomes `canceled` with no
+ *      lingering paid period. A Stripe error must NOT keep the user entitled, so
+ *      it is swallowed — step 2 still runs.
+ *   2. An explicit revoked state is forced locally: `status: "canceled"` AND
+ *      `current_period_end: null`. Nulling the period end means no gate can ever
+ *      re-grant access from a future paid date, and `syncSubscription` revokes
+ *      the Telegram channel in the same call. This is what makes the cut server-
+ *      side and immediate, independent of any webhook or the daily cron.
  *
  * The subscription id is read from the database by user id — never taken from
- * the client — so a caller cannot cancel someone else's subscription. We set
- * `cancel_at_period_end` (a reversible cancellation that also stops the next
- * charge) and then reconcile right away instead of waiting for the webhook:
- * `effectiveSubscriptionStatus` reports it as canceled, so `syncSubscription`
- * revokes the channel and flips the dashboard the moment the user confirms.
+ * the client — so a caller cannot cancel someone else's subscription.
  */
 export async function cancelUserSubscription(
   userId: string,
-): Promise<{ ok: true } | { ok: false; reason: "not_configured" | "no_subscription" | "stripe_error" }> {
-  const stripe = stripeClient()
-  if (!stripe) return { ok: false, reason: "not_configured" }
-
+): Promise<{ ok: true } | { ok: false; reason: "no_subscription" | "storage_unavailable" }> {
   const supabase = createAdminClient()
-  if (!supabase) return { ok: false, reason: "stripe_error" }
+  if (!supabase) return { ok: false, reason: "storage_unavailable" }
 
   const { data } = await supabase
     .from("subscriptions")
-    .select("stripe_subscription_id")
+    .select("stripe_subscription_id, stripe_customer_id")
     .eq("user_id", userId)
     .maybeSingle()
 
-  const subscriptionId = data?.stripe_subscription_id ? String(data.stripe_subscription_id) : null
-  if (!subscriptionId) return { ok: false, reason: "no_subscription" }
+  if (!data) return { ok: false, reason: "no_subscription" }
 
-  try {
-    const sub = await stripe.subscriptions.update(subscriptionId, { cancel_at_period_end: true })
-    await syncSubscription({
-      userId,
-      status: effectiveSubscriptionStatus(sub),
-      currentPeriodEnd: periodEndOf(sub),
-      customerId: typeof sub.customer === "string" ? sub.customer : sub.customer.id,
-      subscriptionId: sub.id,
-    })
-    return { ok: true }
-  } catch {
-    return { ok: false, reason: "stripe_error" }
+  const subscriptionId = data.stripe_subscription_id ? String(data.stripe_subscription_id) : null
+  const customerId = data.stripe_customer_id ? String(data.stripe_customer_id) : null
+
+  // 1. Immediate Stripe cancellation, best-effort.
+  const stripe = stripeClient()
+  if (stripe && subscriptionId) {
+    try {
+      await stripe.subscriptions.cancel(subscriptionId)
+    } catch {
+      // Already canceled or a transient Stripe error: the forced local revoke
+      // below is authoritative, so the user still loses access immediately.
+    }
   }
+
+  // 2. Force the explicit revoked state + Telegram kick, regardless of Stripe.
+  await syncSubscription({
+    userId,
+    status: "canceled",
+    currentPeriodEnd: null,
+    ...(customerId ? { customerId } : {}),
+    ...(subscriptionId ? { subscriptionId } : {}),
+  })
+
+  logEvent("subscription_canceled_by_user", { userId, subscriptionId })
+  return { ok: true }
 }
