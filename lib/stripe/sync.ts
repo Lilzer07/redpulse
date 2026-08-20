@@ -288,3 +288,46 @@ export function periodEndOf(sub: Stripe.Subscription): string | null {
   const seconds = fromItem ?? legacy
   return typeof seconds === "number" ? new Date(seconds * 1000).toISOString() : null
 }
+
+/**
+ * Cancels the signed-in user's subscription and cuts access immediately.
+ *
+ * The subscription id is read from the database by user id — never taken from
+ * the client — so a caller cannot cancel someone else's subscription. We set
+ * `cancel_at_period_end` (a reversible cancellation that also stops the next
+ * charge) and then reconcile right away instead of waiting for the webhook:
+ * `effectiveSubscriptionStatus` reports it as canceled, so `syncSubscription`
+ * revokes the channel and flips the dashboard the moment the user confirms.
+ */
+export async function cancelUserSubscription(
+  userId: string,
+): Promise<{ ok: true } | { ok: false; reason: "not_configured" | "no_subscription" | "stripe_error" }> {
+  const stripe = stripeClient()
+  if (!stripe) return { ok: false, reason: "not_configured" }
+
+  const supabase = createAdminClient()
+  if (!supabase) return { ok: false, reason: "stripe_error" }
+
+  const { data } = await supabase
+    .from("subscriptions")
+    .select("stripe_subscription_id")
+    .eq("user_id", userId)
+    .maybeSingle()
+
+  const subscriptionId = data?.stripe_subscription_id ? String(data.stripe_subscription_id) : null
+  if (!subscriptionId) return { ok: false, reason: "no_subscription" }
+
+  try {
+    const sub = await stripe.subscriptions.update(subscriptionId, { cancel_at_period_end: true })
+    await syncSubscription({
+      userId,
+      status: effectiveSubscriptionStatus(sub),
+      currentPeriodEnd: periodEndOf(sub),
+      customerId: typeof sub.customer === "string" ? sub.customer : sub.customer.id,
+      subscriptionId: sub.id,
+    })
+    return { ok: true }
+  } catch {
+    return { ok: false, reason: "stripe_error" }
+  }
+}

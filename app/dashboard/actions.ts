@@ -6,6 +6,7 @@ import { competitions } from "@/lib/data"
 import { createLinkToken, unlinkTelegram } from "@/lib/telegram/linking"
 import { grantChannelAccess } from "@/lib/telegram/access"
 import { createPortalSession } from "@/lib/stripe/portal"
+import { cancelUserSubscription } from "@/lib/stripe/sync"
 import { authorizeTelegramDelivery } from "@/lib/subscriptions/authorization"
 import { sendMessage } from "@/lib/telegram/service"
 
@@ -104,6 +105,24 @@ export async function openBillingPortal(): Promise<{ ok: true; url: string } | {
     const result = await createPortalSession(user.id)
     if (result.ok) return { ok: true, url: result.url }
     return { ok: false, error: result.reason }
+  } catch {
+    return { ok: false, error: "not-authenticated" }
+  }
+}
+
+/**
+ * Cancels the signed-in user's subscription. Access to the dashboard and the
+ * Telegram channel is cut immediately — the heavy lifting (Stripe cancel +
+ * channel revoke) lives in `cancelUserSubscription`, scoped to this user's id.
+ */
+export async function cancelSubscription(): Promise<ActionResult> {
+  try {
+    const { user } = await requireUser()
+    const result = await cancelUserSubscription(user.id)
+    if (!result.ok) return { ok: false, error: result.reason }
+
+    revalidatePath("/dashboard", "layout")
+    return { ok: true }
   } catch {
     return { ok: false, error: "not-authenticated" }
   }
