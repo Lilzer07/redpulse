@@ -1,9 +1,7 @@
 "use client"
 
-import { useState } from "react"
 import { motion } from "framer-motion"
-import { Check, ExternalLink, Loader2, AlertTriangle, Infinity as InfinityIcon } from "lucide-react"
-import { openBillingPortal } from "@/app/dashboard/actions"
+import { Check, Infinity as InfinityIcon } from "lucide-react"
 import { useI18n } from "@/lib/i18n/context"
 import type { Subscription } from "@/lib/user-data"
 
@@ -30,26 +28,11 @@ function formatDate(value: string | null, locale: string): string | null {
  *
  * Everything shown here comes from the subscription row that the Stripe webhook
  * writes. Card details and invoices are deliberately NOT rendered: Stripe owns
- * them, and a local copy would silently drift out of date. The portal button
- * hands the user to Stripe for those instead.
+ * them, and a local copy would silently drift out of date.
  */
 export function BillingPanel({ subscription, active }: Props) {
   const { t } = useI18n()
   const b = t.billing
-  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle")
-  const [error, setError] = useState("")
-
-  async function openPortal() {
-    setStatus("loading")
-    setError("")
-    const res = await openBillingPortal()
-    if (res.ok) {
-      window.location.href = res.url
-      return
-    }
-    setError(res.error === "no_customer" ? b.portalErrorNoCustomer : b.portalErrorUnavailable)
-    setStatus("error")
-  }
 
   // No row at all: the account never completed a payment.
   if (!subscription) {
@@ -121,39 +104,12 @@ export function BillingPanel({ subscription, active }: Props) {
         ))}
       </ul>
 
-      {/* Only recurring plans have anything to manage in the portal. */}
-      {isLifetime ? (
+      {/* Lifetime plans keep their informational note; recurring plans no longer
+          expose a Stripe management button here. */}
+      {isLifetime && (
         <p className="mt-7 rounded-xl border border-[rgb(var(--overlay)/0.08)] bg-[rgb(var(--overlay)/0.02)] px-4 py-3 text-xs leading-relaxed text-muted-foreground">
           {b.lifetimeNote}
         </p>
-      ) : (
-        <div className="mt-7">
-          <button
-            onClick={openPortal}
-            disabled={status === "loading"}
-            className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-[rgb(var(--overlay)/0.1)] bg-[rgb(var(--overlay)/0.03)] text-sm font-medium text-foreground transition-colors hover:bg-[rgb(var(--overlay)/0.06)] disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            {status === "loading" ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                {b.portalLoading}
-              </>
-            ) : (
-              <>
-                <ExternalLink className="h-4 w-4" />
-                {b.portalCta}
-              </>
-            )}
-          </button>
-          <p className="mt-3 text-center text-xs leading-relaxed text-muted-foreground">{b.portalNote}</p>
-
-          {status === "error" && (
-            <div className="mt-4 flex items-center gap-3 rounded-xl border border-[var(--danger)]/30 bg-[var(--danger)]/[0.08] px-4 py-3">
-              <AlertTriangle className="h-4 w-4 shrink-0 text-[var(--danger)]" />
-              <p className="text-sm font-medium text-[var(--danger)]">{error}</p>
-            </div>
-          )}
-        </div>
       )}
     </motion.div>
   )

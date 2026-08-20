@@ -206,9 +206,31 @@ const fr = {
   footer: {
     tagline: "La surveillance football en temps réel. Ne manquez plus jamais un carton rouge.",
     columns: [
-      { title: "Produit", links: ["Fonctionnalités", "Compétitions", "Tarification", "Démonstration"] },
-      { title: "Entreprise", links: ["À propos", "Blog", "Carrières", "Contact"] },
-      { title: "Légal", links: ["Confidentialité", "Conditions", "Cookies", "Mentions légales"] },
+      {
+        title: "Produit",
+        links: [
+          { label: "Fonctionnalités", href: "#fonctionnalites" },
+          { label: "Compétitions", href: "#competitions" },
+          { label: "Tarification", href: "#tarifs" },
+          { label: "Démonstration", href: "#demo" },
+        ],
+      },
+      {
+        title: "Entreprise",
+        links: [
+          { label: "Fonctionnement", href: "#fonctionnement" },
+          { label: "FAQ", href: "#faq" },
+          { label: "Contact", href: "mailto:redmatch.support@gmail.com" },
+        ],
+      },
+      {
+        title: "Légal",
+        links: [
+          { label: "Conditions", href: "/terms" },
+          { label: "Confidentialité", href: "/terms" },
+          { label: "Mentions légales", href: "/terms" },
+        ],
+      },
     ],
     rights: "© 2026 RedMatch. Tous droits réservés.",
     notBetting: "Outil de surveillance football en temps réel — pas un service de paris.",
@@ -736,9 +758,31 @@ const en: typeof fr = {
   footer: {
     tagline: "Real-time football monitoring. Never miss a red card again.",
     columns: [
-      { title: "Product", links: ["Features", "Competitions", "Pricing", "Demo"] },
-      { title: "Company", links: ["About", "Blog", "Careers", "Contact"] },
-      { title: "Legal", links: ["Privacy", "Terms", "Cookies", "Legal notice"] },
+      {
+        title: "Product",
+        links: [
+          { label: "Features", href: "#fonctionnalites" },
+          { label: "Competitions", href: "#competitions" },
+          { label: "Pricing", href: "#tarifs" },
+          { label: "Demo", href: "#demo" },
+        ],
+      },
+      {
+        title: "Company",
+        links: [
+          { label: "How it works", href: "#fonctionnement" },
+          { label: "FAQ", href: "#faq" },
+          { label: "Contact", href: "mailto:redmatch.support@gmail.com" },
+        ],
+      },
+      {
+        title: "Legal",
+        links: [
+          { label: "Terms", href: "/terms" },
+          { label: "Privacy", href: "/terms" },
+          { label: "Legal notice", href: "/terms" },
+        ],
+      },
     ],
     rights: "© 2026 RedMatch. All rights reserved.",
     notBetting: "A real-time football monitoring tool — not a betting service.",
