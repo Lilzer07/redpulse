@@ -13,6 +13,7 @@ export type LogEvent =
   | "stripe_webhook_provisioned"
   | "stripe_webhook_provision_failed"
   | "stripe_portal_failed"
+  | "stripe_reconciled"
   | "telegram_connection"
   | "telegram_invite_generated"
   | "telegram_invite_failed"

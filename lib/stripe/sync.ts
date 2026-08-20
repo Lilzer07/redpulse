@@ -27,6 +27,22 @@ export function toAccessStatus(stripeStatus: string): "active" | "inactive" {
 }
 
 /**
+ * The status we persist for a Stripe subscription, cancellation-aware.
+ *
+ * A deleted subscription is terminal. Just as important: Stripe's default
+ * "cancel at period end" keeps the subscription `active` (with
+ * `cancel_at_period_end: true`) until the paid term ends, but RedMatch cuts
+ * access the instant the user resiliates — so a scheduled cancellation is
+ * reported as `canceled` immediately. Removing that schedule (reactivation)
+ * clears both flags and restores the live Stripe status.
+ */
+export function effectiveSubscriptionStatus(sub: Stripe.Subscription, opts?: { deleted?: boolean }): string {
+  if (opts?.deleted) return "canceled"
+  if (sub.cancel_at_period_end === true || sub.cancel_at !== null) return "canceled"
+  return sub.status
+}
+
+/**
  * Finds the RedMatch user for a Stripe event.
  *
  * Preference order matters: `client_reference_id` is what we put on the payment
@@ -177,34 +193,87 @@ export async function resyncFromStripe(userId: string): Promise<{ ok: boolean; d
   try {
     if (subscriptionId) {
       const sub = await stripe.subscriptions.retrieve(subscriptionId)
+      const status = effectiveSubscriptionStatus(sub)
       await syncSubscription({
         userId,
-        status: sub.status,
+        status,
         currentPeriodEnd: periodEndOf(sub),
         customerId: typeof sub.customer === "string" ? sub.customer : sub.customer.id,
         subscriptionId: sub.id,
       })
-      return { ok: true, detail: `Statut Stripe : ${sub.status}` }
+      return { ok: true, detail: `Statut Stripe : ${status}` }
     }
 
     if (customerId) {
       const list = await stripe.subscriptions.list({ customer: customerId, status: "all", limit: 1 })
       const sub = list.data[0]
       if (!sub) return { ok: true, detail: "Aucun abonnement Stripe pour ce client" }
+      const status = effectiveSubscriptionStatus(sub)
       await syncSubscription({
         userId,
-        status: sub.status,
+        status,
         currentPeriodEnd: periodEndOf(sub),
         customerId,
         subscriptionId: sub.id,
       })
-      return { ok: true, detail: `Statut Stripe : ${sub.status}` }
+      return { ok: true, detail: `Statut Stripe : ${status}` }
     }
 
     return { ok: true, detail: "Aucune référence Stripe enregistrée" }
   } catch (error) {
     return { ok: false, detail: error instanceof Error ? error.message : "Erreur Stripe" }
   }
+}
+
+/**
+ * Re-reads every stored subscription from Stripe and re-applies its true state.
+ *
+ * This heals rows that a webhook set (or failed to set) under the old rule that
+ * ignored "cancel at period end": a subscription the user already resiliated
+ * stays `active` in our table with a future period end, so neither a new webhook
+ * (none will fire) nor the expiry sweep (period end is not past) corrects it.
+ * Running this once reconciles them, and it is safe to run repeatedly.
+ */
+export async function reconcileAllFromStripe(): Promise<{
+  ok: boolean
+  checked: number
+  updated: number
+  error?: string
+}> {
+  const stripe = stripeClient()
+  if (!stripe) return { ok: false, checked: 0, updated: 0, error: "STRIPE_SECRET_KEY manquante" }
+
+  const supabase = createAdminClient()
+  if (!supabase) return { ok: false, checked: 0, updated: 0, error: "Base indisponible" }
+
+  const { data, error } = await supabase
+    .from("subscriptions")
+    .select("user_id, stripe_subscription_id")
+    .not("stripe_subscription_id", "is", null)
+
+  if (error) return { ok: false, checked: 0, updated: 0, error: error.message }
+  const rows = data ?? []
+
+  let updated = 0
+  for (const row of rows) {
+    const subscriptionId = row.stripe_subscription_id as string
+    try {
+      const sub = await stripe.subscriptions.retrieve(subscriptionId)
+      await syncSubscription({
+        userId: String(row.user_id),
+        status: effectiveSubscriptionStatus(sub),
+        currentPeriodEnd: periodEndOf(sub),
+        customerId: typeof sub.customer === "string" ? sub.customer : sub.customer.id,
+        subscriptionId: sub.id,
+      })
+      updated += 1
+    } catch {
+      // A single bad subscription id must not abort the whole reconciliation.
+    }
+  }
+
+  logEvent("stripe_reconciled", { checked: rows.length, updated })
+  return { ok: true, checked: rows.length, updated }
 }
 
 /**

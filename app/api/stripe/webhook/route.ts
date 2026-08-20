@@ -5,7 +5,7 @@
 // signature verification, so it is read as text before any parsing.
 import { NextResponse } from "next/server"
 import type Stripe from "stripe"
-import { periodEndOf, resolveUserId, stripeClient, syncSubscription } from "@/lib/stripe/sync"
+import { effectiveSubscriptionStatus, periodEndOf, resolveUserId, stripeClient, syncSubscription } from "@/lib/stripe/sync"
 import { getWebhookSigningSecret } from "@/lib/stripe/provision"
 import { logEvent } from "@/lib/logging"
 
@@ -100,8 +100,12 @@ export async function POST(request: Request) {
         const userId = await resolveUserId({ customerId })
         if (!userId) break
 
-        // A deleted subscription is terminal regardless of its last status.
-        const status = event.type === "customer.subscription.deleted" ? "canceled" : sub.status
+        // Cancellation cuts access the instant the user resiliates, including
+        // Stripe's "cancel at period end" variant that otherwise stays active
+        // until the term ends. See effectiveSubscriptionStatus for the rules.
+        const status = effectiveSubscriptionStatus(sub, {
+          deleted: event.type === "customer.subscription.deleted",
+        })
 
         await syncSubscription({
           userId,
