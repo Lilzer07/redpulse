@@ -11,13 +11,7 @@
 import { NextResponse } from "next/server"
 import { rememberChannelId, sendMessage } from "@/lib/telegram/service"
 import { redeemLinkToken, unlinkTelegram, findUserByChatId } from "@/lib/telegram/linking"
-import {
-  approveChannelJoin,
-  grantChannelAccess,
-  hasPremiumAccess,
-  markChannelJoined,
-  revokeChannelAccess,
-} from "@/lib/telegram/access"
+import { grantChannelAccess, hasPremiumAccess, revokeChannelAccess, verifyChannelJoin } from "@/lib/telegram/access"
 import { logEvent } from "@/lib/logging"
 
 export const runtime = "nodejs"
@@ -29,13 +23,15 @@ type TelegramUpdate = {
     chat?: { id?: number }
     from?: { id?: number; username?: string }
   }
+  /**
+   * A membership change in the channel. For a join via one of our single-use
+   * links this carries BOTH who joined (`new_chat_member.user.id`) and which
+   * link admitted them (`invite_link.invite_link`) — the two facts the direct-
+   * join security check needs to bind the entry to the authorised account.
+   */
   chat_member?: {
     new_chat_member?: { status?: string; user?: { id?: number } }
-  }
-  /** A user tapped a join-request invite link and awaits approval. */
-  chat_join_request?: {
-    chat?: { id?: number }
-    from?: { id?: number }
+    invite_link?: { invite_link?: string }
   }
   /** The bot's OWN membership changing — how we learn the channel id. */
   my_chat_member?: {
@@ -130,23 +126,18 @@ export async function POST(request: Request) {
     return ack()
   }
 
-  // ---- join requests: the paywall at the channel door ----------------------
+  // ---- direct joins: the paywall enforced the instant someone lands ---------
   //
-  // With join-request invite links, tapping a link lands here instead of adding
-  // the user. approveChannelJoin re-checks the subscription server-side and only
-  // then admits them, so a shared or stale link cannot buy channel access.
-  const joinRequest = update.chat_join_request
-  if (joinRequest?.from?.id) {
-    await approveChannelJoin(joinRequest.from.id)
-    return ack()
-  }
-
-  // ---- membership changes: record who actually joined or left --------------
+  // A one-time invite link admits the tapper immediately (no join-request button),
+  // so the vetting happens here, on the resulting `chat_member` update. The update
+  // tells us WHO joined and via WHICH link; verifyChannelJoin binds that entry to
+  // the account that minted the link, re-checks the subscription, and kicks anyone
+  // who does not match — a forwarded or stale link therefore grants nothing.
   const memberChange = update.chat_member?.new_chat_member
   if (memberChange?.user?.id) {
     const status = memberChange.status
     if (status === "member" || status === "administrator" || status === "creator") {
-      await markChannelJoined(memberChange.user.id)
+      await verifyChannelJoin(memberChange.user.id, update.chat_member?.invite_link?.invite_link ?? null)
     }
     return ack()
   }
@@ -193,7 +184,7 @@ export async function POST(request: Request) {
     const grant = await grantChannelAccess(result.userId)
     if (grant.ok) {
       await reply(
-        `Compte Telegram connecté.\n\nVoici votre lien d'accès personnel au canal privé RedMatch Alertes :\n${grant.inviteLink}\n\nOuvrez-le puis validez la demande d'adhésion : l'accès est accordé automatiquement si votre abonnement est actif. Ce lien est personnel, à usage unique, et expire sous 15 minutes.`,
+        `Compte Telegram connecté.\n\nVoici votre lien d'accès personnel au canal privé RedMatch Alertes :\n${grant.inviteLink}\n\nOuvrez-le pour rejoindre le canal directement. Ce lien est strictement personnel, à usage unique, et expire sous 15 minutes : ne le partagez pas, il ne fonctionne que depuis ce compte Telegram.`,
       )
       return ack()
     }

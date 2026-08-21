@@ -70,8 +70,9 @@ function summarise(
     }
   }
   const missingRights = [
-    !readiness.canInviteUsers ? "can_invite_users (approve join requests)" : null,
+    !readiness.canInviteUsers ? "can_invite_users (mint single-use invite links)" : null,
     !readiness.canPostMessages ? "can_post_messages (publish alerts)" : null,
+    !readiness.canRestrictMembers ? "can_restrict_members (eject foreign/unpaid joins)" : null,
   ].filter(Boolean)
   if (missingRights.length > 0) {
     return { ready: false, nextStep: `Enable these admin rights on the bot: ${missingRights.join(", ")}.` }

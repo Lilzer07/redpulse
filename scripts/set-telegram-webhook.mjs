@@ -3,13 +3,13 @@
 //
 // WHY THIS SCRIPT EXISTS
 // Telegram only delivers the update types listed in `allowed_updates`, and that
-// list defaults to EVERYTHING EXCEPT `chat_member` and `chat_join_request`.
-// The channel access model depends on `chat_join_request` (the bot approves a
-// join only after re-checking the Stripe subscription), on `chat_member` (to
-// record who actually joined/left) and on `my_chat_member` (how the bot learns
-// the channel id when it is promoted to admin). If the webhook is registered
-// without naming them explicitly, those updates never arrive and nobody is ever
-// admitted to the channel — silently. So this list is load-bearing.
+// list defaults to EVERYTHING EXCEPT `chat_member`. The direct-join access model
+// depends on `chat_member` (who joined, via which single-use link — the security
+// check re-verifies the account + Stripe and kicks foreign joins) and on
+// `my_chat_member` (how the bot learns the channel id when promoted to admin).
+// If the webhook is registered without naming them explicitly, those updates
+// never arrive and the join check never runs — silently. So this list is
+// load-bearing.
 //
 // USAGE (run where TELEGRAM_BOT_TOKEN is available — e.g. Vercel, or locally
 // after `vercel env pull`). The token is read from the environment; never pass
@@ -39,16 +39,18 @@ if (!token) {
 
 const checkOnly = process.argv.includes("--check")
 
-// The permissions the access model actually relies on.
+// The permissions the direct-join access model actually relies on.
 const REQUIRED_ADMIN_RIGHTS = [
-  ["can_invite_users", "approve/decline join requests"],
+  ["can_invite_users", "mint single-use invite links"],
   ["can_post_messages", "publish red-card alerts to the channel"],
+  ["can_restrict_members", "eject a foreign/unpaid account that used a link"],
 ]
 
 // Keep in sync with REQUIRED_WEBHOOK_UPDATES in lib/telegram/service.ts.
-// `channel_post` lets any message in the channel re-teach the channel id when
-// the my_chat_member promotion event was missed (self-healing discovery).
-const REQUIRED_UPDATES = ["message", "my_chat_member", "chat_member", "chat_join_request", "channel_post"]
+// `chat_member` is what reveals who joined and via which link (the direct-join
+// security check). `channel_post` lets any message in the channel re-teach the
+// channel id when the my_chat_member promotion event was missed (self-healing).
+const REQUIRED_UPDATES = ["message", "my_chat_member", "chat_member", "channel_post"]
 
 /** Calls the Bot API. The token only ever travels in the URL path. */
 async function tg(method, body) {
@@ -117,7 +119,7 @@ async function registerWebhook() {
 async function verify() {
   let ok = true
 
-  // 1) Webhook info: URL set, and chat_join_request among allowed_updates.
+  // 1) Webhook info: URL set, and chat_member among allowed_updates.
   const info = await tg("getWebhookInfo")
   const r = info.result ?? {}
   const allowed = r.allowed_updates ?? []
@@ -127,13 +129,13 @@ async function verify() {
   console.log(`  pending updates: ${r.pending_update_count ?? 0}`)
   if (r.last_error_message) console.log(`  ⚠ last error: ${r.last_error_message}`)
 
-  for (const u of ["chat_join_request", "my_chat_member", "chat_member"]) {
+  for (const u of ["my_chat_member", "chat_member"]) {
     if (!allowed.includes(u)) {
       console.log(`  ✗ '${u}' is NOT in allowed_updates — those updates will never arrive`)
       ok = false
     }
   }
-  if (ok) console.log("  ✓ chat_join_request / my_chat_member / chat_member are all enabled")
+  if (ok) console.log("  ✓ my_chat_member / chat_member are enabled")
 
   // 2) Channel + bot admin rights.
   console.log("\n— Channel & bot admin rights —")
