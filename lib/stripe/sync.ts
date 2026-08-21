@@ -113,20 +113,41 @@ export async function syncSubscription(input: SyncInput): Promise<{ ok: boolean 
 
   const access = toAccessStatus(input.status)
 
-  const { error } = await supabase.from("subscriptions").upsert(
-    {
+  // Fields common to insert and update. `plan` is deliberately NOT here: the
+  // column is NOT NULL, and a status-only change (cancellation, webhook update)
+  // must never have to supply it.
+  const fields = {
+    status: access === "active" ? "active" : input.status,
+    current_period_end: input.currentPeriodEnd ?? null,
+    ...(input.plan ? { plan: input.plan } : {}),
+    ...(input.customerId ? { stripe_customer_id: input.customerId } : {}),
+    ...(input.subscriptionId ? { stripe_subscription_id: input.subscriptionId } : {}),
+    updated_at: new Date().toISOString(),
+  }
+
+  // Update the existing row first. This is the path for cancellations and
+  // webhook status changes, and it never touches `plan`, so it cannot trip the
+  // NOT NULL constraint that a blind upsert would (an upsert evaluates the
+  // INSERT's NOT NULL checks before falling back to DO UPDATE — the bug that
+  // silently left cancelled users `active`).
+  const { data: updatedRows, error: updateError } = await supabase
+    .from("subscriptions")
+    .update(fields)
+    .eq("user_id", input.userId)
+    .select("user_id")
+
+  if (updateError) return { ok: false }
+
+  // No existing row: this is a brand-new subscription, so `plan` is available
+  // from the checkout flow. Insert it (with a valid fallback as a last resort).
+  if (!updatedRows || updatedRows.length === 0) {
+    const { error: insertError } = await supabase.from("subscriptions").insert({
       user_id: input.userId,
-      // Keep the existing plan label when Stripe does not tell us a new one.
-      ...(input.plan ? { plan: input.plan } : {}),
-      status: access === "active" ? "active" : input.status,
-      current_period_end: input.currentPeriodEnd ?? null,
-      ...(input.customerId ? { stripe_customer_id: input.customerId } : {}),
-      ...(input.subscriptionId ? { stripe_subscription_id: input.subscriptionId } : {}),
-      updated_at: new Date().toISOString(),
-    },
-    { onConflict: "user_id" },
-  )
-  if (error) return { ok: false }
+      plan: input.plan ?? "monthly",
+      ...fields,
+    })
+    if (insertError) return { ok: false }
+  }
 
   logEvent("stripe_subscription_updated", {
     userId: input.userId,
@@ -338,13 +359,20 @@ export async function cancelUserSubscription(
   }
 
   // 2. Force the explicit revoked state + Telegram kick, regardless of Stripe.
-  await syncSubscription({
+  // The result IS checked: a failed write must surface as a failed cancellation,
+  // never a false success that leaves the user `active` (the original bug).
+  const synced = await syncSubscription({
     userId,
     status: "canceled",
     currentPeriodEnd: null,
     ...(customerId ? { customerId } : {}),
     ...(subscriptionId ? { subscriptionId } : {}),
   })
+
+  if (!synced.ok) {
+    logEvent("subscription_cancel_failed", { userId, subscriptionId })
+    return { ok: false, reason: "storage_unavailable" }
+  }
 
   logEvent("subscription_canceled_by_user", { userId, subscriptionId })
   return { ok: true }

@@ -15,6 +15,7 @@ export type LogEvent =
   | "stripe_portal_failed"
   | "stripe_reconciled"
   | "subscription_canceled_by_user"
+  | "subscription_cancel_failed"
   | "telegram_connection"
   | "telegram_invite_generated"
   | "telegram_invite_failed"
