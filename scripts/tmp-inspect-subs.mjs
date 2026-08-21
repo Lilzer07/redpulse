@@ -1,6 +1,10 @@
 import pg from "pg"
 
-const client = new pg.Client({ connectionString: process.env.POSTGRES_URL_NON_POOLING })
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
+// Strip sslmode from the URL so it does not override the client ssl option.
+const url = (process.env.POSTGRES_URL_NON_POOLING || "").replace(/([?&])sslmode=[^&]*/i, "$1").replace(/[?&]$/, "")
+
+const client = new pg.Client({ connectionString: url, ssl: { rejectUnauthorized: false } })
 await client.connect()
 
 const check = await client.query(`
@@ -30,8 +34,7 @@ console.log("\n=== COLUMNS ===")
 for (const r of cols.rows) console.log(`${r.column_name} ${r.data_type} nullable=${r.is_nullable}`)
 
 const rows = await client.query(`
-  SELECT user_id, status, cancel_at_period_end, current_period_end, stripe_subscription_id, updated_at
-  FROM public.subscriptions ORDER BY updated_at DESC NULLS LAST LIMIT 20
+  SELECT * FROM public.subscriptions ORDER BY updated_at DESC NULLS LAST LIMIT 20
 `)
 console.log("\n=== ROWS (max 20) ===")
 for (const r of rows.rows) {
