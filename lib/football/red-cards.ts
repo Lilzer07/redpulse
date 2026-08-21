@@ -8,17 +8,22 @@ import type { Fixture, FixtureEvent, RedCardEvent } from "./types"
 /**
  * API-Football encodes dismissals as `type: "Card"` with one of these details.
  *
- * "Second Yellow card" is included deliberately: in API-Football that detail is
- * only emitted when the second booking actually sends the player off, which is
- * the expulsion the spec asks us to react to. A plain "Yellow Card" is never a
- * dismissal and is excluded.
+ * A second booking that sends a player off is reported with DIFFERENT wording
+ * depending on the league/feed — API-Football uses both "Second Yellow card" and
+ * "Yellow-Red Card" for the exact same event (a straight red is "Red Card").
+ * All three must trigger the alert: a two-yellows expulsion is a red card and
+ * must be treated identically to a straight red (this is precisely what was
+ * missed for Lopy D. in Al Qadsiah–Al-Ittihad, where the feed said
+ * "Yellow-Red Card"). A plain "Yellow Card" is never a dismissal and is excluded.
  */
-const DISMISSAL_DETAILS = ["red card", "second yellow card"]
+const DISMISSAL_DETAILS = ["red card", "second yellow card", "yellow-red card"]
 
 /** True only for events that represent an actual expulsion. */
 export function isRedCardEvent(event: FixtureEvent): boolean {
   if (event.type.trim().toLowerCase() !== "card") return false
-  const detail = event.detail.trim().toLowerCase()
+  // Collapse inner whitespace + lowercase so "Yellow-Red Card", "Second Yellow
+  // card" and odd spacing all normalise to a canonical form before comparison.
+  const detail = event.detail.trim().toLowerCase().replace(/\s+/g, " ")
   // Exact-set membership, not `includes("red")`: a detail like
   // "Yellow Card, red card rescinded" must not trigger an alert.
   return DISMISSAL_DETAILS.includes(detail)
