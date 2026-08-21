@@ -7,13 +7,7 @@
 import "server-only"
 
 import { createAdminClient } from "@/lib/supabase/admin"
-import {
-  approveChatJoinRequest,
-  createInviteLink,
-  declineChatJoinRequest,
-  removeUserFromChannel,
-  revokeInviteLink,
-} from "./service"
+import { createInviteLink, removeUserFromChannel, revokeInviteLink } from "./service"
 import { logEvent } from "@/lib/logging"
 
 /** Stripe statuses that entitle a user to premium access. */
@@ -203,58 +197,78 @@ export async function sweepChannelMembership(): Promise<{ checked: number; remov
   return { checked: data.length, removed }
 }
 
-export type JoinDecision = "approved" | "declined" | "unknown_user" | "not_configured" | "error"
+export type JoinOutcome =
+  | "admitted"
+  | "kicked_foreign"
+  | "kicked_unpaid"
+  | "kicked_unknown_link"
+  | "ignored"
+  | "error"
 
 /**
- * Decides a pending channel join request (spec: paid access only).
+ * Verifies a direct channel join and ejects anyone who is not entitled to it.
  *
- * This is the real security gate of the join-request model. A `chat_join_request`
- * update carries a Telegram user id we do not implicitly trust: we resolve it to
- * a RedMatch account and RE-CHECK the live subscription before letting Telegram
- * add anyone. An unknown account, or one without an active subscription, is
- * declined — a leaked invite link is therefore worthless without a paid account
- * behind it.
+ * This is the security gate of the DIRECT-JOIN model. Because a one-time
+ * (`member_limit: 1`) invite link admits the tapper instantly, Telegram gives no
+ * chance to vet them beforehand — so the check happens the instant they land,
+ * from the `chat_member` update, and an unauthorised member is kicked at once.
  *
- * On approval the invite link is revoked immediately, which restores the
- * "one join per link" guarantee that `member_limit` used to provide before the
- * switch to join requests.
+ * Three independent conditions must all hold, none of them trusted from the
+ * update itself:
+ *   1. The used link must match a link RedMatch actually minted (looked up by
+ *      the exact `invite_link` string). A leaked/foreign/stale link matches no
+ *      row → eject.
+ *   2. The joining Telegram id must equal the id bound to that link when the
+ *      subscriber connected their account. This is the anti-sharing guarantee:
+ *      forwarding your link to a friend does not let the friend in — they are
+ *      ejected, and the single-use link is spent, so nobody gains access.
+ *   3. The subscription must still be active, re-read live from billing state.
+ *
+ * A join with no invite link (an operator adding someone by hand, or the channel
+ * creator) is left untouched, so we can never kick the owner of the channel.
  */
-export async function approveChannelJoin(telegramUserId: number): Promise<JoinDecision> {
+export async function verifyChannelJoin(telegramUserId: number, usedInviteLink: string | null): Promise<JoinOutcome> {
+  // Not one of our links: don't touch it (manual add / channel owner).
+  if (!usedInviteLink) return "ignored"
+
   const supabase = createAdminClient()
   if (!supabase) return "error"
 
+  // Which RedMatch account minted THIS exact link?
   const { data } = await supabase
     .from("telegram_settings")
-    .select("user_id, invite_link")
-    .eq("telegram_user_id", telegramUserId)
+    .select("user_id, telegram_user_id")
+    .eq("invite_link", usedInviteLink)
     .maybeSingle()
 
-  // No linked RedMatch account for this Telegram user: refuse and clear it.
+  // 1. Link belongs to no active row → leaked/stale/foreign. Eject.
   if (!data?.user_id) {
-    const declined = await declineChatJoinRequest(telegramUserId)
-    logEvent("telegram_join_declined", { reason: "unknown_user" })
-    return declined.ok ? "unknown_user" : "error"
+    await removeUserFromChannel(telegramUserId)
+    logEvent("telegram_join_rejected", { reason: "unknown_link" })
+    return "kicked_unknown_link"
   }
 
   const userId = String(data.user_id)
+  const boundId = data.telegram_user_id != null ? Number(data.telegram_user_id) : null
 
-  // The authoritative check: billing is re-read from the database, never trusted
-  // from the update itself.
+  // 2. Anti-sharing: the link is bound to the account that connected it. Anyone
+  // else who tapped it (a forwarded link) is ejected immediately.
+  if (boundId == null || boundId !== telegramUserId) {
+    await removeUserFromChannel(telegramUserId)
+    logEvent("telegram_join_rejected", { userId, reason: "account_mismatch" })
+    return "kicked_foreign"
+  }
+
+  // 3. Stripe gate, re-read live: cancelled/lapsed since the link was issued → out.
   if (!(await hasPremiumAccess(userId))) {
-    const declined = await declineChatJoinRequest(telegramUserId)
-    logEvent("telegram_join_declined", { userId, reason: "no_subscription" })
-    return declined.ok ? "declined" : "error"
+    await removeUserFromChannel(telegramUserId)
+    logEvent("telegram_join_rejected", { userId, reason: "no_subscription" })
+    return "kicked_unpaid"
   }
 
-  const approved = await approveChatJoinRequest(telegramUserId)
-  if (!approved.ok) {
-    logEvent("telegram_invite_failed", { userId, reason: approved.reason })
-    return approved.reason === "not_configured" ? "not_configured" : "error"
-  }
-
-  // Single-use: burn the link now that it has admitted its owner, and record the
-  // membership so the dashboard reflects the joined state.
-  if (data.invite_link) await revokeInviteLink(String(data.invite_link))
+  // Authorised. The link is single-use by construction, but burn it and clear it
+  // from the row anyway (belt and braces) and record the joined state.
+  await revokeInviteLink(usedInviteLink)
   await supabase
     .from("telegram_settings")
     .update({
@@ -267,16 +281,5 @@ export async function approveChannelJoin(telegramUserId: number): Promise<JoinDe
     .eq("user_id", userId)
 
   logEvent("telegram_join_approved", { userId })
-  return "approved"
-}
-
-/** Marks the user as having actually joined, from a chat_member update. */
-export async function markChannelJoined(telegramUserId: number): Promise<void> {
-  const supabase = createAdminClient()
-  if (!supabase) return
-
-  await supabase
-    .from("telegram_settings")
-    .update({ channel_status: "member", invite_link: null, invite_link_expires_at: null, updated_at: new Date().toISOString() })
-    .eq("telegram_user_id", telegramUserId)
+  return "admitted"
 }

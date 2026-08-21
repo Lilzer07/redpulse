@@ -143,7 +143,7 @@ export async function syncSubscription(input: SyncInput): Promise<{ ok: boolean 
       if (chatId) {
         await sendMessage(
           chatId,
-          `Abonnement confirmé.\n\nVoici votre lien d'accès personnel au canal privé RedMatch Alertes :\n${grant.inviteLink}\n\nOuvrez-le puis validez la demande d'adhésion : l'accès est accordé automatiquement. Ce lien est personnel, à usage unique, et expire sous 15 minutes.`,
+          `Abonnement confirmé.\n\nVoici votre lien d'accès personnel au canal privé RedMatch Alertes :\n${grant.inviteLink}\n\nOuvrez-le pour rejoindre le canal directement. Ce lien est strictement personnel, à usage unique, et expire sous 15 minutes : ne le partagez pas, il ne fonctionne que depuis ce compte Telegram.`,
         )
       }
     }

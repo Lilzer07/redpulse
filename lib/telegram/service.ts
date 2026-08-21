@@ -18,8 +18,8 @@ const TELEGRAM_API = "https://api.telegram.org"
  *
  * Kept short on purpose: the link only has to survive the few seconds between
  * "get my link" and tapping it in Telegram. A tight window shrinks the chance
- * of a link leaking and being used by someone else before the join request is
- * checked against the subscription.
+ * of a link leaking, and even a leaked link is useless — it is single-use and,
+ * once tapped by a foreign account, that account is kicked on arrival.
  */
 const INVITE_TTL_MS = 15 * 60 * 1000
 
@@ -129,19 +129,19 @@ export async function sendChannelMessage(text: string): Promise<{ ok: true } | T
 export type InviteLink = { inviteLink: string; expiresAt: string }
 
 /**
- * Creates a personal invite link that funnels the user into a JOIN REQUEST
- * rather than an instant join.
+ * Creates a personal, single-use invite link that admits the tapper DIRECTLY.
  *
- * `creates_join_request: true` is the crux of the access model: tapping the link
- * does not add anyone to the channel — it raises a `chat_join_request` update
- * that the bot approves only after re-checking the subscription server-side
- * (see `approveChannelJoin`). This closes the hole where a leaked instant-join
- * link would hand out channel access with no payment check at join time.
+ * `member_limit: 1` gives an instant join with no "request to join" button and
+ * no manual approval: the link works exactly once, then Telegram invalidates it
+ * on its own. `expire_date` caps how long an unused link can sit around (15 min).
  *
- * Telegram forbids `member_limit` together with `creates_join_request`, so the
- * "one person only" guarantee moves to the approval handler: it approves a
- * single request, then revokes the link so it can raise no further requests.
- * `expire_date` still caps how long an unused link can sit around.
+ * Telegram forbids binding a link to a specific account and forbids
+ * `member_limit` together with `creates_join_request`, so the "only the account
+ * that generated it may use it" guarantee cannot be enforced before entry. It is
+ * enforced the instant the join lands, in `verifyChannelJoin`, which matches the
+ * used link to its owner and kicks anyone else — so a forwarded link grants
+ * nothing. The channel stays fully private: this link is the only way in, it is
+ * never published, and the channel is never made public or searchable.
  */
 export async function createInviteLink(label: string): Promise<({ ok: true } & InviteLink) | TelegramFailure> {
   const channel = await channelId()
@@ -152,40 +152,12 @@ export async function createInviteLink(label: string): Promise<({ ok: true } & I
     chat_id: channel,
     name: label.slice(0, 32),
     expire_date: Math.floor(expiresAt.getTime() / 1000),
-    creates_join_request: true,
+    member_limit: 1,
   })
 
   if (!result.ok) return result
   if (!result.result.invite_link) return { ok: false, reason: "api_error", detail: "missing invite_link" }
   return { ok: true, inviteLink: result.result.invite_link, expiresAt: expiresAt.toISOString() }
-}
-
-/**
- * Approves a pending join request for a user (spec: paid access only).
- *
- * Called from the webhook once the subscription has been confirmed active. The
- * user is added to the channel by Telegram as a direct result of this call.
- */
-export async function approveChatJoinRequest(telegramUserId: number): Promise<{ ok: true } | TelegramFailure> {
-  const channel = await channelId()
-  if (!channel) return { ok: false, reason: "not_configured" }
-
-  const result = await call<unknown>("approveChatJoinRequest", { chat_id: channel, user_id: telegramUserId })
-  return result.ok ? { ok: true } : result
-}
-
-/**
- * Declines a pending join request — used when no active subscription backs it.
- *
- * Declining (rather than ignoring) clears the request so a later, legitimate
- * attempt starts from a clean slate.
- */
-export async function declineChatJoinRequest(telegramUserId: number): Promise<{ ok: true } | TelegramFailure> {
-  const channel = await channelId()
-  if (!channel) return { ok: false, reason: "not_configured" }
-
-  const result = await call<unknown>("declineChatJoinRequest", { chat_id: channel, user_id: telegramUserId })
-  return result.ok ? { ok: true } : result
 }
 
 /** Revokes a previously issued invite link so it can no longer be used. */
@@ -240,10 +212,11 @@ export async function getChatMember(
 /**
  * The update types the access model depends on.
  *
- * Telegram's default `allowed_updates` omits `chat_member` and
- * `chat_join_request`, and a webhook registered without naming them explicitly
- * silently never receives them — so nobody is ever admitted to the channel and
- * the channel id is never auto-discovered. This list is therefore load-bearing.
+ * Telegram's default `allowed_updates` omits `chat_member`, and a webhook
+ * registered without naming it explicitly silently never receives it — so the
+ * direct-join security check (`verifyChannelJoin`) would never run and foreign
+ * joins would go unchecked. `chat_member` is therefore load-bearing here: it is
+ * the update that reveals who joined and via which link.
  *
  * `scripts/set-telegram-webhook.mjs` keeps its own copy because a plain .mjs
  * script cannot import from TypeScript; the two lists must stay in sync.
@@ -252,7 +225,6 @@ export const REQUIRED_WEBHOOK_UPDATES = [
   "message",
   "my_chat_member",
   "chat_member",
-  "chat_join_request",
   // `channel_post` is what makes channel-id discovery self-healing: `my_chat_member`
   // only fires at the *moment* the bot's status changes, so if the bot was already
   // an admin when the webhook was (re)registered — or the promotion update was
@@ -321,15 +293,20 @@ export type ChannelReadiness = {
   botStatus: MemberStatus | null
   canInviteUsers: boolean
   canPostMessages: boolean
+  canRestrictMembers: boolean
   detail: string | null
 }
 
 /**
  * Checks whether the bot can actually operate the channel.
  *
- * Both rights are required by the access model: `can_invite_users` to approve or
- * decline join requests, `can_post_messages` to publish alerts. Reported as data
- * rather than thrown so the setup route can explain exactly what is missing.
+ * Three rights are required by the direct-join access model:
+ *   - `can_invite_users`   — mint the single-use invite links,
+ *   - `can_post_messages`  — publish red-card alerts,
+ *   - `can_restrict_members` — kick a foreign/unpaid account the instant it uses
+ *                              a link it was not entitled to.
+ * Reported as data rather than thrown so the setup route can explain exactly
+ * what is missing.
  */
 export async function getChannelReadiness(): Promise<ChannelReadiness> {
   const channel = await channelId()
@@ -339,14 +316,28 @@ export async function getChannelReadiness(): Promise<ChannelReadiness> {
       botStatus: null,
       canInviteUsers: false,
       canPostMessages: false,
+      canRestrictMembers: false,
       detail: "Channel id unknown — promote the bot to administrator of the private channel.",
     }
   }
 
   const me = await call<{ id?: number }>("getMe")
-  if (!me.ok) return { channelKnown: true, botStatus: null, canInviteUsers: false, canPostMessages: false, detail: me.reason === "api_error" ? me.detail : "not configured" }
+  if (!me.ok)
+    return {
+      channelKnown: true,
+      botStatus: null,
+      canInviteUsers: false,
+      canPostMessages: false,
+      canRestrictMembers: false,
+      detail: me.reason === "api_error" ? me.detail : "not configured",
+    }
 
-  const member = await call<{ status?: MemberStatus; can_invite_users?: boolean; can_post_messages?: boolean }>("getChatMember", {
+  const member = await call<{
+    status?: MemberStatus
+    can_invite_users?: boolean
+    can_post_messages?: boolean
+    can_restrict_members?: boolean
+  }>("getChatMember", {
     chat_id: channel,
     user_id: me.result.id,
   })
@@ -356,6 +347,7 @@ export async function getChannelReadiness(): Promise<ChannelReadiness> {
       botStatus: null,
       canInviteUsers: false,
       canPostMessages: false,
+      canRestrictMembers: false,
       detail: member.reason === "api_error" ? member.detail : "not configured",
     }
   }
@@ -365,6 +357,7 @@ export async function getChannelReadiness(): Promise<ChannelReadiness> {
     botStatus: (member.result.status ?? "left") as MemberStatus,
     canInviteUsers: Boolean(member.result.can_invite_users),
     canPostMessages: Boolean(member.result.can_post_messages),
+    canRestrictMembers: Boolean(member.result.can_restrict_members),
     detail: null,
   }
 }

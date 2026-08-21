@@ -22,6 +22,7 @@ export type LogEvent =
   | "telegram_membership_swept"
   | "telegram_join_approved"
   | "telegram_join_declined"
+  | "telegram_join_rejected"
   | "telegram_alert_sent"
   | "telegram_alert_failed"
   | "telegram_channel_detected"
