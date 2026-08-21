@@ -28,6 +28,9 @@ export function CancelSubscriptionLink() {
       setStatus("done")
       setMessage(a.cancelDone)
       setConfirming(false)
+      // Access is revoked server-side; send the user straight to the plan wall
+      // and refresh so the now-canceled state is re-read everywhere.
+      router.replace("/choose-plan")
       router.refresh()
       return
     }
