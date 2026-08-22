@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { Check, Flame, Goal, Send, Sparkles, Trophy } from "lucide-react"
-import { makeRandomEvent, seedEvents, type MatchEvent } from "@/lib/data"
+import { Check, Flame, Goal, Send, Sparkles, Trophy, UserX } from "lucide-react"
+import { buildAiReading, flagForCompetition, makeRandomEvent, seedEvents, type MatchEvent } from "@/lib/data"
 import { useI18n } from "@/lib/i18n/context"
 
 type Notif = MatchEvent & { time: string }
@@ -78,11 +78,14 @@ export function TelegramPhone() {
                   <div className="mb-2 flex items-center gap-2">
                     <span className="flex h-5 w-3.5 items-center justify-center rounded-[3px] bg-[var(--danger)] shadow-[0_0_10px_rgba(255,59,48,0.6)]" aria-hidden />
                     <span className="text-xs font-bold uppercase tracking-wide text-[var(--danger)]">
-                      RedMatch
+                      {t.phone.redCardTitle}
                     </span>
                     <span className="ml-auto text-[10px] text-muted-foreground">{n.minute}&apos;</span>
                   </div>
-                  <p className="text-[11px] font-medium uppercase tracking-wide text-primary">{n.competition}</p>
+                  <p className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wide text-primary">
+                    <span aria-hidden>{flagForCompetition(n.competitionId)}</span>
+                    <span className="truncate">{n.competition}</span>
+                  </p>
                   <p className="mt-0.5 text-sm font-semibold text-foreground">
                     {n.home}{" "}
                     <span className="rounded bg-[rgb(var(--overlay)/0.05)] px-1.5 py-0.5 text-xs font-semibold text-foreground">
@@ -90,9 +93,11 @@ export function TelegramPhone() {
                     </span>{" "}
                     {n.away}
                   </p>
-                  <p className="mt-1 flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                    <span className="h-3 w-2 rounded-[2px] bg-[var(--danger)]" aria-hidden />
-                    {t.phone.redCard} · <span className="font-medium text-foreground">{n.team}</span>
+                  <p className="mt-1.5 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                    <UserX className="h-3.5 w-3.5 shrink-0 text-[var(--danger)]" aria-hidden />
+                    <span className="text-muted-foreground">{t.phone.expulsion} ·</span>
+                    <span className="font-semibold text-foreground">{n.player}</span>
+                    <span className="truncate text-muted-foreground">({n.team})</span>
                   </p>
 
                   {/* AI analysis */}
@@ -125,6 +130,16 @@ export function TelegramPhone() {
                           {n.analysis.impact}/100
                         </span>
                       </div>
+                    </div>
+                    {/* AI reading: the "Lecture IA" paragraph of the real alert */}
+                    <div className="mt-2.5 border-t border-primary/15 pt-2">
+                      <p className="mb-1 flex items-center gap-1.5 text-[11px] font-semibold text-primary">
+                        <Sparkles className="h-3.5 w-3.5" aria-hidden />
+                        {t.phone.aiReading}
+                      </p>
+                      <p className="text-[11px] leading-relaxed text-muted-foreground">
+                        {buildAiReading(n, locale === "en" ? "en" : "fr")}
+                      </p>
                     </div>
                   </div>
 

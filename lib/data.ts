@@ -288,14 +288,26 @@ export function flagForCompetition(competitionId: string): string {
  * paragraph of the real Telegram alert. Simulated but structured so a real
  * model response can be swapped in without touching the UI.
  */
-export function buildAiReading(event: {
-  player: string
-  team: string
-  minute: number
-  analysis: Analysis
-}): string {
+export function buildAiReading(
+  event: {
+    player: string
+    team: string
+    minute: number
+    analysis: Analysis
+  },
+  locale: "fr" | "en" = "fr",
+): string {
   const { player, team, minute, analysis } = event
   const late = minute >= 70
+  if (locale === "en") {
+    return (
+      `${player}'s dismissal leaves ${team} a man down ` +
+      `${late ? "late in the game" : "with time still to play"}. ` +
+      `This strengthens ${analysis.favorite}'s position ` +
+      `(${analysis.favoriteWinProb}% win probability), with a ` +
+      `${analysis.extraGoalProb >= 60 ? "high" : "moderate"} chance of another goal.`
+    )
+  }
   return (
     `L'expulsion de ${player} laisse ${team} en infériorité numérique ` +
     `${late ? "en fin de match" : "avec encore du temps à jouer"}. ` +
