@@ -62,6 +62,8 @@ export const COMPETITIONS: CompetitionConfig[] = [
   { id: 203, slug: "super-lig", name: "Süper Lig", country: "Turquie", type: "league", enabled: true },
   // Belgium
   { id: 144, slug: "jupiler-pro-league", name: "Jupiler Pro League", country: "Belgique", type: "league", enabled: true },
+  // Switzerland
+  { id: 207, slug: "super-league-suisse", name: "Super League", country: "Suisse", type: "league", enabled: true },
   // Saudi Arabia
   { id: 307, slug: "saudi-pro-league", name: "Saudi Pro League", country: "Arabie saoudite", type: "league", enabled: true },
   // Europe
@@ -117,6 +119,7 @@ const COUNTRY_FLAGS: Record<string, string> = {
   "Pays-Bas": "🇳🇱",
   Turquie: "🇹🇷",
   Belgique: "🇧🇪",
+  Suisse: "🇨🇭",
   "Arabie saoudite": "🇸🇦",
   Europe: "🇪🇺",
 }

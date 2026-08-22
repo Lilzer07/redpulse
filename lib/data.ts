@@ -37,6 +37,7 @@ export const competitions: Competition[] = [
   { id: "eredivisie", name: "Eredivisie", country: "Pays-Bas", tier: "league", color: "#FF6600", abbr: "ERE", logo: "https://media.api-sports.io/football/leagues/88.png" },
   { id: "super-lig", name: "Süper Lig", country: "Turquie", tier: "league", color: "#E30A17", abbr: "SL", logo: "https://media.api-sports.io/football/leagues/203.png" },
   { id: "jupiler-pro-league", name: "Jupiler Pro League", country: "Belgique", tier: "league", color: "#E4022E", abbr: "JPL", logo: "https://media.api-sports.io/football/leagues/144.png" },
+  { id: "super-league-suisse", name: "Super League", country: "Suisse", tier: "league", color: "#E30613", abbr: "SLS", logo: "https://media.api-sports.io/football/leagues/207.png" },
   { id: "saudi-pro-league", name: "Saudi Pro League", country: "Arabie saoudite", tier: "league", color: "#006C35", abbr: "SPL", logo: "https://media.api-sports.io/football/leagues/307.png" },
   { id: "champions-league", name: "Champions League", country: "Europe", tier: "european", color: "#0B1B54", abbr: "UCL", logo: "/logos/champions-league.png" },
   { id: "europa-league", name: "Europa League", country: "Europe", tier: "european", color: "#FF6900", abbr: "UEL", logo: "/logos/europa-league.png" },
@@ -274,6 +275,7 @@ const COUNTRY_FLAGS: Record<string, string> = {
   "Pays-Bas": "🇳🇱",
   Turquie: "🇹🇷",
   Belgique: "🇧🇪",
+  Suisse: "🇨🇭",
   "Arabie saoudite": "🇸🇦",
   Europe: "🇪🇺",
 }
