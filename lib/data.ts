@@ -259,6 +259,64 @@ export type MatchEvent = {
   analysis: Analysis
 }
 
+/**
+ * Flag emoji per competition country, so the demo notification can mirror the
+ * real Telegram alert format (🇵🇹 Liga Portugal 2, etc.). Looked up by the
+ * competition's `country` field; falls back to a neutral globe.
+ */
+const COUNTRY_FLAGS: Record<string, string> = {
+  Angleterre: "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+  France: "🇫🇷",
+  Espagne: "🇪🇸",
+  Italie: "🇮🇹",
+  Allemagne: "🇩🇪",
+  Portugal: "🇵🇹",
+  "Pays-Bas": "🇳🇱",
+  Turquie: "🇹🇷",
+  Belgique: "🇧🇪",
+  "Arabie saoudite": "🇸🇦",
+  Europe: "🇪🇺",
+}
+
+export function flagForCompetition(competitionId: string): string {
+  const country = competitions.find((c) => c.id === competitionId)?.country
+  return (country && COUNTRY_FLAGS[country]) || "🌍"
+}
+
+/**
+ * Short, human AI reading of the red card's impact — the "🤖 Lecture IA"
+ * paragraph of the real Telegram alert. Simulated but structured so a real
+ * model response can be swapped in without touching the UI.
+ */
+export function buildAiReading(
+  event: {
+    player: string
+    team: string
+    minute: number
+    analysis: Analysis
+  },
+  locale: "fr" | "en" = "fr",
+): string {
+  const { player, team, minute, analysis } = event
+  const late = minute >= 70
+  if (locale === "en") {
+    return (
+      `${player}'s dismissal leaves ${team} a man down ` +
+      `${late ? "late in the game" : "with time still to play"}. ` +
+      `This strengthens ${analysis.favorite}'s position ` +
+      `(${analysis.favoriteWinProb}% win probability), with a ` +
+      `${analysis.extraGoalProb >= 60 ? "high" : "moderate"} chance of another goal.`
+    )
+  }
+  return (
+    `L'expulsion de ${player} laisse ${team} en infériorité numérique ` +
+    `${late ? "en fin de match" : "avec encore du temps à jouer"}. ` +
+    `Cette situation renforce la position de ${analysis.favorite} ` +
+    `(${analysis.favoriteWinProb}% de victoire), avec une opportunité ` +
+    `${analysis.extraGoalProb >= 60 ? "élevée" : "modérée"} d'inscrire un autre but.`
+  )
+}
+
 const fixtures: { competitionId: string; competition: string; home: string; away: string; players: string[] }[] = [
   { competitionId: "premier-league", competition: "Premier League", home: "Liverpool", away: "Arsenal", players: ["Van Dijk", "Saliba", "Rice"] },
   { competitionId: "ligue-1", competition: "Ligue 1", home: "PSG", away: "Marseille", players: ["Marquinhos", "Rongier", "Hakimi"] },
