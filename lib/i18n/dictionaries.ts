@@ -37,7 +37,7 @@ const fr = {
     // Reflects MONITOR_CONFIG.intervalSeconds (60s). Keep this in step with the
     // real cadence: the earlier "Analyse < 2 s" was removed precisely because it
     // promised a latency the product did not deliver.
-    trust: ["Vérification toutes les 60 s", "Indice de confiance /100", "25 compétitions"],
+    trust: ["Vérification toutes les 60 s", "Indice de confiance /100", "26 compétitions"],
     imageAlt: "Stade de football illuminé la nuit",
   },
 
@@ -275,7 +275,7 @@ const fr = {
     ],
     mobileItems: ["Accueil", "Direct", "Compét.", "Telegram", "Facture"],
     systemOk: "Système opérationnel",
-    watching: "Surveillance active sur 25 compétitions.",
+    watching: "Surveillance active sur 26 compétitions.",
   },
 
   topbar: {
@@ -605,7 +605,7 @@ const en: typeof fr = {
       "The moment a red card is shown, RedMatch pulls the match context, analyses the situation and sends you a Telegram notification: chance of another goal, favourite’s win probability and a confidence score. In seconds.",
     ctaPrimary: "Get started",
     ctaSecondary: "Watch the demo",
-    trust: ["Checked every 60 s", "Confidence score /100", "25 competitions"],
+    trust: ["Checked every 60 s", "Confidence score /100", "26 competitions"],
     imageAlt: "Football stadium lit up at night",
   },
 
@@ -832,7 +832,7 @@ const en: typeof fr = {
     items: ["Dashboard", "Live feed", "Competitions", "Telegram", "Billing", "Settings"],
     mobileItems: ["Home", "Live", "Comps", "Telegram", "Billing"],
     systemOk: "All systems operational",
-    watching: "Actively monitoring 25 competitions.",
+    watching: "Actively monitoring 26 competitions.",
   },
 
   topbar: {
