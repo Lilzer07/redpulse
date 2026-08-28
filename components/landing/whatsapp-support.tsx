@@ -4,9 +4,11 @@ import { useState } from "react"
 import { X } from "lucide-react"
 import { useI18n } from "@/lib/i18n/context"
 
-/** Displayed number (human readable). */
-const PHONE_DISPLAY = "+33 6 85 70 65 25"
-/** International form for the wa.me deep link (no +, spaces or leading 0). */
+/**
+ * International form for the wa.me deep link (no +, spaces or leading 0).
+ * The number is intentionally never rendered on screen — only used inside the
+ * WhatsApp link so it stays hidden from visitors.
+ */
 const PHONE_E164 = "33685706525"
 
 /** Official WhatsApp glyph — brand icon, kept as a single inline path. */
@@ -53,17 +55,10 @@ export function WhatsAppSupport() {
           </div>
 
           <a
-            href={`tel:${PHONE_E164}`}
-            className="mt-3 block rounded-xl bg-[rgb(var(--overlay)/0.05)] px-3 py-2 text-center font-mono text-sm font-medium tracking-wide text-foreground transition-colors hover:bg-[rgb(var(--overlay)/0.08)]"
-          >
-            {PHONE_DISPLAY}
-          </a>
-
-          <a
             href={waHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-2 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-2.5 text-sm font-semibold text-white transition-transform hover:brightness-105 active:scale-[0.98]"
+            className="mt-3 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-2.5 text-sm font-semibold text-white transition-transform hover:brightness-105 active:scale-[0.98]"
           >
             <WhatsAppGlyph className="h-5 w-5" />
             {w.cta}
