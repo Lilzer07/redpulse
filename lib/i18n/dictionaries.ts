@@ -29,7 +29,7 @@ const fr = {
     badge: "Copilote IA football en temps réel",
     titleBefore: "Chaque carton rouge cache une",
     titleHighlight: "opportunité",
-    titleAfter: ", notre IA la détecte.",
+    titleAfter: ", RedMatch la détecte.",
     paragraph:
       "Dès qu’un carton rouge tombe, RedMatch récupère le contexte du match, analyse la situation et vous envoie une notification Telegram : probabilité de but supplémentaire, victoire du favori et indice de confiance. En quelques secondes.",
     ctaPrimary: "Commencer",
