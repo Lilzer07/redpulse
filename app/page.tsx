@@ -8,6 +8,7 @@ import { LiveDemo } from "@/components/landing/live-demo"
 import { Pricing } from "@/components/landing/pricing"
 import { Faq } from "@/components/landing/faq"
 import { SiteFooter } from "@/components/landing/site-footer"
+import { WhatsAppSupport } from "@/components/landing/whatsapp-support"
 
 export default function Page() {
   return (
@@ -24,6 +25,7 @@ export default function Page() {
         <Faq />
       </main>
       <SiteFooter />
+      <WhatsAppSupport />
     </div>
   )
 }

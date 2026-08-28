@@ -243,6 +243,15 @@ const fr = {
     supportEmail: "redmatch.support@gmail.com",
   },
 
+  whatsapp: {
+    label: "Support WhatsApp",
+    tagline: "Une question ? Écrivez-nous, on répond vite.",
+    cta: "Discuter sur WhatsApp",
+    open: "Ouvrir le support",
+    close: "Fermer",
+    prefill: "Bonjour, j'ai une question au sujet de RedMatch.",
+  },
+
   countries: {
     Angleterre: "Angleterre",
     France: "France",
@@ -805,6 +814,15 @@ const en: typeof fr = {
     notBetting: "A real-time football monitoring tool — not a betting service.",
     supportLabel: "Support",
     supportEmail: "redmatch.support@gmail.com",
+  },
+
+  whatsapp: {
+    label: "WhatsApp support",
+    tagline: "A question? Message us, we reply fast.",
+    cta: "Chat on WhatsApp",
+    open: "Open support",
+    close: "Close",
+    prefill: "Hi, I have a question about RedMatch.",
   },
 
   countries: {
