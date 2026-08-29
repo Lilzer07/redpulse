@@ -609,7 +609,7 @@ const en: typeof fr = {
     badge: "Real-time football AI copilot",
     titleBefore: "Every red card hides an",
     titleHighlight: "opportunity",
-    titleAfter: " �� our AI spots it.",
+    titleAfter: ", RedMatch spots it.",
     paragraph:
       "The moment a red card is shown, RedMatch pulls the match context, analyses the situation and sends you a Telegram notification: chance of another goal, favourite’s win probability and a confidence score. In seconds.",
     ctaPrimary: "Get started",
