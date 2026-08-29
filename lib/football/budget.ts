@@ -24,7 +24,7 @@ import { createAdminClient } from "@/lib/supabase/admin"
  * lowering this is safe; raising the cadence without raising this is not — the
  * budget simply runs out mid-afternoon and monitoring stops until midnight UTC.
  */
-export const DAILY_REQUEST_BUDGET = readBudgetFromEnv() ?? 7500
+export const DAILY_REQUEST_BUDGET = readBudgetFromEnv() ?? 75000 // Ultra plan
 
 /**
  * Requests deliberately left unspent by the monitor.
