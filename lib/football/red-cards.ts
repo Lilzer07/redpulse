@@ -29,6 +29,61 @@ export function isRedCardEvent(event: FixtureEvent): boolean {
   return DISMISSAL_DETAILS.includes(detail)
 }
 
+/** A single (first-or-second) booking: `type: "Card"`, `detail: "Yellow Card"`. */
+function isYellowCardEvent(event: FixtureEvent): boolean {
+  if (event.type.trim().toLowerCase() !== "card") return false
+  return event.detail.trim().toLowerCase().replace(/\s+/g, " ") === "yellow card"
+}
+
+/** Stable per-player identity used to count bookings within one fixture. */
+function playerIdentity(event: FixtureEvent): string | null {
+  if (event.playerId !== null) return `p${event.playerId}`
+  const name = event.player.trim().toLowerCase()
+  if (name && name !== "joueur inconnu") return `n${normaliseName(name)}`
+  return null
+}
+
+/**
+ * Derives sending-offs that the feed reports as two separate "Yellow Card"
+ * events instead of an explicit "Second Yellow card"/"Yellow-Red Card".
+ *
+ * This is the common API-Football shape and the reason two-yellow dismissals
+ * were previously missed entirely (e.g. Keller T., Heidenheim–Dynamo Dresden):
+ * the second booking arrives as a plain "Yellow Card", which `isRedCardEvent`
+ * rightly excludes on its own. Two yellows in a match is always a red under the
+ * Laws of the Game, so counting them is safe and produces no false positives.
+ *
+ * A player without a resolvable identity (no id, no usable name) is skipped —
+ * two unattributable yellows can't be proven to belong to the same player.
+ */
+function deriveSecondYellowDismissals(events: FixtureEvent[]): FixtureEvent[] {
+  const yellowsByPlayer = new Map<string, FixtureEvent[]>()
+  for (const event of events) {
+    if (!isYellowCardEvent(event)) continue
+    const id = playerIdentity(event)
+    if (!id) continue
+    const list = yellowsByPlayer.get(id)
+    if (list) list.push(event)
+    else yellowsByPlayer.set(id, [event])
+  }
+
+  const dismissals: FixtureEvent[] = []
+  for (const bookings of yellowsByPlayer.values()) {
+    if (bookings.length < 2) continue
+    // Present the dismissal at the LATER booking's minute, and relabel it so
+    // downstream messaging reads as a second-yellow sending-off.
+    const secondBooking = bookings.reduce((latest, current) =>
+      eventMinute(current) >= eventMinute(latest) ? current : latest,
+    )
+    dismissals.push({ ...secondBooking, detail: "Second Yellow card" })
+  }
+  return dismissals
+}
+
+function eventMinute(event: FixtureEvent): number {
+  return (Number.isFinite(event.minute) ? event.minute : 0) + (event.minuteExtra ?? 0)
+}
+
 /**
  * Stable identity for one expulsion, used as the unique deduplication key.
  *
@@ -71,27 +126,40 @@ function normaliseName(value: string): string {
 export function extractRedCards(fixture: Fixture, events: FixtureEvent[]): RedCardEvent[] {
   const detectedAt = new Date().toISOString()
 
-  return events.filter(isRedCardEvent).map((event) => ({
-    eventKey: buildEventKey(fixture, event),
-    fixtureId: fixture.id,
-    leagueId: fixture.leagueId,
-    leagueName: fixture.leagueName,
-    country: fixture.country,
-    leagueLogo: fixture.leagueLogo,
-    season: fixture.season,
-    homeTeam: fixture.homeTeam,
-    awayTeam: fixture.awayTeam,
-    homeScore: fixture.homeScore,
-    awayScore: fixture.awayScore,
-    player: event.player,
-    // The team of the player shown the card, i.e. the side going down to ten.
-    team: event.team,
-    minute: clampMinute(event.minute),
-    minuteExtra: event.minuteExtra,
-    detail: event.detail,
-    fixtureStatus: fixture.status,
-    detectedAt,
-  }))
+  // Explicit dismissals first so they win the dedup over a derived second
+  // yellow for the same player; then the two-yellow sending-offs the feed only
+  // exposes as separate "Yellow Card" events.
+  const candidates = [...events.filter(isRedCardEvent), ...deriveSecondYellowDismissals(events)]
+
+  const seen = new Set<string>()
+  const results: RedCardEvent[] = []
+  for (const event of candidates) {
+    const eventKey = buildEventKey(fixture, event)
+    if (seen.has(eventKey)) continue
+    seen.add(eventKey)
+    results.push({
+      eventKey,
+      fixtureId: fixture.id,
+      leagueId: fixture.leagueId,
+      leagueName: fixture.leagueName,
+      country: fixture.country,
+      leagueLogo: fixture.leagueLogo,
+      season: fixture.season,
+      homeTeam: fixture.homeTeam,
+      awayTeam: fixture.awayTeam,
+      homeScore: fixture.homeScore,
+      awayScore: fixture.awayScore,
+      player: event.player,
+      // The team of the player shown the card, i.e. the side going down to ten.
+      team: event.team,
+      minute: clampMinute(event.minute),
+      minuteExtra: event.minuteExtra,
+      detail: event.detail,
+      fixtureStatus: fixture.status,
+      detectedAt,
+    })
+  }
+  return results
 }
 
 /** The events table constrains minute to 0-130; keep parsing tolerant of odd feeds. */
