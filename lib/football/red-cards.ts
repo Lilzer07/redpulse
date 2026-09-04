@@ -16,30 +16,36 @@ import type { Fixture, FixtureEvent, RedCardEvent } from "./types"
  * missed for Lopy D. in Al Qadsiah–Al-Ittihad, where the feed said
  * "Yellow-Red Card"). A plain "Yellow Card" is never a dismissal and is excluded.
  */
-const DISMISSAL_DETAILS = ["red card", "second yellow card", "yellow-red card"]
+const DISMISSAL_DETAILS = new Set(["red card", "second yellow card", "yellow-red card", "yellow red card"])
+
+function normaliseDetail(value: string): string {
+  return value.trim().toLowerCase().replace(/[–—]/g, "-").replace(/\s+/g, " ")
+}
 
 /** True only for events that represent an actual expulsion. */
 export function isRedCardEvent(event: FixtureEvent): boolean {
   if (event.type.trim().toLowerCase() !== "card") return false
   // Collapse inner whitespace + lowercase so "Yellow-Red Card", "Second Yellow
   // card" and odd spacing all normalise to a canonical form before comparison.
-  const detail = event.detail.trim().toLowerCase().replace(/\s+/g, " ")
+  const detail = normaliseDetail(event.detail)
   // Exact-set membership, not `includes("red")`: a detail like
   // "Yellow Card, red card rescinded" must not trigger an alert.
-  return DISMISSAL_DETAILS.includes(detail)
+  return DISMISSAL_DETAILS.has(detail)
 }
 
 /** A single (first-or-second) booking: `type: "Card"`, `detail: "Yellow Card"`. */
 function isYellowCardEvent(event: FixtureEvent): boolean {
   if (event.type.trim().toLowerCase() !== "card") return false
-  return event.detail.trim().toLowerCase().replace(/\s+/g, " ") === "yellow card"
+  return normaliseDetail(event.detail) === "yellow card"
 }
 
 /** Stable per-player identity used to count bookings within one fixture. */
 function playerIdentity(event: FixtureEvent): string | null {
-  if (event.playerId !== null) return `p${event.playerId}`
+  // The feed can omit the player id on one of two bookings; names are more
+  // reliable for linking the pair and avoid treating p123 and nname as two players.
   const name = event.player.trim().toLowerCase()
   if (name && name !== "joueur inconnu") return `n${normaliseName(name)}`
+  if (event.playerId !== null) return `p${event.playerId}`
   return null
 }
 
