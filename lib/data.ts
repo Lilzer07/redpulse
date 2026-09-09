@@ -189,7 +189,7 @@ export const pricingPlans: PricingPlan[] = [
     name: "Abonnement Mensuel",
     price: "10 €",
     period: "/ mois",
-    tagline: "Idéal pour découvrir RedMatch.",
+    tagline: "3 jours gratuits, puis 10 € par mois.",
     features: [
       "Analyses IA illimitées",
       "Notifications Telegram instantanées",
@@ -200,8 +200,8 @@ export const pricingPlans: PricingPlan[] = [
     cta: "Commencer maintenant",
     href: "/checkout?plan=monthly",
     highlight: false,
-    // Les deux Payment Links étaient inversés : celui-ci est bien le checkout 10 €/mois.
-    checkoutUrl: "https://buy.stripe.com/00w14n17XbMr6T8e3e6EU02",
+  // Payment Link Stripe : 3 jours d’essai gratuit, puis 10 €/mois.
+  checkoutUrl: "https://buy.stripe.com/14AdR95odbMrcdsf7i6EU03",
   },
   {
     id: "lifetime",

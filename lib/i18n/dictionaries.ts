@@ -155,7 +155,7 @@ const fr = {
       monthly: {
         name: "Abonnement Mensuel",
         period: "/ mois",
-        tagline: "Idéal pour découvrir RedMatch.",
+        tagline: "3 jours gratuits, puis 10 € par mois.",
         features: [
           "Analyses IA illimitées",
           "Notifications Telegram instantanées",
@@ -163,7 +163,7 @@ const fr = {
           "Dashboard en temps réel",
           "Toutes les mises à jour",
         ],
-        cta: "Commencer maintenant",
+        cta: "Commencer l’essai gratuit de 3 jours",
       },
       lifetime: {
         name: "Offre Fondateur",
@@ -728,7 +728,7 @@ const en: typeof fr = {
       monthly: {
         name: "Monthly plan",
         period: "/ month",
-        tagline: "Perfect for discovering RedMatch.",
+        tagline: "3 days free, then €10 per month.",
         features: [
           "Unlimited AI analyses",
           "Instant Telegram notifications",
@@ -736,7 +736,7 @@ const en: typeof fr = {
           "Real-time dashboard",
           "All updates included",
         ],
-        cta: "Start now",
+        cta: "Start your 3-day free trial",
       },
       lifetime: {
         name: "Founder offer",
