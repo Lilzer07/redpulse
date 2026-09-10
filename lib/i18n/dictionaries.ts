@@ -32,7 +32,7 @@ const fr = {
     titleAfter: ", RedMatch la détecte.",
     paragraph:
       "Dès qu’un carton rouge tombe, RedMatch récupère le contexte du match, analyse la situation et vous envoie une notification Telegram : probabilité de but supplémentaire, victoire du favori et indice de confiance. En quelques secondes.",
-    ctaPrimary: "Commencer",
+    ctaPrimary: "Commencer l’essai gratuit de 3 jours",
     ctaSecondary: "Voir la démonstration",
     // Reflects MONITOR_CONFIG.intervalSeconds (60s). Keep this in step with the
     // real cadence: the earlier "Analyse < 2 s" was removed precisely because it
@@ -612,7 +612,7 @@ const en: typeof fr = {
     titleAfter: ", RedMatch spots it.",
     paragraph:
       "The moment a red card is shown, RedMatch pulls the match context, analyses the situation and sends you a Telegram notification: chance of another goal, favourite’s win probability and a confidence score. In seconds.",
-    ctaPrimary: "Get started",
+    ctaPrimary: "Start your 3-day free trial",
     ctaSecondary: "Watch the demo",
     trust: ["Checked every 60 s", "Confidence score /100", "26 competitions"],
     imageAlt: "Football stadium lit up at night",
