@@ -9,6 +9,7 @@ const AFFILIATE_URL =
 const IMAGE_URLS = [
   "https://drive.google.com/thumbnail?id=1g55s3HmWAV7GWN68fNhjKtmIJndC5j6c&sz=w1600",
   "https://drive.google.com/thumbnail?id=1KK3tzYV673gru52F5w3_DEaEw4q3ckup&sz=w1600",
+  "https://drive.google.com/thumbnail?id=1daqBypMbNTDnxJciGvAcPYCTX8XGSsco&sz=w1600",
 ]
 
 export function UnibetBanner({
@@ -16,7 +17,7 @@ export function UnibetBanner({
   bannerIndex,
 }: {
   placement?: "landing" | "dashboard"
-  bannerIndex?: 0 | 1
+  bannerIndex?: 0 | 1 | 2
 }) {
   const [dismissed, setDismissed] = useState(false)
   if (dismissed) return null
@@ -52,9 +53,9 @@ export function UnibetBanner({
               type="button"
               onClick={() => setDismissed(true)}
               aria-label="Fermer la publicité"
-              className="absolute right-1 top-1 inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/65 text-white backdrop-blur-sm transition hover:bg-black/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              className="absolute right-1 top-1 inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/65 text-white backdrop-blur-sm transition hover:bg-black/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:h-8 sm:w-8"
             >
-              <X className="h-4 w-4" aria-hidden />
+              <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" aria-hidden />
             </button>
           )}
         </div>

@@ -22,6 +22,7 @@ export default function Page() {
         <Stats />
         <Features />
         <HowItWorks />
+        <UnibetBanner bannerIndex={2} />
         <LiveDemo />
         <Pricing />
         <UnibetBanner bannerIndex={1} />
