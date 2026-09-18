@@ -8,7 +8,7 @@ const AFFILIATE_URL =
 
 const IMAGE_URLS = [
   "https://drive.google.com/thumbnail?id=1g55s3HmWAV7GWN68fNhjKtmIJndC5j6c&sz=w1600",
-  "https://drive.google.com/thumbnail?id=1bgQSU9qrAX9L1AlYv0Yh9wXLMs5_Y4mv&sz=w1600",
+  "https://drive.google.com/thumbnail?id=1KK3tzYV673gru52F5w3_DEaEw4q3ckup&sz=w1600",
 ]
 
 export function UnibetBanner({
@@ -43,7 +43,7 @@ export function UnibetBanner({
             <img
               src={IMAGE_URLS[index]}
               alt="Offre Unibet"
-              className="block h-auto max-h-24 w-full object-contain sm:max-h-32"
+              className="mx-auto block h-auto w-full max-w-3xl"
               referrerPolicy="no-referrer"
             />
           </a>
