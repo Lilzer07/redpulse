@@ -17,13 +17,14 @@ export default function Page() {
       <SiteNav />
       <main>
         <Hero />
-        <UnibetBanner />
+        <UnibetBanner bannerIndex={0} />
         <CompetitionMarquee />
         <Stats />
         <Features />
         <HowItWorks />
         <LiveDemo />
         <Pricing />
+        <UnibetBanner bannerIndex={1} />
         <Faq />
       </main>
       <SiteFooter />
