@@ -9,6 +9,7 @@ import { Pricing } from "@/components/landing/pricing"
 import { Faq } from "@/components/landing/faq"
 import { SiteFooter } from "@/components/landing/site-footer"
 import { WhatsAppSupport } from "@/components/landing/whatsapp-support"
+import { UnibetBanner } from "@/components/ads/unibet-banner"
 
 export default function Page() {
   return (
@@ -16,12 +17,14 @@ export default function Page() {
       <SiteNav />
       <main>
         <Hero />
+        <UnibetBanner bannerIndex={0} />
         <CompetitionMarquee />
         <Stats />
         <Features />
         <HowItWorks />
         <LiveDemo />
         <Pricing />
+        <UnibetBanner bannerIndex={1} />
         <Faq />
       </main>
       <SiteFooter />

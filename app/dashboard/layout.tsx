@@ -5,6 +5,7 @@ import { MobileNav } from "@/components/dashboard/mobile-nav"
 import { createClient } from "@/lib/supabase/server"
 import { SessionProvider } from "@/lib/session-context"
 import { getProfile, hasActiveSubscription } from "@/lib/user-data"
+import { UnibetBanner } from "@/components/ads/unibet-banner"
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
   const supabase = await createClient()
@@ -36,7 +37,10 @@ export default async function DashboardLayout({ children }: { children: ReactNod
     <SessionProvider email={user.email ?? ""} profile={profile}>
       <div className="flex min-h-screen bg-background">
         <Sidebar userEmail={user.email} />
-        <div className="flex min-w-0 flex-1 flex-col pb-20 lg:pb-0">{children}</div>
+        <div className="flex min-w-0 flex-1 flex-col pb-20 lg:pb-0">
+          <UnibetBanner placement="dashboard" />
+          {children}
+        </div>
         <MobileNav />
       </div>
     </SessionProvider>
