@@ -9,22 +9,19 @@ const AFFILIATE_URL =
 const IMAGE_URLS = [
   "https://drive.google.com/thumbnail?id=1g55s3HmWAV7GWN68fNhjKtmIJndC5j6c&sz=w1600",
   "https://drive.google.com/thumbnail?id=1bgQSU9qrAX9L1AlYv0Yh9wXLMs5_Y4mv&sz=w1600",
-  "https://drive.google.com/thumbnail?id=1stRUh9bc2CAdU4Ugj9lLk9EENPDRUONK&sz=w1600",
-  "https://drive.google.com/thumbnail?id=1Fm0x2UL4JLuGx0qo_SKe0_7BqWpYHZJ_&sz=w1600",
 ]
 
 export function UnibetBanner({ placement = "landing" }: { placement?: "landing" | "dashboard" }) {
   const [dismissed, setDismissed] = useState(false)
-  const [imageIndex, setImageIndex] = useState(0)
-
   if (dismissed) return null
 
+  const bannerClass = placement === "dashboard"
+    ? "mx-auto w-full max-w-3xl px-3 py-2 sm:px-6"
+    : "mx-auto w-full max-w-4xl px-4 py-3 sm:px-6"
+
   return (
-    <aside
-      aria-label="Publicité Unibet"
-      className={placement === "dashboard" ? "px-4 py-4 sm:px-6 lg:px-8" : "mx-auto max-w-6xl px-5 py-6"}
-    >
-      <div className="relative overflow-hidden rounded-2xl border border-border/70 bg-card shadow-lg">
+    <aside aria-label="Publicité Unibet" className={bannerClass}>
+      <div className="relative overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm">
         <a
           href={AFFILIATE_URL}
           target="_blank"
@@ -33,9 +30,9 @@ export function UnibetBanner({ placement = "landing" }: { placement?: "landing" 
           className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
         >
           <img
-            src={IMAGE_URLS[imageIndex]}
+            src={IMAGE_URLS[0]}
             alt="Offre Unibet"
-            className="block h-auto max-h-56 w-full object-cover sm:max-h-72"
+            className="block h-auto max-h-24 w-full object-contain sm:max-h-32"
             referrerPolicy="no-referrer"
           />
         </a>
@@ -43,22 +40,26 @@ export function UnibetBanner({ placement = "landing" }: { placement?: "landing" 
           type="button"
           onClick={() => setDismissed(true)}
           aria-label="Fermer la publicité"
-          className="absolute right-2 top-2 inline-flex h-11 w-11 items-center justify-center rounded-full bg-black/65 text-white backdrop-blur-sm transition hover:bg-black/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          className="absolute right-1 top-1 inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/65 text-white backdrop-blur-sm transition hover:bg-black/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
         >
-          <X className="h-5 w-5" aria-hidden />
+          <X className="h-4 w-4" aria-hidden />
         </button>
-        <div className="absolute bottom-2 left-2 flex gap-1.5" aria-label="Choisir la bannière">
-          {IMAGE_URLS.map((_, index) => (
-            <button
-              key={index}
-              type="button"
-              aria-label={`Afficher la bannière ${index + 1}`}
-              aria-pressed={index === imageIndex}
-              onClick={() => setImageIndex(index)}
-              className={`h-2.5 w-2.5 rounded-full border border-white/80 ${index === imageIndex ? "bg-white" : "bg-white/40"}`}
-            />
-          ))}
-        </div>
+      </div>
+      <div className="relative mt-2 overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm">
+        <a
+          href={AFFILIATE_URL}
+          target="_blank"
+          rel="sponsored noopener noreferrer"
+          aria-label="Découvrir l'offre Unibet"
+          className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
+        >
+          <img
+            src={IMAGE_URLS[1]}
+            alt="Offre Unibet"
+            className="block h-auto max-h-24 w-full object-contain sm:max-h-32"
+            referrerPolicy="no-referrer"
+          />
+        </a>
       </div>
     </aside>
   )
