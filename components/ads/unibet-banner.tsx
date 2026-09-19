@@ -23,8 +23,8 @@ export function UnibetBanner({
   if (dismissed) return null
 
   const bannerClass = placement === "dashboard"
-    ? "mx-auto w-full max-w-3xl px-3 py-2 sm:px-6"
-    : "mx-auto w-full max-w-4xl px-4 py-3 sm:px-6"
+    ? "mx-auto w-full px-3 py-2 sm:max-w-[680px] sm:px-6"
+    : "mx-auto w-full px-4 py-3 sm:max-w-[680px] sm:px-6"
   const indexes = bannerIndex === undefined ? [0, 1] : [bannerIndex]
 
   return (
@@ -44,7 +44,7 @@ export function UnibetBanner({
             <img
               src={IMAGE_URLS[index]}
               alt="Offre Unibet"
-              className="mx-auto block h-auto w-full max-w-3xl"
+              className="mx-auto block h-auto w-full sm:max-w-[680px]"
               referrerPolicy="no-referrer"
             />
           </a>
