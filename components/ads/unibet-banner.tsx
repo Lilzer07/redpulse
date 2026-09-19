@@ -53,9 +53,9 @@ export function UnibetBanner({
               type="button"
               onClick={() => setDismissed(true)}
               aria-label="Fermer la publicité"
-              className="absolute right-1 top-1 inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/65 text-white backdrop-blur-sm transition hover:bg-black/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:h-8 sm:w-8"
+              className="absolute right-1 top-1 inline-flex h-10 w-10 items-center justify-center bg-transparent text-white/70 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
             >
-              <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" aria-hidden />
+              <X className="h-7 w-7 stroke-[1.7]" aria-hidden />
             </button>
           )}
         </div>
