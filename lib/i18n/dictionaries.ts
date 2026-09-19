@@ -26,7 +26,7 @@ const fr = {
   },
 
   hero: {
-    badge: "Copilote IA football en temps réel",
+    badge: "Copilote football en temps réel",
     titleBefore: "Chaque carton rouge cache une",
     titleHighlight: "opportunité",
     titleAfter: ", RedMatch la détecte.",
@@ -606,7 +606,7 @@ const en: typeof fr = {
   },
 
   hero: {
-    badge: "Real-time football AI copilot",
+    badge: "Real-time football copilot",
     titleBefore: "Every red card hides an",
     titleHighlight: "opportunity",
     titleAfter: ", RedMatch spots it.",

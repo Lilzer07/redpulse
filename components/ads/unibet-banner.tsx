@@ -23,8 +23,8 @@ export function UnibetBanner({
   if (dismissed) return null
 
   const bannerClass = placement === "dashboard"
-    ? "mx-auto w-full max-w-3xl px-3 py-2 sm:px-6"
-    : "mx-auto w-full max-w-4xl px-4 py-3 sm:px-6"
+    ? "mx-auto w-full px-3 py-2 sm:max-w-[680px] sm:px-6"
+    : "mx-auto w-full px-4 py-3 sm:max-w-[680px] sm:px-6"
   const indexes = bannerIndex === undefined ? [0, 1] : [bannerIndex]
 
   return (
@@ -34,6 +34,19 @@ export function UnibetBanner({
           key={index}
           className={`relative overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm ${position > 0 ? "mt-2" : ""}`}
         >
+          {position === 0 && (
+            <div className="flex min-h-12 items-center justify-between bg-[#12271d] px-4 py-1.5 text-sm text-white/65 sm:px-6 sm:text-base">
+              <span>Publicité. Cliquez pour en savoir plus.</span>
+              <button
+                type="button"
+                onClick={() => setDismissed(true)}
+                aria-label="Fermer la publicité"
+                className="-mr-2 inline-flex h-10 w-10 shrink-0 items-center justify-center bg-transparent text-white/70 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+              >
+                <X className="h-7 w-7 stroke-[1.7]" aria-hidden />
+              </button>
+            </div>
+          )}
           <a
             href={AFFILIATE_URL}
             target="_blank"
@@ -44,20 +57,11 @@ export function UnibetBanner({
             <img
               src={IMAGE_URLS[index]}
               alt="Offre Unibet"
-              className="mx-auto block h-auto w-full max-w-3xl"
+              className="mx-auto block h-auto w-full sm:max-w-[680px]"
               referrerPolicy="no-referrer"
             />
           </a>
-          {position === 0 && (
-            <button
-              type="button"
-              onClick={() => setDismissed(true)}
-              aria-label="Fermer la publicité"
-              className="absolute right-1 top-1 inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/65 text-white backdrop-blur-sm transition hover:bg-black/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:h-8 sm:w-8"
-            >
-              <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" aria-hidden />
-            </button>
-          )}
+
         </div>
       ))}
     </aside>
