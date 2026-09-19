@@ -145,7 +145,7 @@
   --popover: #0c0d0c;
   --popover-foreground: #ffffff;
 
-  --primary: #18c964;
+  --primary: #20df70;
   --primary-foreground: #04120a;
 
   --secondary: #0e6a34;
@@ -155,7 +155,7 @@
   --muted-foreground: #9aa39c;
 
   --accent: #10231a;
-  --accent-foreground: #18c964;
+  --accent-foreground: #20df70;
 
   /* Red card red — reserved for red-card events only */
   --danger: #ff3b30;
@@ -164,9 +164,9 @@
 
   --border: rgba(255, 255, 255, 0.08);
   --input: rgba(255, 255, 255, 0.1);
-  --ring: #18c964;
+  --ring: #20df70;
 
-  --chart-1: #18c964;
+  --chart-1: #20df70;
   --chart-2: #0e6a34;
   --chart-3: #34d399;
   --chart-4: #6ee7b7;
@@ -176,12 +176,12 @@
 
   --sidebar: #070807;
   --sidebar-foreground: #ffffff;
-  --sidebar-primary: #18c964;
+  --sidebar-primary: #20df70;
   --sidebar-primary-foreground: #04120a;
   --sidebar-accent: #10231a;
-  --sidebar-accent-foreground: #18c964;
+  --sidebar-accent-foreground: #20df70;
   --sidebar-border: rgba(255, 255, 255, 0.07);
-  --sidebar-ring: #18c964;
+  --sidebar-ring: #20df70;
 
   /* Overlay scale (dark): the exact values previously hardcoded as
      `white/8`, `white/[0.02]`, `white/[0.03]`, `white/[0.06]`, so swapping the
