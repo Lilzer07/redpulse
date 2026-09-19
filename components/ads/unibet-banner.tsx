@@ -34,6 +34,19 @@ export function UnibetBanner({
           key={index}
           className={`relative overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm ${position > 0 ? "mt-2" : ""}`}
         >
+          {position === 0 && (
+            <div className="flex min-h-12 items-center justify-between bg-[#12271d] px-4 py-1.5 text-sm text-white/65 sm:px-6 sm:text-base">
+              <span>Publicité. Cliquez pour en savoir plus.</span>
+              <button
+                type="button"
+                onClick={() => setDismissed(true)}
+                aria-label="Fermer la publicité"
+                className="-mr-2 inline-flex h-10 w-10 shrink-0 items-center justify-center bg-transparent text-white/70 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+              >
+                <X className="h-7 w-7 stroke-[1.7]" aria-hidden />
+              </button>
+            </div>
+          )}
           <a
             href={AFFILIATE_URL}
             target="_blank"
@@ -48,16 +61,7 @@ export function UnibetBanner({
               referrerPolicy="no-referrer"
             />
           </a>
-          {position === 0 && (
-            <button
-              type="button"
-              onClick={() => setDismissed(true)}
-              aria-label="Fermer la publicité"
-              className="absolute right-1 top-1 inline-flex h-10 w-10 items-center justify-center bg-transparent text-white/70 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
-            >
-              <X className="h-7 w-7 stroke-[1.7]" aria-hidden />
-            </button>
-          )}
+
         </div>
       ))}
     </aside>
