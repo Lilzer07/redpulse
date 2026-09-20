@@ -32,10 +32,10 @@ export function UnibetBanner({
       {indexes.map((index, position) => (
         <div
           key={index}
-          className={`relative overflow-hidden bg-[#12271d] ${position > 0 ? "mt-3" : ""}`}
+          className={`relative overflow-hidden ${position > 0 ? "mt-3" : ""}`}
         >
           {position === 0 && (
-            <div className="flex min-h-14 items-center justify-between bg-[#12271d] px-6 py-2 text-base text-white/65 sm:px-6 sm:text-[22px]">
+            <div className="flex items-center justify-between px-4 py-1 text-sm text-white/65 sm:px-6 sm:text-base">
               <span>Publicité. Cliquez pour en savoir plus.</span>
               <button
                 type="button"
