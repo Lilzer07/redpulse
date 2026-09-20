@@ -23,8 +23,8 @@ export function UnibetBanner({
   if (dismissed) return null
 
   const bannerClass = placement === "dashboard"
-    ? "mx-auto w-full px-3 py-2 sm:max-w-[680px] sm:px-6"
-    : "mx-auto w-full px-4 py-3 sm:max-w-[680px] sm:px-6"
+    ? "mx-auto w-full max-w-[1032px] px-3 py-2 sm:px-6"
+    : "mx-auto w-full max-w-[1032px] px-0 py-3 sm:px-6"
   const indexes = bannerIndex === undefined ? [0, 1] : [bannerIndex]
 
   return (
@@ -32,10 +32,10 @@ export function UnibetBanner({
       {indexes.map((index, position) => (
         <div
           key={index}
-          className={`relative overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm ${position > 0 ? "mt-2" : ""}`}
+          className={`relative overflow-hidden ${position > 0 ? "mt-3" : ""}`}
         >
           {position === 0 && (
-            <div className="flex min-h-12 items-center justify-between bg-[#12271d] px-4 py-1.5 text-sm text-white/65 sm:px-6 sm:text-base">
+            <div className="flex items-center justify-between px-4 py-1 text-sm text-white/65 sm:px-6 sm:text-base">
               <span>Publicité. Cliquez pour en savoir plus.</span>
               <button
                 type="button"
@@ -57,7 +57,7 @@ export function UnibetBanner({
             <img
               src={IMAGE_URLS[index]}
               alt="Offre Unibet"
-              className="mx-auto block h-auto w-full sm:max-w-[680px]"
+              className="mx-auto block h-auto w-full"
               referrerPolicy="no-referrer"
             />
           </a>
