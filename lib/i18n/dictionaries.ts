@@ -33,8 +33,7 @@ const fr = {
     paragraph:
       "Dès qu’un carton rouge tombe, RedMatch récupère le contexte du match, analyse la situation et vous envoie une notification Telegram : probabilité de but supplémentaire, victoire du favori et indice de confiance. En quelques secondes.",
     ctaPrimary: "Commencer l’essai gratuit de 3 jours",
-    ctaSecondary: "Voir la démonstration",
-    // Reflects MONITOR_CONFIG.intervalSeconds (60s). Keep this in step with the
+      // Reflects MONITOR_CONFIG.intervalSeconds (60s). Keep this in step with the
     // real cadence: the earlier "Analyse < 2 s" was removed precisely because it
     // promised a latency the product did not deliver.
     trust: ["Vérification toutes les 60 s", "Indice de confiance /100", "26 compétitions"],
@@ -613,8 +612,7 @@ const en: typeof fr = {
     paragraph:
       "The moment a red card is shown, RedMatch pulls the match context, analyses the situation and sends you a Telegram notification: chance of another goal, favourite’s win probability and a confidence score. In seconds.",
     ctaPrimary: "Start your 3-day free trial",
-    ctaSecondary: "Watch the demo",
-    trust: ["Checked every 60 s", "Confidence score /100", "26 competitions"],
+       trust: ["Checked every 60 s", "Confidence score /100", "26 competitions"],
     imageAlt: "Football stadium lit up at night",
   },
 

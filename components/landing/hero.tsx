@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import { motion } from "framer-motion"
-import { ArrowRight, Play } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 import { ButtonLink } from "@/components/ui/button-link"
 import { TelegramPhone } from "@/components/landing/telegram-phone"
 import { useI18n } from "@/lib/i18n/context"
@@ -79,15 +79,6 @@ export function Hero() {
             >
               {t.hero.ctaPrimary}
               <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </ButtonLink>
-            <ButtonLink
-              href="#demo"
-              size="lg"
-              variant="outline"
-              className="h-12 rounded-xl border-[rgb(var(--overlay)/0.15)] bg-[rgb(var(--overlay)/0.05)] px-6 text-base font-medium text-foreground backdrop-blur hover:bg-[rgb(var(--overlay)/0.1)]"
-            >
-              <Play className="mr-1 h-4 w-4" />
-              {t.hero.ctaSecondary}
             </ButtonLink>
           </motion.div>
 
