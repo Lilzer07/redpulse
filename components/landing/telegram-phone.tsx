@@ -48,7 +48,7 @@ export function TelegramPhone() {
 
           {/* Telegram header */}
           <div className="flex items-center gap-3 border-b border-[rgb(var(--overlay)/0.05)] bg-[rgb(var(--overlay)/0.03)] px-4 pb-3 pt-9 backdrop-blur">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary to-secondary">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#229ED9] shadow-[0_0_14px_rgba(34,158,217,0.35)]">
               <Send className="h-4 w-4 text-primary-foreground" aria-hidden />
             </div>
             <div className="min-w-0">
