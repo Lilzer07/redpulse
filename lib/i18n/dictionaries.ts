@@ -69,14 +69,14 @@ const fr = {
 
   features: {
     eyebrow: "Fonctionnalités",
-    title: "Le carton rouge déclenche, l’IA analyse",
+    title: "Le carton rouge déclenche, RedMatch analyse",
     subtitle:
       "Bien plus qu’une alerte : un copilote qui mesure l’indice de confiance de chaque carton, en temps réel.",
     items: [
       {
-        title: "Analyse IA instantanée",
+        title: "Analyse instantanée",
         description:
-          "Dès qu’un carton rouge tombe, l’IA analyse le contexte du match et en calcule l’indice de confiance.",
+          "Dès qu’un carton rouge tombe, RedMatch analyse le contexte du match et en calcule l’indice de confiance.",
       },
       {
         title: "Indice de confiance sur 100",

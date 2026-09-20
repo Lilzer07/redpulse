@@ -59,9 +59,9 @@ export type Feature = {
 export const features: Feature[] = [
   {
     icon: "sparkles",
-    title: "Analyse IA instantanée",
+    title: "Analyse instantanée",
     description:
-      "Dès qu’un carton rouge tombe, l’IA analyse le contexte du match et en calcule l’indice de confiance.",
+      "Dès qu’un carton rouge tombe, RedMatch analyse le contexte du match et en calcule l’indice de confiance.",
   },
   {
     icon: "gauge",
