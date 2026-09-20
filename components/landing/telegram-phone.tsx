@@ -48,8 +48,10 @@ export function TelegramPhone() {
 
           {/* Telegram header */}
           <div className="flex items-center gap-3 border-b border-[rgb(var(--overlay)/0.05)] bg-[rgb(var(--overlay)/0.03)] px-4 pb-3 pt-9 backdrop-blur">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#229ED9] shadow-[0_0_14px_rgba(34,158,217,0.35)]">
-              <Send className="h-4 w-4 text-primary-foreground" aria-hidden />
+            <div className="flex h-10 w-10 items-center justify-center rounded-[0.8rem] bg-white shadow-[0_0_14px_rgba(34,158,217,0.25)]">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#2AABEE]">
+                <Send className="h-5 w-5 -rotate-6 text-white" aria-hidden />
+              </span>
             </div>
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold text-foreground">{t.phone.botName}</p>
