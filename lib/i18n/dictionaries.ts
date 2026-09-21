@@ -69,7 +69,7 @@ const fr = {
 
   features: {
     eyebrow: "Fonctionnalités",
-    title: "Le carton rouge SE déclenche, RedMatch analyse",
+    title: "Le carton rouge se déclenche, RedMatch analyse",
     subtitle:
       "Bien plus qu’une alerte : un copilote qui mesure l’indice de confiance de chaque carton, en temps réel.",
     items: [
