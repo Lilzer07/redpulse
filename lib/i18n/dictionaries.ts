@@ -130,7 +130,7 @@ const fr = {
 
   demo: {
     eyebrow: "Démonstration en direct",
-    title: "Voyez l’IA analyser en temps réel",
+    title: "Voyez RedMatch analyser en temps réel",
     subtitle: "Chaque carton rouge déclenche une analyse instantanée, sans statistiques complexes.",
     liveTitle: "Analyses en direct",
     autoUpdate: "Mise à jour automatique",
