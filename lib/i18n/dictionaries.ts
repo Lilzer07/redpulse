@@ -154,7 +154,7 @@ const fr = {
       monthly: {
         name: "Abonnement Mensuel",
         period: "/ mois",
-        tagline: "3 jours gratuits, puis 10 € par mois.",
+        tagline: "3 jours gratuits, puis 10 € par mois sans engagement.",
         features: [
           "Analyses IA illimitées",
           "Notifications Telegram instantanées",
