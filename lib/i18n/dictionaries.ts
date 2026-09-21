@@ -189,8 +189,8 @@ const fr = {
     title: "Questions fréquentes",
     items: [
       {
-        q: "Comment fonctionne l’analyse IA ?",
-        a: "Le carton rouge est le déclencheur. Dès qu’il est détecté, RedMatch récupère le contexte du match, puis l’IA calcule l’indice de confiance du carton et vous envoie une analyse claire dans Telegram : probabilité de but supplémentaire, probabilité de victoire du favori et indice de confiance sur 100.",
+        q: "Comment fonctionne l’analyse ?",
+        a: "Le carton rouge est le déclencheur. Dès qu’il est détecté, RedMatch récupère le contexte du match, puis RedMatch calcule l’indice de confiance du carton et vous envoie une analyse claire dans Telegram : probabilité de but supplémentaire, probabilité de victoire du favori et indice de confiance sur 100.",
       },
       {
         q: "RedMatch donne-t-il des conseils de pari ?",
