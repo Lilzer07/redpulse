@@ -69,7 +69,7 @@ const fr = {
 
   features: {
     eyebrow: "Fonctionnalités",
-    title: "Le carton rouge déclenche, RedMatch analyse",
+    title: "Le carton rouge SE déclenche, RedMatch analyse",
     subtitle:
       "Bien plus qu’une alerte : un copilote qui mesure l’indice de confiance de chaque carton, en temps réel.",
     items: [
@@ -557,7 +557,7 @@ const fr = {
       },
       {
         heading: "3. Compte utilisateur",
-        body: "Vous vous engagez à fournir une adresse e-mail valide et à préserver la confidentialité de votre mot de passe. Toute activité réalisée depuis votre compte vous est imputable. Prévenez-nous sans délai si vous suspectez un accès non autorisé.",
+        body: "Vous vous engagez à fournir une adresse e-mail valide et à préserver la confidentialité de votre mot de passe. Toute activité réalisée depuis votre compte vous est imputable. Pr��venez-nous sans délai si vous suspectez un accès non autorisé.",
       },
       {
         heading: "4. Abonnement et paiement",
