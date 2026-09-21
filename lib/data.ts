@@ -189,7 +189,7 @@ export const pricingPlans: PricingPlan[] = [
     name: "Abonnement Mensuel",
     price: "10 €",
     period: "/ mois",
-    tagline: "3 jours gratuits, puis 10 € par mois.",
+    tagline: "3 jours gratuits, puis 10 € par mois sans engagement.",
     features: [
       "Analyses IA illimitées",
       "Notifications Telegram instantanées",
