@@ -73,7 +73,7 @@ export function formatTelegramAlert(
 
   // Header sits directly above the sentence (no blank line between) to keep the
   // reading tight against its label.
-  if (aiReading) lines.push("", "🤖 Lecture IA", aiReading)
+  if (aiReading) lines.push("", "🤖 Lecture", aiReading)
 
   return lines.join("\n")
 }

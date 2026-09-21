@@ -49,8 +49,8 @@ const fr = {
     player: "Joueur",
     expulsion: "Expulsion",
     analysisTitle: "Analyse RedMatch",
-    aiAnalysis: "Analyse IA",
-    aiReading: "Lecture IA",
+    aiAnalysis: "Analyse",
+    aiReading: "Lecture",
     extraGoal: "But supplémentaire",
     win: "Victoire",
     confidence: "Confiance",
@@ -69,7 +69,7 @@ const fr = {
 
   features: {
     eyebrow: "Fonctionnalités",
-    title: "Le carton rouge déclenche, RedMatch analyse",
+    title: "Le carton rouge se déclenche, RedMatch analyse",
     subtitle:
       "Bien plus qu’une alerte : un copilote qui mesure l’indice de confiance de chaque carton, en temps réel.",
     items: [
@@ -118,7 +118,7 @@ const fr = {
         description: "Le contexte du match est collecté automatiquement : score, minute, équipes.",
       },
       {
-        title: "L’IA analyse la situation",
+        title: "Analyse de la situation",
         description: "Le copilote calcule l’indice de confiance et les probabilités clés du match.",
       },
       {
@@ -130,7 +130,7 @@ const fr = {
 
   demo: {
     eyebrow: "Démonstration en direct",
-    title: "Voyez l’IA analyser en temps réel",
+    title: "Voyez RedMatch analyser en temps réel",
     subtitle: "Chaque carton rouge déclenche une analyse instantanée, sans statistiques complexes.",
     liveTitle: "Analyses en direct",
     autoUpdate: "Mise à jour automatique",
@@ -557,7 +557,7 @@ const fr = {
       },
       {
         heading: "3. Compte utilisateur",
-        body: "Vous vous engagez à fournir une adresse e-mail valide et à préserver la confidentialité de votre mot de passe. Toute activité réalisée depuis votre compte vous est imputable. Prévenez-nous sans délai si vous suspectez un accès non autorisé.",
+        body: "Vous vous engagez à fournir une adresse e-mail valide et à préserver la confidentialité de votre mot de passe. Toute activité réalisée depuis votre compte vous est imputable. Pr��venez-nous sans délai si vous suspectez un accès non autorisé.",
       },
       {
         heading: "4. Abonnement et paiement",
