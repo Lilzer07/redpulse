@@ -98,7 +98,7 @@ export const features: Feature[] = [
 export const steps = [
   { step: "01", title: "Carton rouge détecté", description: "Un carton rouge tombe : c’est le déclencheur. RedMatch le repère instantanément." },
   { step: "02", title: "Données récupérées", description: "Le contexte du match est collecté automatiquement : score, minute, équipes." },
-  { step: "03", title: "L’IA analyse la situation", description: "Le copilote calcule l’indice de confiance et les probabilités clés du match." },
+  { step: "03", title: "Analyse de la situation", description: "Le copilote calcule l’indice de confiance et les probabilités clés du match." },
   { step: "04", title: "Telegram enrichi envoyé", description: "Vous recevez l’analyse complète dans Telegram en quelques secondes." },
 ]
 

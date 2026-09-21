@@ -118,7 +118,7 @@ const fr = {
         description: "Le contexte du match est collecté automatiquement : score, minute, équipes.",
       },
       {
-        title: "L’IA analyse la situation",
+        title: "Analyse de la situation",
         description: "Le copilote calcule l’indice de confiance et les probabilités clés du match.",
       },
       {
