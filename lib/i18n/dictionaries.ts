@@ -32,7 +32,7 @@ const fr = {
     titleAfter: ", RedMatch la détecte.",
     paragraph:
       "Dès qu’un carton rouge tombe, RedMatch récupère le contexte du match, analyse la situation et vous envoie une notification Telegram : probabilité de but supplémentaire, victoire du favori et indice de confiance. En quelques secondes.",
-    ctaPrimary: "Commencer l’essai gratuit de 3 jours",
+    ctaPrimary: "Commencer l’essai gratuit de 7 jours",
       // Reflects MONITOR_CONFIG.intervalSeconds (60s). Keep this in step with the
     // real cadence: the earlier "Analyse < 2 s" was removed precisely because it
     // promised a latency the product did not deliver.
@@ -149,12 +149,12 @@ const fr = {
   pricing: {
     eyebrow: "Tarification",
     title: "Choisissez votre accès à RedMatch.",
-    subtitle: "Un abonnement flexible pour découvrir, ou un accès à vie pour les premiers membres.",
+    subtitle: "Un abonnement mensuel flexible avec 7 jours offerts, ou l’annuel pour payer moins.",
     plans: {
       monthly: {
         name: "Abonnement Mensuel",
         period: "/ mois",
-        tagline: "3 jours gratuits, puis 10 € par mois sans engagement.",
+        tagline: "7 jours gratuits, puis 4,99 € par mois sans engagement.",
         features: [
           "Analyses IA illimitées",
           "Notifications Telegram instantanées",
@@ -162,24 +162,24 @@ const fr = {
           "Dashboard en temps réel",
           "Toutes les mises à jour",
         ],
-        cta: "Commencer l’essai gratuit de 3 jours",
+        cta: "Commencer l’essai gratuit de 7 jours",
       },
       lifetime: {
-        name: "Offre Fondateur",
-        period: "Accès à vie",
+        name: "Abonnement Annuel",
+        period: "/ an",
         badge: "Le plus populaire",
-        tagline: "Payez une seule fois, accès à vie.",
+        tagline: "48 € par an, soit 4 € par mois.",
         description:
-          "Payez une seule fois et profitez d’un accès à vie à RedMatch ainsi qu’à toutes les futures mises à jour.",
+          "Un an d’accès complet à RedMatch et à toutes les mises à jour, pour moins cher que le mensuel.",
         features: [
-          "Accès à vie",
+          "12 mois d’accès complet",
           "Analyses IA illimitées",
           "Notifications Telegram illimitées",
           "Toutes les compétitions",
           "Toutes les futures fonctionnalités incluses",
           "Badge exclusif « Membre Fondateur »",
         ],
-        cta: "Obtenir l’accès à vie",
+        cta: "Choisir l’abonnement annuel",
       },
     },
   },
@@ -561,7 +561,7 @@ const fr = {
       },
       {
         heading: "4. Abonnement et paiement",
-        body: "L'accès est proposé par abonnement mensuel ou par achat unique donnant un accès à vie. L'abonnement mensuel se renouvelle automatiquement et peut être résilié à tout moment : l'accès reste alors actif jusqu'à la fin de la période déjà payée.",
+        body: "L'accès est proposé par abonnement mensuel (7 jours d'essai gratuit, puis 4,99 € par mois) ou par abonnement annuel (48 € par an). L'abonnement se renouvelle automatiquement et peut être résilié à tout moment : l'accès reste alors actif jusqu'à la fin de la période déjà payée.",
       },
       {
         heading: "5. Disponibilité",
@@ -611,7 +611,7 @@ const en: typeof fr = {
     titleAfter: ", RedMatch spots it.",
     paragraph:
       "The moment a red card is shown, RedMatch pulls the match context, analyses the situation and sends you a Telegram notification: chance of another goal, favourite’s win probability and a confidence score. In seconds.",
-    ctaPrimary: "Start your 3-day free trial",
+    ctaPrimary: "Start your 7-day free trial",
        trust: ["Checked every 60 s", "Confidence score /100", "26 competitions"],
     imageAlt: "Football stadium lit up at night",
   },
@@ -721,12 +721,12 @@ const en: typeof fr = {
   pricing: {
     eyebrow: "Pricing",
     title: "Choose your access to RedMatch.",
-    subtitle: "A flexible subscription to try it out, or lifetime access for early members.",
+    subtitle: "A flexible monthly plan with 7 days free, or the yearly plan to pay less.",
     plans: {
       monthly: {
         name: "Monthly plan",
         period: "/ month",
-        tagline: "3 days free, then €10 per month.",
+        tagline: "7 days free, then €4.99 per month.",
         features: [
           "Unlimited AI analyses",
           "Instant Telegram notifications",
@@ -734,24 +734,24 @@ const en: typeof fr = {
           "Real-time dashboard",
           "All updates included",
         ],
-        cta: "Start your 3-day free trial",
+        cta: "Start your 7-day free trial",
       },
       lifetime: {
-        name: "Founder offer",
-        period: "Lifetime access",
+        name: "Yearly plan",
+        period: "/ year",
         badge: "Most popular",
-        tagline: "Pay once, keep it for life.",
+        tagline: "€48 per year, just €4 per month.",
         description:
-          "Pay once and enjoy lifetime access to RedMatch, including every future update.",
+          "A full year of RedMatch and every update, for less than the monthly plan.",
         features: [
-          "Lifetime access",
+          "12 months of full access",
           "Unlimited AI analyses",
           "Unlimited Telegram notifications",
           "All competitions",
           "All future features included",
           "Exclusive “Founding Member” badge",
         ],
-        cta: "Get lifetime access",
+        cta: "Choose the yearly plan",
       },
     },
   },
@@ -1123,7 +1123,7 @@ const en: typeof fr = {
       },
       {
         heading: "4. Subscription and payment",
-        body: "Access is offered as a monthly subscription or as a one-off purchase granting lifetime access. The monthly subscription renews automatically and can be cancelled at any time: access then remains active until the end of the period already paid for.",
+        body: "Access is offered as a monthly subscription (7-day free trial, then €4.99 per month) or a yearly subscription (€48 per year). The subscription renews automatically and can be cancelled at any time: access then remains active until the end of the period already paid for.",
       },
       {
         heading: "5. Availability",

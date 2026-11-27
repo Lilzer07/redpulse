@@ -12,8 +12,8 @@ type Props = {
 }
 
 const PLAN_PRICE: Record<string, string> = {
-  monthly: "10 €",
-  lifetime: "50 €",
+  monthly: "4,99 €",
+  lifetime: "48 €",
 }
 
 function formatDate(value: string | null, locale: string): string | null {
