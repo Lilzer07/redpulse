@@ -187,9 +187,9 @@ export const pricingPlans: PricingPlan[] = [
   {
     id: "monthly",
     name: "Abonnement Mensuel",
-    price: "10 €",
+    price: "4,99 €",
     period: "/ mois",
-    tagline: "3 jours gratuits, puis 10 € par mois sans engagement.",
+    tagline: "7 jours gratuits, puis 4,99 € par mois sans engagement.",
     features: [
       "Analyses IA illimitées",
       "Notifications Telegram instantanées",
@@ -200,31 +200,31 @@ export const pricingPlans: PricingPlan[] = [
     cta: "Commencer maintenant",
     href: "/checkout?plan=monthly",
     highlight: false,
-  // Payment Link Stripe : 3 jours d’essai gratuit, puis 10 €/mois.
-  checkoutUrl: "https://buy.stripe.com/14AdR95odbMrcdsf7i6EU03",
+    // Whop : 7 jours d’essai gratuit, puis 4,99 €/mois.
+    checkoutUrl: "https://whop.com/checkout/plan_KXGJwtGvXUP8J",
   },
   {
     id: "lifetime",
-    name: "Offre Fondateur",
-    price: "50 €",
-    period: "Accès à vie",
+    name: "Abonnement Annuel",
+    price: "48 €",
+    period: "/ an",
     badge: "Le plus populaire",
-    tagline: "Payez une seule fois, accès à vie.",
+    tagline: "48 € par an, soit 4 € par mois.",
     description:
-      "Payez une seule fois et profitez d’un accès à vie à RedMatch ainsi qu’à toutes les futures mises à jour.",
+      "Un an d’accès complet à RedMatch et à toutes les mises à jour, pour moins cher que le mensuel.",
     features: [
-      "Accès à vie",
+      "12 mois d’accès complet",
       "Analyses IA illimitées",
       "Notifications Telegram illimitées",
       "Toutes les compétitions",
       "Toutes les futures fonctionnalités incluses",
       "Badge exclusif « Membre Fondateur »",
     ],
-    cta: "Obtenir l’accès à vie",
+    cta: "Choisir l’abonnement annuel",
     href: "/checkout?plan=lifetime",
     highlight: true,
-    // Les deux Payment Links étaient inversés : celui-ci est bien le checkout 50 € à vie.
-    checkoutUrl: "https://buy.stripe.com/cNi4gz9Et3fV0uK0co6EU01",
+    // Whop : 48 €/an. L’id "lifetime" est conservé (contrainte CHECK en base).
+    checkoutUrl: "https://whop.com/checkout/plan_J9pkZWJNTcIun",
   },
 ]
 
